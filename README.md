@@ -7,6 +7,7 @@ planned funcionality:
     * AirBank
     * Raiffeisen Bank
     * Revolut
+
 Base technologies: 
 * Node.js - main backend
 * Heroku/MS Azure/Google Cloud - will be specified
