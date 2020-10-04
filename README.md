@@ -1,5 +1,6 @@
 # Budget_app
 This is repo for my bachelor final work
+
 planned funcionality: 
 * expenses/incomes tracking
 * charts and statistics
