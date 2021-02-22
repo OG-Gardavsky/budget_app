@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require("node/crypto");
+const jsonUtils = require('../utils/JsonUtils');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -45,13 +46,21 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.generateAuthToken = async function() {
     const user = this;
-    const token = jwt.sign({ _id: user._id.toString() }, 'ggdf');
+
+    const configJson = jsonUtils.loadJSON(__dirname + '/config/variables.json');
+    const passwdKey = configJson.passwdKey;
+
+    const token = jwt.sign({ _id: user._id.toString() }, passwdKey);
 
     user.tokens = user.tokens.concat({ token });
     await user.save();
 
     return token;
 }
+
+
+
+
 
 const User = mongoose.model('User', userSchema);
 
