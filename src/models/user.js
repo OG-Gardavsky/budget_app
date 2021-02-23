@@ -47,10 +47,10 @@ const userSchema = new mongoose.Schema({
 userSchema.methods.generateAuthToken = async function() {
     const user = this;
 
-    const configJson = jsonUtils.loadJSON(__dirname + '/config/variables.json');
-    const passwdKey = configJson.passwdKey;
+    const configJson = jsonUtils.loadJSON(__dirname + '../config/variables.json');
+    const jwtKey = configJson.jwtKey;
 
-    const token = jwt.sign({ _id: user._id.toString() }, passwdKey);
+    const token = jwt.sign({ _id: user._id.toString() }, jwtKey);
 
     user.tokens = user.tokens.concat({ token });
     await user.save();
@@ -63,5 +63,7 @@ userSchema.methods.generateAuthToken = async function() {
 
 
 const User = mongoose.model('User', userSchema);
+
+
 
 modules.exports = User;
