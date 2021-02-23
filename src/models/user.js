@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const jwt = require("node/crypto");
-const constants = require('./config/constants');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const constants = require('../config/constants');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -44,6 +45,10 @@ const userSchema = new mongoose.Schema({
     }
 );
 
+/**
+ * mwthod generates jwt token for user and saves it to database
+ * @returns jwt token
+ */
 userSchema.methods.generateAuthToken = async function() {
     const user = this;
 
@@ -58,6 +63,56 @@ userSchema.methods.generateAuthToken = async function() {
 }
 
 
+/**
+ * method removes password and tokens from response
+ * @returns userObject without confidential data
+ */
+userSchema.methods.toJSON = function() {
+    const user = this;
+    const userObject = user.toObject();
+
+    delete userObject.password;
+    delete userObject.tokens;
+
+    return userObject;
+}
+
+/**
+ * methods finds searched user by provided creadentials
+ * @param email
+ * @param password
+ * @returns user from db if finds coresponding record
+ */
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new Error('Unable to login');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        throw new Error('Unable to login');
+    }
+
+    return user
+}
+
+
+/**
+ * takes care of saving password in hashed form
+ */
+userSchema.pre('save', async function(next) {
+    const user = this;
+
+    if (user.isModified('password')) {
+        user.password = await bcrypt.hash(user.password, 8);
+    }
+
+    next();
+})
+
 
 
 
@@ -65,4 +120,4 @@ const User = mongoose.model('User', userSchema);
 
 
 
-modules.exports = User;
+module.exports = User;
