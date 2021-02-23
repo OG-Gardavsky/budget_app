@@ -18,6 +18,8 @@ const acountSchema = new mongoose.Schema({
     }
 });
 
-const Account = mongoose.model('Transaction', acountSchema);
+const Account = mongoose.model('Account', acountSchema);
 
 modules.exports = Account;
+
+const neco = new Account
