@@ -9,7 +9,7 @@ const transactionSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['income', 'expense', 'investment']
+        enum: ['income', 'expense', 'investment', 'transfer']
     },
     amount: {
         type: Number,
@@ -25,6 +25,11 @@ const transactionSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+    ownerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     }
 });
 

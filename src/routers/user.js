@@ -1,7 +1,8 @@
-const express = require('express')
-const User = require('../models/user')
-const router = new express.Router()
-const auth = require('../middleware/auth')
+const express = require('express');
+const User = require('../models/user');
+const auth = require('../middleware/auth');
+
+const router = new express.Router();
 
 
 /**
@@ -22,7 +23,7 @@ router.post('/users', async (req, res) => {
 
 
 /**
- * API logs in user and return
+ * API logs in user and return user info and jwt token
  */
 router.post('/users/login', async(req, res) => {
     try {

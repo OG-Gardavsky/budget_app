@@ -15,11 +15,14 @@ const acountSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+    ownerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     }
 });
 
 const Account = mongoose.model('Account', acountSchema);
 
-modules.exports = Account;
-
-const neco = new Account
+module.exports = Account;
