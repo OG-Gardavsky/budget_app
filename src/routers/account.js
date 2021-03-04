@@ -60,9 +60,9 @@ router.get('/accounts/balance', auth, async (req, res) => {
                     { $match: { accountId: account._id, type: 'income' } },
                     { $group: {  _id: null, balance: { $sum: '$amount' } } }
                 ],
-        function(e, result) {
+        (e, result) => {
                     if (e) {
-                        throw new Error(e);
+                        res.status(500).send();
                     } else {
                         if (result[0]){
                             accountsToSend.push( { accountName: account.name, balance: result[0].balance } );
