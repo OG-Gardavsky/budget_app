@@ -16,11 +16,17 @@ const acountSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    ownerId: {
+    owner: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
     }
+});
+
+acountSchema.virtual('transactions', {
+    ref: 'Transaction',
+    localField: '_id',
+    foreignField: 'accountId'
 });
 
 const Account = mongoose.model('Account', acountSchema);

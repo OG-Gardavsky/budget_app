@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const constants = require('../config/constants');
 
+//pridat primarni currency - pro danej ucet
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -53,7 +54,7 @@ userSchema.virtual('accounts', {
     ref: 'Account',
     localField: '_id',
     foreignField: 'owner'
-})
+});
 
 
 /**
@@ -63,7 +64,7 @@ userSchema.virtual('transactions', {
     ref: 'Transaction',
     localField: '_id',
     foreignField: 'owner'
-})
+});
 
 
 /**
@@ -132,7 +133,7 @@ userSchema.pre('save', async function(next) {
     }
 
     next();
-})
+});
 
 
 /**

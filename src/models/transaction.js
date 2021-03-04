@@ -25,14 +25,22 @@ const transactionSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+        // ,
+        // validate(){
+        //    navalidovat to tak at to musi byt kategorie asociovana s tim uctem - mozna pridat az v routeru
+        // }
     },
-    ownerId: {
+    owner: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
+    },
+    accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Account'
     }
 });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
-modules.exports = Transaction;
+module.exports = Transaction;

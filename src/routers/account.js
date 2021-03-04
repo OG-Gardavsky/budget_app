@@ -1,8 +1,9 @@
 const express = require('express');
 const Account = require('../models/account');
 const auth = require('../middleware/auth');
+const Transaction = require('../models/transaction')
 
-const router = new express.Router()
+const router = new express.Router();
 
 
 /**
@@ -12,16 +13,16 @@ router.post('/accounts', auth, async (req, res) => {
     const account = new Account({
         //... copies content of req.body
         ...req.body,
-        ownerId: req.user._id
-    })
+        owner: req.user._id
+    });
 
     try {
-        await account.save()
-        res.status(201).send(account)
+        await account.save();
+        res.status(201).send(account);
     } catch (e) {
-        res.status(400).send(e)
+        res.status(400).send(e);
     }
-})
+});
 
 
 /**
@@ -32,15 +33,53 @@ router.get('/accounts', auth, async (req, res) => {
 
         await req.user.populate({
             path: 'accounts'
-        }).execPopulate()
+        }).execPopulate();
 
-        res.send(req.user.accounts)
+        res.send(req.user.accounts);
 
     } catch (e) {
-        res.status(500).send(e)
-        console.log(e)
+        res.status(500).send(e);
     }
-})
+});
+
+/**
+ * API gets balance of accounts
+ */
+router.get('/accounts/balance', auth, async (req, res) => {
+    try {
+
+        await req.user.populate({
+            path: 'accounts'
+        }).execPopulate();
+
+        const accountsToSend = [];
+
+        for (const account of req.user.accounts) {
+            await Transaction.aggregate(
+        [
+                    { $match: { accountId: account._id, type: 'income' } },
+                    { $group: {  _id: null, balance: { $sum: '$amount' } } }
+                ],
+        function(e, result) {
+                    if (e) {
+                        throw new Error(e);
+                    } else {
+                        if (result[0]){
+                            accountsToSend.push( { accountName: account.name, balance: result[0].balance } );
+                        } else {
+                            accountsToSend.push( { accountName: account.name, balance: 0 } );
+                        }
+                    }
+                }
+            );
+        }
+
+        res.send(accountsToSend);
+    } catch (e) {
+        res.status(500).send();
+    }
+});
+
 
 
 module.exports = router;
