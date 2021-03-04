@@ -11,6 +11,7 @@ const transactionSchema = new mongoose.Schema({
         required: true,
         enum: ['income', 'expense', 'investment', 'transfer']
     },
+    //add check for .00 max 2 numbers after .00
     amount: {
         type: Number,
         required: true,

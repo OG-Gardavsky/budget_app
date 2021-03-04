@@ -58,16 +58,16 @@ router.get('/accounts/balance', auth, async (req, res) => {
             await Transaction.aggregate(
         [
                     { $match: { accountId: account._id, type: 'income' } },
-                    { $group: {  _id: null, balance: { $sum: '$amount' } } }
+                    { $group: {  _id: account._id, balance: { $sum: '$amount' } } }
                 ],
         (e, result) => {
                     if (e) {
                         res.status(500).send();
                     } else {
                         if (result[0]){
-                            accountsToSend.push( { accountName: account.name, balance: result[0].balance } );
+                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: result[0].balance } );
                         } else {
-                            accountsToSend.push( { accountName: account.name, balance: 0 } );
+                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: 0 } );
                         }
                     }
                 }
@@ -83,5 +83,3 @@ router.get('/accounts/balance', auth, async (req, res) => {
 
 
 module.exports = router;
-
-
