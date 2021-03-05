@@ -5,8 +5,7 @@ planned funcionality:
 * expenses/incomes tracking
 * charts and statistics
 * possible integration with bank API, possibly: 
-    * AirBank
-    * Raiffeisen Bank
+    * Fio banka
     * Revolut
 
 Base technologies: 
