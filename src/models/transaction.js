@@ -15,12 +15,24 @@ const transactionSchema = new mongoose.Schema({
     amount: {
         type: Number,
         required: true,
-        trim: true
+        trim: true,
+        validate(value) {
+            if (value>0) {
+                throw new Error('number must be positive');
+            }
+
+            const reg = new RegExp('^\\d*.\\d{0,2}$');
+
+            if (!reg.test(value)) {
+                throw new Error('number must contain max 2 decimals')
+            }
+        }
     },
     currency: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        enum: ['CZK', 'USD', 'EUR']
     },
     category: {
         type: String,

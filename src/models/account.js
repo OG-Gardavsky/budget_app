@@ -29,6 +29,8 @@ acountSchema.virtual('transactions', {
     foreignField: 'accountId'
 });
 
+//pre-save - at je to jmenove unikatni per user
+
 const Account = mongoose.model('Account', acountSchema);
 
 module.exports = Account;

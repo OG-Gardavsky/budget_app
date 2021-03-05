@@ -57,12 +57,13 @@ router.get('/accounts/balance', auth, async (req, res) => {
         for (const account of req.user.accounts) {
             await Transaction.aggregate(
         [
-                    { $match: { accountId: account._id, type: 'income' } },
+                    { $match: { accountId: account._id} },
                     { $group: {  _id: account._id, balance: { $sum: '$amount' } } }
                 ],
         (e, result) => {
                     if (e) {
                         res.status(500).send();
+                        console.log(e)
                     } else {
                         if (result[0]){
                             accountsToSend.push( { accountId: account._id, accountName: account.name, balance: result[0].balance } );
