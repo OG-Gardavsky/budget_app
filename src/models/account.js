@@ -15,11 +15,22 @@ const acountSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     }
 });
 
+acountSchema.virtual('transactions', {
+    ref: 'Transaction',
+    localField: '_id',
+    foreignField: 'accountId'
+});
+
+//pre-save - at je to jmenove unikatni per user
+
 const Account = mongoose.model('Account', acountSchema);
 
-modules.exports = Account;
-
-const neco = new Account
+module.exports = Account;

@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const constants = require('../config/constants');
 
+//pridat primarni currency - pro danej ucet
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -46,6 +48,26 @@ const userSchema = new mongoose.Schema({
 );
 
 /**
+ * creates link to account
+ */
+userSchema.virtual('accounts', {
+    ref: 'Account',
+    localField: '_id',
+    foreignField: 'owner'
+});
+
+
+/**
+ * creates link to account
+ */
+userSchema.virtual('transactions', {
+    ref: 'Transaction',
+    localField: '_id',
+    foreignField: 'owner'
+});
+
+
+/**
  * mwthod generates jwt token for user and saves it to database
  * @returns jwt token
  */
@@ -78,10 +100,10 @@ userSchema.methods.toJSON = function() {
 }
 
 /**
- * methods finds searched user by provided creadentials
+ * methods finds searched user by provided credentials
  * @param email
  * @param password
- * @returns user from db if finds coresponding record
+ * @returns user from db if finds corresponding record
  */
 userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email });
@@ -111,8 +133,13 @@ userSchema.pre('save', async function(next) {
     }
 
     next();
-})
+});
 
+
+/**
+ * add pre delete - delete all asociated accounts
+ * @type {*}
+ */
 
 
 
