@@ -66,22 +66,48 @@ router.get('/accounts/:id', auth, async (req, res) => {
  */
 router.get('/accounts/balance', auth, async (req, res) => {
     try {
-        const account = await Account.findOne({_id: accountId, owner: req.user._id});
 
-        console.log(account);
-
-        if (!account) {
-            return res.status(404).send()
-        }
-
-        await account.populate({
-            path: 'transactions'
+        await req.user.populate({
+            path: 'accounts'
         }).execPopulate();
 
-        res.send(account.transactions);
+        res.send(req.user.accounts);
 
+
+
+        await req.user.populate({
+            path: 'accounts'
+        }).execPopulate();
+
+        const accountsToSend = [];
+
+        for (const account of req.user.accounts) {
+            await Transaction.aggregate(
+                [
+                    { $match: { accountId: account._id} },
+                    { $group: {  _id: account._id, balance: { $sum: '$amount' } } }
+                ],
+                (e, result) => {
+                    if (e) {
+                        console.log(e)
+                        res.status(500).send();
+
+                    } else {
+                        if (result[0]){
+                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: result[0].balance } );
+                        } else {
+                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: 0 } );
+                        }
+                    }
+                }
+            );
+        }
+
+        res.send(accountsToSend);
     } catch (e) {
-        res.status(500).send()
+        console.log('je to blby');
+        res.status(500).send(e);
+
     }
 });
 
