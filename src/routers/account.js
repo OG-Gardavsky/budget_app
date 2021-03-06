@@ -111,4 +111,27 @@ router.get('/accounts/balance', auth, async (req, res) => {
     }
 });
 
+
+router.get('/accounts/:id/transactions', auth, async (req, res) => {
+    const _id = req.params.id;
+
+    try {
+        const account = await Account.findOne({_id, owner: req.user._id});
+
+        if (!account) {
+            return res.status(404).send();
+        }
+
+        await account.populate({
+            path: 'transactions'
+        }).execPopulate();
+
+        res.send(account.transactions);
+
+    } catch (e) {
+        res.status(500).send();
+    }
+});
+
+
 module.exports = router;
