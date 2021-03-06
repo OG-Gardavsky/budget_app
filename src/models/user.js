@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    primarCurrency: {
+        type: String,
+        required: true,
+        trim: true,
+        enum: ['CZK', 'USD', 'EUR']
+    },
     tokens: [{
         token: {
             type: String,
@@ -58,10 +64,20 @@ userSchema.virtual('accounts', {
 
 
 /**
- * creates link to account
+ * creates link to transaction
  */
 userSchema.virtual('transactions', {
     ref: 'Transaction',
+    localField: '_id',
+    foreignField: 'owner'
+});
+
+
+/**
+ * creates link to category
+ */
+userSchema.virtual('categories', {
+    ref: 'Category',
     localField: '_id',
     foreignField: 'owner'
 });

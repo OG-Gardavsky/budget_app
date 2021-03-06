@@ -1,7 +1,7 @@
 const express = require('express');
-const Account = require('../models/account');
 const auth = require('../middleware/auth');
-const Transaction = require('../models/transaction')
+const Account = require('../models/account');
+const Transaction = require('../models/transaction');
 
 const router = new express.Router();
 
@@ -43,44 +43,46 @@ router.get('/accounts', auth, async (req, res) => {
 });
 
 /**
- * API gets balance of accounts
+ * API gets acount details by its id
  */
-router.get('/accounts/balance', auth, async (req, res) => {
+router.get('/accounts/:id', auth, async (req, res) => {
+    const _id = req.params.id;
+
     try {
+        const account = await Account.findOne({_id, owner: req.user._id});
 
-        await req.user.populate({
-            path: 'accounts'
-        }).execPopulate();
-
-        const accountsToSend = [];
-
-        for (const account of req.user.accounts) {
-            await Transaction.aggregate(
-        [
-                    { $match: { accountId: account._id} },
-                    { $group: {  _id: account._id, balance: { $sum: '$amount' } } }
-                ],
-        (e, result) => {
-                    if (e) {
-                        res.status(500).send();
-                        console.log(e)
-                    } else {
-                        if (result[0]){
-                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: result[0].balance } );
-                        } else {
-                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: 0 } );
-                        }
-                    }
-                }
-            );
+        if (!account) {
+            return res.status(404).send();
         }
 
-        res.send(accountsToSend);
+        res.send(account)
     } catch (e) {
         res.status(500).send();
     }
 });
 
+/**
+ * API gets balance of accounts
+ */
+router.get('/accounts/balance', auth, async (req, res) => {
+    try {
+        const account = await Account.findOne({_id: accountId, owner: req.user._id});
 
+        console.log(account);
+
+        if (!account) {
+            return res.status(404).send()
+        }
+
+        await account.populate({
+            path: 'transactions'
+        }).execPopulate();
+
+        res.send(account.transactions);
+
+    } catch (e) {
+        res.status(500).send()
+    }
+});
 
 module.exports = router;
