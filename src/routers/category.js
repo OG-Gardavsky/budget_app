@@ -23,6 +23,44 @@ router.post('/categories', auth, async (req, res) => {
     }
 });
 
+/**
+ * API return list of categories created by User
+ */
+router.get('/categories', auth, async (req, res) => {
+    try {
+
+        await req.user.populate({
+            path: 'categories'
+        }).execPopulate();
+
+        res.send(req.user.categories);
+
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
+
+
+/**
+ * API deletes acount by ID
+ */
+router.delete('/categories/id::id', auth, async (req, res) => {
+    const _id = req.params.id;
+
+    try {
+        const category = await Category.findOne({_id, owner: req.user._id});
+
+        if (!category) {
+            return res.status(404).send();
+        }
+
+        category.remove();
+
+        res.send(category);
+    } catch (e) {
+        res.status(500).send();
+    }
+})
 
 
 

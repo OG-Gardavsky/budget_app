@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const transactionSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
+        required: false,
         trim: true
     },
     type: {
@@ -31,13 +31,9 @@ const transactionSchema = new mongoose.Schema({
         enum: ['CZK', 'USD', 'EUR']
     },
     categoryId: {
-        type: String,
-        required: false,
-        trim: true
-        // ,
-        // validate(){
-        //    navalidovat to tak at to musi byt kategorie asociovana s tim uctem - mozna pridat az v routeru
-        // }
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
@@ -47,7 +43,7 @@ const transactionSchema = new mongoose.Schema({
     accountId: {
         type: mongoose.Schema.Types.ObjectId,
         required: false,
-        ref: 'Account'
+        ref: 'Category'
     }
 });
 

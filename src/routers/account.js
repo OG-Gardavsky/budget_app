@@ -45,7 +45,7 @@ router.get('/accounts', auth, async (req, res) => {
 /**
  * API gets acount details by its id
  */
-router.get('/accounts/:id', auth, async (req, res) => {
+router.get('/accounts/id::id', auth, async (req, res) => {
     const _id = req.params.id;
 
     try {
@@ -55,7 +55,7 @@ router.get('/accounts/:id', auth, async (req, res) => {
             return res.status(404).send();
         }
 
-        res.send(account)
+        res.send(account);
     } catch (e) {
         res.status(500).send();
     }
@@ -71,14 +71,6 @@ router.get('/accounts/balance', auth, async (req, res) => {
             path: 'accounts'
         }).execPopulate();
 
-        res.send(req.user.accounts);
-
-
-
-        await req.user.populate({
-            path: 'accounts'
-        }).execPopulate();
-
         const accountsToSend = [];
 
         for (const account of req.user.accounts) {
@@ -89,7 +81,6 @@ router.get('/accounts/balance', auth, async (req, res) => {
                 ],
                 (e, result) => {
                     if (e) {
-                        console.log(e)
                         res.status(500).send();
 
                     } else {
@@ -105,18 +96,17 @@ router.get('/accounts/balance', auth, async (req, res) => {
 
         res.send(accountsToSend);
     } catch (e) {
-        console.log('je to blby');
         res.status(500).send(e);
 
     }
 });
 
 
-router.get('/accounts/:id/transactions', auth, async (req, res) => {
-    const _id = req.params.id;
+router.get('/accounts/id::id/transactions', auth, async (req, res) => {
+    const accountId = req.params.id;
 
     try {
-        const account = await Account.findOne({_id, owner: req.user._id});
+        const account = await Account.findOne({_id: accountId, owner: req.user._id});
 
         if (!account) {
             return res.status(404).send();
@@ -127,11 +117,32 @@ router.get('/accounts/:id/transactions', auth, async (req, res) => {
         }).execPopulate();
 
         res.send(account.transactions);
-
     } catch (e) {
         res.status(500).send();
     }
 });
+
+
+/**
+ * API deletes acount by ID
+ */
+router.delete('/accounts/id::id', auth, async (req, res) => {
+    const _id = req.params.id;
+
+    try {
+            const account = await Account.findOne({_id, owner: req.user._id});
+
+        if (!account) {
+            return res.status(404).send();
+        }
+
+        account.remove();
+
+        res.send(account);
+    } catch (e) {
+        res.status(500).send();
+    }
+})
 
 
 module.exports = router;

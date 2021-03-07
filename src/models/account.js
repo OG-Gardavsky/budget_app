@@ -14,7 +14,8 @@ const acountSchema = new mongoose.Schema({
     currency: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        enum: ['CZK', 'USD', 'EUR']
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,

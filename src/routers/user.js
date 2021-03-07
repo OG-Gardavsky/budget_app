@@ -65,6 +65,19 @@ router.post('/users/logoutAll', auth, async (req, res) => {
     } catch (e) {
         res.status(500).send(e);
     }
+});
+
+
+/**
+ * API deletes current user account
+ */
+router.delete('/users/me', auth, async (req, res) => {
+    try {
+        await req.user.remove();
+        res.send(req.user);
+    } catch (e) {
+        res.status(500).send();
+    }
 })
 
 
