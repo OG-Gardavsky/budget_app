@@ -1,8 +1,5 @@
 const mongoose = require('mongoose');
 
-//can be added subtype - if is income | expense - podle toho check u vytvareni transakce
-// also can be added, if is global or just for one user
-
 const categorySchema = new mongoose.Schema({
     name: {
         type: String,

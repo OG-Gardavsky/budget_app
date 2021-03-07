@@ -1,5 +1,6 @@
 const express = require('express');
 const Transaction = require('../models/transaction');
+const Account = require('../models/account');
 const auth = require('../middleware/auth');
 
 const router = new express.Router()
@@ -23,7 +24,7 @@ router.post('/transactions', auth, async (req, res) => {
 
     const belongsAccToUser = allowedAcountIds.includes(req.body.accountId);
     if (!belongsAccToUser) {
-        return res.status(403).send({error: 'Entered acount does not belong to user.'});
+        return res.status(403).send({error: 'Entered acount does not belong to user or does not exist.'});
     }
 
 
@@ -37,7 +38,24 @@ router.post('/transactions', auth, async (req, res) => {
         await transaction.save();
         res.status(201).send(transaction);
     } catch (e) {
-        res.status(400).send(e);
+        res.status(400).send(e.toString());
+    }
+});
+
+/**
+ * API gets list of transactions associated with user
+ */
+router.get('/transactions', auth, async (req, res) => {
+    try {
+
+        await req.user.populate({
+            path: 'transactions'
+        }).execPopulate();
+
+        res.send(req.user.transactions);
+
+    } catch (e) {
+        res.status(500).send(e);
     }
 });
 
@@ -63,12 +81,6 @@ router.delete('/transactions/id::id', auth, async (req, res) => {
         res.status(500).send();
     }
 })
-
-
-
-//vyrobit to logiku pro transfery -
-// mozna pridat typy - transferIn/out
-// nebo specifikovat incoming account a outcomming account
 
 
 module.exports = router;
