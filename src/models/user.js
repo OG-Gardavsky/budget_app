@@ -6,7 +6,6 @@ const constants = require('../config/constants');
 const Account = require('./account');
 const Transaction = require('./transaction');
 
-//pridat primarni currency - pro danej ucet
 
 const userSchema = new mongoose.Schema({
     name: {

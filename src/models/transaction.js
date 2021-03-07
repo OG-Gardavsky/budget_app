@@ -50,12 +50,11 @@ const transactionSchema = new mongoose.Schema({
 transactionSchema.pre('save', async function(next) {
     const transaction = this;
 
+    if (transaction.amount < 0) {
+        throw new Error("All incoming data must contain positive 'amount' value");
+    }
+
     if (transaction.type === 'expense') {
-
-        if (transaction.amount < 0) {
-            throw new Error("All incoming data must contain positive 'amount' value");
-        }
-
         transaction.amount = transaction.amount * (-1);
     }
 
