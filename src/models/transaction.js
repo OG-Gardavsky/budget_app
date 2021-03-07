@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const transactionSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
+        required: false,
         trim: true
     },
     type: {
@@ -17,11 +17,7 @@ const transactionSchema = new mongoose.Schema({
         required: true,
         trim: true,
         validate(value) {
-            if (value>0) {
-                throw new Error('number must be positive');
-            }
-
-            const reg = new RegExp('^\\d*.\\d{0,2}$');
+            const reg = new RegExp('^-?\\d*.\\d{0,2}$');
 
             if (!reg.test(value)) {
                 throw new Error('number must contain max 2 decimals')
@@ -34,14 +30,10 @@ const transactionSchema = new mongoose.Schema({
         trim: true,
         enum: ['CZK', 'USD', 'EUR']
     },
-    category: {
-        type: String,
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
-        trim: true
-        // ,
-        // validate(){
-        //    navalidovat to tak at to musi byt kategorie asociovana s tim uctem - mozna pridat az v routeru
-        // }
+        ref: 'User'
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
@@ -50,8 +42,24 @@ const transactionSchema = new mongoose.Schema({
     },
     accountId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Account'
+        required: false,
+        ref: 'Category'
     }
+});
+
+transactionSchema.pre('save', async function(next) {
+    const transaction = this;
+
+    if (transaction.type === 'expense') {
+
+        if (transaction.amount < 0) {
+            throw new Error("All incoming data must contain positive 'amount' value");
+        }
+
+        transaction.amount = transaction.amount * (-1);
+    }
+
+    next();
 });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);

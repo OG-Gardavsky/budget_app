@@ -3,6 +3,8 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const constants = require('../config/constants');
+const Account = require('./account');
+const Transaction = require('./transaction');
 
 //pridat primarni currency - pro danej ucet
 
@@ -34,6 +36,12 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    primarCurrency: {
+        type: String,
+        required: true,
+        trim: true,
+        enum: ['CZK', 'USD', 'EUR']
+    },
     tokens: [{
         token: {
             type: String,
@@ -58,10 +66,20 @@ userSchema.virtual('accounts', {
 
 
 /**
- * creates link to account
+ * creates link to transaction
  */
 userSchema.virtual('transactions', {
     ref: 'Transaction',
+    localField: '_id',
+    foreignField: 'owner'
+});
+
+
+/**
+ * creates link to category
+ */
+userSchema.virtual('categories', {
+    ref: 'Category',
     localField: '_id',
     foreignField: 'owner'
 });
@@ -137,9 +155,15 @@ userSchema.pre('save', async function(next) {
 
 
 /**
- * add pre delete - delete all asociated accounts
- * @type {*}
+ * takes care of deleting associated Accounts and Transactions
  */
+userSchema.pre('remove', async function (next) {
+    const user = this;
+    await Transaction.deleteMany({ owner: user._id });
+    await Account.deleteMany({ owner: user._id });
+    next();
+});
+
 
 
 
