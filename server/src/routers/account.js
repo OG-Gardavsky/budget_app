@@ -64,7 +64,7 @@ router.get('/accounts/id::id', auth, async (req, res) => {
 /**
  * API gets balance of accounts
  */
-router.get('/accounts/balance', auth, async (req, res) => {
+router.get('/api/accounts/balance', auth, async (req, res) => {
     try {
 
         await req.user.populate({
