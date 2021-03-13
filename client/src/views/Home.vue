@@ -7,7 +7,7 @@
   </div>
 
   <div>
-      <button @click="click">click na fetch</button>
+      <button @click="showBalanceOfAccounts">click na fetch</button>
   </div>
 
 
@@ -23,6 +23,7 @@
 <script>
 // @ is an alias to /src
 import HomePage from "@/components/HomePage";
+import router from "@/router";
 
 export default {
     name: 'Home',
@@ -35,16 +36,25 @@ export default {
         }
     },
     methods: {
-        async click() {
+        async showBalanceOfAccounts() {
 
             const res = await fetch('api/accounts/balance', {
                 method: 'GET',
                 headers: {
-                  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDRjN2NjMTJkZGZmNTQ2YjRkZmZhNDEiLCJpYXQiOjE2MTU2MjU0MDl9.V3NXISLRi6KfUdtrSqYdkJbDZZsqa2nLi-OMJiWDN-U'}
+                  'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
             });
 
             this.accountsBalance = await res.json();
         }
+
+    },
+    async created() {
+        if (localStorage.getItem('userToken') === null) {
+            alert('You are not authenticated, please logged in');
+            await router.push('/');
+        }
+
     }
 }
 </script>
