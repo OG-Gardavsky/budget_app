@@ -5,11 +5,12 @@ const Transaction = require('../models/transaction');
 
 const router = new express.Router();
 
+const baseUrl = '/api/accounts';
 
 /**
  * API creates new account
  */
-router.post('/accounts', auth, async (req, res) => {
+router.post(baseUrl, auth, async (req, res) => {
     const account = new Account({
         //... copies content of req.body
         ...req.body,
@@ -28,7 +29,7 @@ router.post('/accounts', auth, async (req, res) => {
 /**
  * API gets accounts associated with user
  */
-router.get('/accounts', auth, async (req, res) => {
+router.get(baseUrl, auth, async (req, res) => {
     try {
 
         await req.user.populate({
@@ -45,7 +46,7 @@ router.get('/accounts', auth, async (req, res) => {
 /**
  * API gets acount details by its id
  */
-router.get('/accounts/id::id', auth, async (req, res) => {
+router.get(baseUrl + '/id::id', auth, async (req, res) => {
     const _id = req.params.id;
 
     try {
@@ -64,7 +65,7 @@ router.get('/accounts/id::id', auth, async (req, res) => {
 /**
  * API gets balance of accounts
  */
-router.get('/api/accounts/balance', auth, async (req, res) => {
+router.get(baseUrl + '/balance', auth, async (req, res) => {
     try {
 
         await req.user.populate({
@@ -102,7 +103,7 @@ router.get('/api/accounts/balance', auth, async (req, res) => {
 });
 
 
-router.get('/accounts/id::id/transactions', auth, async (req, res) => {
+router.get(baseUrl + '/id::id/transactions', auth, async (req, res) => {
     const accountId = req.params.id;
 
     try {
@@ -126,7 +127,7 @@ router.get('/accounts/id::id/transactions', auth, async (req, res) => {
 /**
  * API deletes acount by ID
  */
-router.delete('/accounts/id::id', auth, async (req, res) => {
+router.delete(baseUrl + '/id::id', auth, async (req, res) => {
     const _id = req.params.id;
 
     try {

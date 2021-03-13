@@ -1,14 +1,16 @@
 const express = require('express');
 const Transaction = require('../models/transaction');
-const Account = require('../models/account');
+// const Account = require('../models/account');
 const auth = require('../middleware/auth');
 
 const router = new express.Router()
 
+const baseUrl = '/api/transactions';
+
 /**
  * API creates transaction
  */
-router.post('/transactions', auth, async (req, res) => {
+router.post(baseUrl, auth, async (req, res) => {
 
     // chcecks if acccountId belongs to user
     await req.user.populate({
@@ -45,7 +47,7 @@ router.post('/transactions', auth, async (req, res) => {
 /**
  * API gets list of transactions associated with user
  */
-router.get('/transactions', auth, async (req, res) => {
+router.get(baseUrl, auth, async (req, res) => {
     try {
 
         await req.user.populate({
@@ -64,7 +66,7 @@ router.get('/transactions', auth, async (req, res) => {
 /**
  * API deletes transaction by ID
  */
-router.delete('/transactions/id::id', auth, async (req, res) => {
+router.delete(baseUrl + '/id::id', auth, async (req, res) => {
     const _id = req.params.id;
 
     try {

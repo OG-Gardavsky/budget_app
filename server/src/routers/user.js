@@ -4,11 +4,12 @@ const auth = require('../middleware/auth');
 
 const router = new express.Router();
 
+const baseUrl = '/api/users';
 
 /**
  * API creates new user
  */
-router.post('/users', async (req, res) => {
+router.post(baseUrl, async (req, res) => {
     const user = new User(req.body);
 
     try{
@@ -25,7 +26,7 @@ router.post('/users', async (req, res) => {
 /**
  * API logs in user and return user info and jwt token
  */
-router.post('/users/login', async(req, res) => {
+router.post(baseUrl + '/login', async(req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password);
         const token = await user.generateAuthToken();
@@ -39,7 +40,7 @@ router.post('/users/login', async(req, res) => {
 /**
  * API logs out user by deleting current jwt token
  */
-router.post('/users/logout', auth, async (req, res) => {
+router.post(baseUrl + '/logout', auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token;
@@ -56,7 +57,7 @@ router.post('/users/logout', auth, async (req, res) => {
 /**
  * API logs out user from all devices by deleting all jwt tokens
  */
-router.post('/users/logoutAll', auth, async (req, res) => {
+router.post(baseUrl + '/logoutAll', auth, async (req, res) => {
     try {
         req.user.tokens = [];
 
@@ -71,7 +72,7 @@ router.post('/users/logoutAll', auth, async (req, res) => {
 /**
  * API deletes current user account
  */
-router.delete('/users/me', auth, async (req, res) => {
+router.delete(baseUrl + '/me', auth, async (req, res) => {
     try {
         await req.user.remove();
         res.send(req.user);

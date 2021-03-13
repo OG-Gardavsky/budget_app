@@ -4,11 +4,12 @@ const Category = require('../models/category');
 
 const router = new express.Router();
 
+const baseUrl = '/api/categories';
 
 /**
  * API creates new account
  */
-router.post('/categories', auth, async (req, res) => {
+router.post(baseUrl, auth, async (req, res) => {
     const category = new Category({
         //... copies content of req.body
         ...req.body,
@@ -26,7 +27,7 @@ router.post('/categories', auth, async (req, res) => {
 /**
  * API return list of categories created by User
  */
-router.get('/categories', auth, async (req, res) => {
+router.get(baseUrl, auth, async (req, res) => {
     try {
 
         await req.user.populate({
@@ -44,7 +45,7 @@ router.get('/categories', auth, async (req, res) => {
 /**
  * API deletes acount by ID
  */
-router.delete('/categories/id::id', auth, async (req, res) => {
+router.delete(baseUrl + '/id::id', auth, async (req, res) => {
     const _id = req.params.id;
 
     try {
