@@ -2,7 +2,7 @@
   "name": "budget_app",
   "version": "1.0.0",
   "description": "project for bachelor work",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "start2": "node src/index.js",
     "dev": "nodemon src/index.js"
