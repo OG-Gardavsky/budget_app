@@ -4,7 +4,8 @@
   "description": "This is repo for my bachelor final work",
   "main": "index.js",
   "scripts": {
-    "start": "cd server && npm install && node src/index.js"
+    "build": "cd server && npm install",
+    "start": "node server/src/index.js"
   },
   "repository": {
     "type": "git",
