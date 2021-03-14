@@ -8,7 +8,7 @@ const categoryRouter = require('./routers/category');
 const process = require('process');
 
 const app = express();
-const port = process.env.port;
+const port = process.env.PORT;
 
 app.use(express.json());
 app.use(userRouter);
