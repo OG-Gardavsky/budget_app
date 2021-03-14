@@ -5,9 +5,10 @@ const userRouter = require('./routers/user');
 const accountRouter = require('./routers/account');
 const transactionRouter = require('./routers/transaction');
 const categoryRouter = require('./routers/category');
+const process = require('process');
 
 const app = express();
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(userRouter);
