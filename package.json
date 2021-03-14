@@ -4,7 +4,8 @@
   "description": "This is repo for my bachelor final work",
   "main": "index.js",
   "scripts": {
-    "start": "./build_run.sh"
+    "heroku-prebuild": "cd client && npm install && npm run build && cd ../server && npm install",
+    "start": "node server/src/index.js"
   },
   "repository": {
     "type": "git",
@@ -12,9 +13,6 @@
   },
   "author": "Ondrej Gardavsky",
   "license": "ISC",
-  "dependencies": {
-    "bash": "0.0.1"
-  },
   "bugs": {
     "url": "https://github.com/OG-Gardavsky/budget_app/issues"
   },
