@@ -1,22 +1,22 @@
 {
   "name": "budget_app",
   "version": "1.0.0",
-  "description": "project for bachelor work",
+  "description": "This is repo for my bachelor final work",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start": "./build_run.sh"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OG-Gardavsky/budget_app.git"
+  },
+  "author": "Ondrej Gardavsky",
   "license": "ISC",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.12.0",
-    "node": "^15.8.0"
+    "bash": "0.0.1"
   },
-  "devDependencies": {
-    "validator": "^13.5.2"
-  }
+  "bugs": {
+    "url": "https://github.com/OG-Gardavsky/budget_app/issues"
+  },
+  "homepage": "https://github.com/OG-Gardavsky/budget_app#readme"
 }

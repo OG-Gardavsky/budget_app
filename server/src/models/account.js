@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//add initial balance field
 const acountSchema = new mongoose.Schema({
     name: {
         type: String,
