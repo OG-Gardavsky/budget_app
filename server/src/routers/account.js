@@ -86,9 +86,9 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
 
                     } else {
                         if (result[0]){
-                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: result[0].balance } );
+                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: result[0].balance,  currency: account.currency});
                         } else {
-                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: 0 } );
+                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: 0 ,  currency: account.currency} );
                         }
                     }
                 }

@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-      <HomePage msg="Welcome to budget app"/>
+      <HomePage msg="Log in, please."/>
       <LoginPage @on-login="onLogin"/>
   </div>
 

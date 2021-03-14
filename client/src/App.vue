@@ -7,6 +7,10 @@
 </template>
 
 <style lang="scss">
+body{
+    background-color: #e0e0e0;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

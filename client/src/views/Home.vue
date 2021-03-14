@@ -1,20 +1,17 @@
 <template>
   <div class="home">
+      <Header />
       <!--    <img alt="Vue logo" src="../assets/logo.png">-->
       <HomePage msg="Welcome to budget app"/>
 
 
   </div>
 
-  <div>
-      <button @click="showBalanceOfAccounts">click na fetch</button>
-  </div>
-
 
   <div id="accounts">
       <div :key="account.accountId" v-for="account in accountsBalance">
           <p>{{account.accountName}}</p>
-          <p>{{account.balance}}</p>
+          <p>{{account.balance}} {{account.currency}}</p>
       </div>
   </div>
 
@@ -24,10 +21,13 @@
 // @ is an alias to /src
 import HomePage from "@/components/HomePage";
 import router from "@/router";
+import Header from "@/components/Header";
+
 
 export default {
     name: 'Home',
     components: {
+        Header,
         HomePage
     },
     data() {
@@ -52,8 +52,11 @@ export default {
     async created() {
         if (localStorage.getItem('userToken') === null) {
             alert('You are not authenticated, please logged in');
-            await router.push('/');
+            return await router.push('/');
         }
+
+        await this.showBalanceOfAccounts();
+
 
     }
 }
@@ -61,19 +64,21 @@ export default {
 
 <style lang="scss">
 
+
+
 #accounts {
 
-    margin: 0 50px;
+    //margin: 0 50px;
 
     display: flex;
     flex-direction: row;
+    align-items: center;
 
     div {
+        margin: 10px;
         border: 1px solid black;
-        padding: 0 10px;
+        padding: 10px 10px;
         flex-direction: column;
-        display: flex;
-        align-items: center;
     }
 
 }
