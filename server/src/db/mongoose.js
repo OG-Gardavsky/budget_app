@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const constants = require('../config/constants')
 
-mongoose.connect('mongodb://127.0.0.1:27017/budget_app', {
+mongoose.connect(constants.dbAdrres, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,

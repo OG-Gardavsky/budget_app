@@ -1,7 +1,8 @@
 
-//poresit generovani tady tech hodnt
+//set to procces env variables in future
 const constants = {
-    jwtKey: "1xG6JpTrKbO3FK3us3SKwlzs1teqnUle"
+    jwtKey: "someRandomKey",
+    dbAdrres: "mongodb://127.0.0.1:27017/budget_app"
 }
 
 module.exports = constants;
