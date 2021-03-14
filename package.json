@@ -4,9 +4,12 @@
   "description": "This is repo for my bachelor final work",
   "main": "index.js",
   "scripts": {
-    "prebuild": "cd client",
-    "build": "vue-cli-service build",
-    "start": "node server/src/index.js"
+    "preinstall": "cd client",
+    "install": "npm install",
+    "postinstall": "vue-cli-service build",
+    "prebuild": "cd ../server",
+    "build": "npm install",
+    "start": "node src/index.js"
   },
   "repository": {
     "type": "git",
