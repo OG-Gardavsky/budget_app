@@ -1,7 +1,6 @@
 {
-  "name": "budget_app",
+  "name": "budget_app-api",
   "version": "1.0.0",
-  "description": "project for bachelor work",
   "main": "index.js",
   "scripts": {
     "start2": "node src/index.js",
