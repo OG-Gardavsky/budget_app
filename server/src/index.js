@@ -7,7 +7,7 @@ const transactionRouter = require('./routers/transaction');
 const categoryRouter = require('./routers/category');
 
 const app = express();
-const port = process.env.port || 3000;
+const port = process.env.port;
 
 app.use(express.json());
 app.use(userRouter);
