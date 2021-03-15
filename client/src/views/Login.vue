@@ -19,7 +19,7 @@ export default {
     },
     data() {
         return {
-
+            userInfo: {}
         }
     },
     methods: {
@@ -44,15 +44,26 @@ export default {
                 alert('unable to login');
             }
 
+        },
+        async getUserInfo() {
 
+            const res = await fetch('api/users', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
 
-
-
+            this.userInfo = await res.json();
         }
     },
     async created() {
-        if (localStorage.getItem('userToken') !== null) {
-            await router.push('home');
+        if (localStorage.getItem('userToken')) {
+            await this.getUserInfo();
+
+            if (!this.userInfo.hasOwnProperty('error')){
+                await router.push('home');
+            }
         }
     }
 
