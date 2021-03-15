@@ -1,12 +1,14 @@
 <template>
-    <button @click="logOut">logout</button>
+    <custom-button text-of-button="log out" @on-click="logOut"/>
 </template>
 
 <script>
 import router from "@/router";
+import CustomButton from "@/components/customButton";
 
 export default {
     name: "Header",
+    components: {CustomButton},
     methods: {
         async logOut() {
 
@@ -21,7 +23,7 @@ export default {
                     }
                 });
 
-                if (res.status === 200) {
+                if (res.status === 200 || res.status === 401) {
                     localStorage.removeItem('userToken');
                     router.push('/');
                 }

@@ -3,14 +3,19 @@
         <form @submit="onLogin">
             <input  type="email" v-model="email" placeholder="Email" />
             <input type="password" v-model="password" placeholder="Password" />
-            <button v-on:click="">Log in</button>
+            <custom-button text-of-button="Log in"/>
         </form>
     </section>
 </template>
 
 <script>
+import CustomButton from "@/components/customButton";
+
 export default {
     name: "LoginPage",
+    components: {
+        CustomButton
+    },
     data() {
         return {
             email: '',
@@ -83,20 +88,7 @@ input{
     background-color:#e0dada;
     border:none;
 }
-button{
-    height:40px;
-    padding: 5px 5px;
-    margin: 10px 0px;
-    font-weight:bold;
-    background-color: #91c27f;
-    border:none;
-    color:#e0dada;
-    cursor:pointer;
-    font-size:16px;
-}
-button:hover{
-    background-color: #58724a;
-}
+
 
 
 
