@@ -88,11 +88,11 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
         }).execPopulate();
 
         const accountsToSend = [];
-        for (const account of  req.user.accounts) {
+        req.user.accounts.forEach((account) => {
             const match = accountsBalance.find(obj => obj._id.toString() === account._id.toString());
             const balance = !match ? 0:match.balance;
             accountsToSend.push( { accountId: account._id, accountName: account.name, balance: balance,  currency: account.currency} );
-        }
+        });
 
         res.send(accountsToSend);
     } catch (e) {
