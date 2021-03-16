@@ -76,7 +76,7 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
                         }
                 }
             ],
-            (e, result) => {
+            (e) => {
                 if (e) {
                     throw new Error('error in DB agregation');
                 }
@@ -90,16 +90,13 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
         const accountsToSend = [];
         for (const account of  req.user.accounts) {
             const match = accountsBalance.find(obj => obj._id.toString() === account._id.toString());
-            const balance = (!match) ? 0:match.balance;
+            const balance = !match ? 0:match.balance;
             accountsToSend.push( { accountId: account._id, accountName: account.name, balance: balance,  currency: account.currency} );
         }
 
         res.send(accountsToSend);
-
     } catch (e) {
         res.status(500).send(e);
-
-        console.log(e)
     }
 });
 
