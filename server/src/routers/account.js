@@ -89,9 +89,9 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
 
         const accountsToSend = [];
         for (const account of  req.user.accounts) {
-            let match = accountsBalance.find(obj => obj._id.toString() === account._id.toString());
-
-            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: match.balance,  currency: account.currency} );
+            const match = accountsBalance.find(obj => obj._id.toString() === account._id.toString());
+            const balance = (!match) ? 0:match.balance;
+            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: balance,  currency: account.currency} );
         }
 
         res.send(accountsToSend);
