@@ -67,42 +67,45 @@ router.get(baseUrl + '/id::id', auth, async (req, res) => {
  */
 router.get(baseUrl + '/balance', auth, async (req, res) => {
     try {
+        const accountsBalance = await Transaction.aggregate([
+                { $match: { owner: req.user._id} },
+                {"$group" :
+                        {
+                            _id:"$accountId",
+                            balance: { $sum: '$amount' }
+                        }
+                }
+            ],
+            (e, result) => {
+                if (e) {
+                    throw new Error('error in DB agregation');
+                }
+            }
+        );
 
         await req.user.populate({
             path: 'accounts'
         }).execPopulate();
 
         const accountsToSend = [];
+        for (const account of  req.user.accounts) {
+            let match = accountsBalance.find(obj => obj._id.toString() === account._id.toString());
 
-        for (const account of req.user.accounts) {
-            await Transaction.aggregate(
-                [
-                    { $match: { accountId: account._id} },
-                    { $group: {  _id: account._id, balance: { $sum: '$amount' } } }
-                ],
-                (e, result) => {
-                    if (e) {
-                        res.status(500).send();
-
-                    } else {
-                        if (result[0]){
-                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: result[0].balance,  currency: account.currency});
-                        } else {
-                            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: 0 ,  currency: account.currency} );
-                        }
-                    }
-                }
-            );
+            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: match.balance,  currency: account.currency} );
         }
 
         res.send(accountsToSend);
+
     } catch (e) {
         res.status(500).send(e);
 
+        console.log(e)
     }
 });
 
-
+/**
+ * API gets details of one given transaction
+ */
 router.get(baseUrl + '/id::id/transactions', auth, async (req, res) => {
     const accountId = req.params.id;
 
@@ -143,7 +146,7 @@ router.delete(baseUrl + '/id::id', auth, async (req, res) => {
     } catch (e) {
         res.status(500).send();
     }
-})
+});
 
 
 module.exports = router;

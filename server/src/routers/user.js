@@ -18,7 +18,6 @@ router.post(baseUrl, async (req, res) => {
         res.status(201).send({user, token});
     } catch (e) {
         res.status(400).send(e);
-        console.log(e);
     }
 });
 
@@ -35,6 +34,28 @@ router.post(baseUrl + '/login', async(req, res) => {
         res.status(400).send();
     }
 });
+
+
+/**
+ * API gets user account info
+ */
+router.get(baseUrl, auth, async (req, res) => {
+    try{
+        // console.log(req.user)
+
+        // const user = await User.findOne({_id:req.user._id });
+        //
+        // if (!user) {
+        //     return res.status(404).send();
+        // }
+
+        res.status(200).send(req.user);
+
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
 
 
 /**
