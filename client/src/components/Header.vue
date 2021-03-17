@@ -1,5 +1,8 @@
 <template>
-    <custom-button text-of-button="log out" @on-click="logOut"/>
+    <div>
+        <h1>Budget app</h1>
+        <custom-button text-of-button="log out" @on-click="logOut"/>
+    </div>
 </template>
 
 <script>
@@ -11,30 +14,41 @@ export default {
     components: {CustomButton},
     methods: {
         async logOut() {
-
             const answer = window.confirm("Are you sure you want to log out?");
 
-            if (answer) {
+            if (!answer) {
+                return;
+            }
 
-                const res = await fetch('api/users/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('userToken')
-                    }
-                });
-
-                if (res.status === 200 || res.status === 401) {
-                    localStorage.removeItem('userToken');
-                    router.push('/');
+            const res = await fetch('api/users/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
                 }
+            });
 
+            if (res.status === 200 || res.status === 401) {
+                localStorage.removeItem('userToken');
+                router.push('/');
             }
         }
-
     },
 }
 </script>
 
 <style scoped>
+     div {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+     div * {
+         margin: 0 10px;
+     }
+
+    button{
+       background-color: darkred;
+    }
 
 </style>
