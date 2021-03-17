@@ -41,10 +41,12 @@ export default {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        border-bottom: 1px solid #797979;
+        /*position: fixed;*/
     }
 
      div * {
-         margin: 0 10px;
+         margin: 10px;
      }
 
     button{

@@ -8,7 +8,7 @@
 
 <style lang="scss">
 body{
-    background-color: #e0e0e0;
+    background-color: #ececec;
 }
 
 #app {
