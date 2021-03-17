@@ -1,9 +1,9 @@
 <template>
       <div class="home">
           <Header />
-          <HomePage msg="Welcome to budget app"/>
-          <p>{{userInfo.name}}</p>
+          <h1>Welcome to budget app, {{userInfo.name}}</h1>
           <custom-button @on-click="refresh" text-of-button="refresh" />
+          <custom-button @on-click="" text-of-button="add Transaction" />
       </div>
 
     <div id="accounts">

@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-      <HomePage msg="Log in, please."/>
+      <h1>Log in, please.</h1>
       <LoginPage @on-login="onLogin"/>
   </div>
 
