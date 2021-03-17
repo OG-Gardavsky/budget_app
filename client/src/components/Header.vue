@@ -37,20 +37,37 @@ export default {
 </script>
 
 <style scoped>
-     div {
+
+    html, body{
+        width:100%;
+        height:100%;
+        margin:0px;
+        border-bottom: 1px solid #797979;
+    }
+
+    div {
+        width:100%;
+        height:100%;
+        margin:0px;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         border-bottom: 1px solid #797979;
-        /*position: fixed;*/
+        /*position: sticky;*/
+        background-color: #42b983;
     }
 
-     div * {
-         margin: 10px;
-     }
 
     button{
-       background-color: darkred;
+        background-color: #032d03;
+        margin: 10px
+    }
+
+    h1 {
+        margin: 10px
+    }
+    button:hover{
+        background-color: #054e05;
     }
 
 </style>

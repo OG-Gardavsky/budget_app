@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div id="mainContent">
       <h1>Log in, please.</h1>
       <LoginPage @on-login="onLogin"/>
   </div>
@@ -7,15 +7,13 @@
 </template>
 
 <script>
-import HomePage from "@/components/HomePage";
 import LoginPage from "@/components/LoginPage";
 import router from "@/router";
 
 export default {
     name: 'Login',
     components: {
-      LoginPage,
-        HomePage
+      LoginPage
     },
     data() {
         return {
@@ -72,20 +70,4 @@ export default {
 
 <style lang="scss">
 
-#accounts {
-
-    margin: 0 50px;
-
-    display: flex;
-    flex-direction: row;
-
-    div {
-        border: 1px solid black;
-        padding: 0 10px;
-        flex-direction: column;
-        display: flex;
-        align-items: center;
-    }
-
-}
 </style>

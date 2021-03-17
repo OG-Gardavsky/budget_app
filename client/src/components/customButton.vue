@@ -28,6 +28,7 @@ export default {
         color:#e0dada;
         cursor:pointer;
         font-size:16px;
+        border-radius: 5%;
     }
 
     button:hover{

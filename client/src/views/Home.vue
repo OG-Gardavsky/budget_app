@@ -27,7 +27,6 @@
 
 <script>
 // @ is an alias to /src
-import HomePage from "@/components/HomePage";
 import router from "@/router";
 import Header from "@/components/Header";
 import CustomButton from "@/components/customButton";
@@ -38,8 +37,6 @@ export default {
     components: {
         CustomButton,
         Header,
-        HomePage,
-
     },
     data() {
         return {
@@ -121,15 +118,24 @@ export default {
 #accounts {
 
     max-width: 60%;
-    margin: 0px auto;
-    //display: flex;
-    //flex-direction: row;
-    //align-items: center;
+    margin: 20px auto;
+    overflow: scroll;
+    //background-color: #6c6c6c;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    //align-items: ;
+
+    @media screen and (max-width: 560px) {
+        max-width: 100%;
+    }
 
     span {
+        min-width: 90px;
+        max-width: 130px;
         margin: 10px;
         border: 1px solid black;
-        padding: 10px 10px;
+        padding: 0px 10px;
         flex-direction: column;
     }
 
