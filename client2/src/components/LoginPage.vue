@@ -1,13 +1,19 @@
 <template>
     <section>
-        <form @submit="onLogin">
-<!--            <input  type="email" v-model="email" placeholder="Email" />-->
-<!--            <input type="password" v-model="password" placeholder="Password" />-->
-<!--            <custom-button text-of-button="Log in"/>-->
+
+        <md-field>
+            <label>Enter your email</label>
             <md-input type="email" v-model="email" placeholder="Email" />
-            <input type="password" v-model="password" placeholder="Password" />
-            <md-button class="md-raised md-primary" @click="onLogin">Log in</md-button>
-        </form>
+        </md-field>
+
+        <md-field>
+            <label>Enter you password</label>
+            <md-input type="password" v-model="password" placeholder="Password" />
+        </md-field>
+
+
+        <md-button class="md-raised md-primary" @click="onLogin">Log in</md-button>
+
     </section>
 </template>
 
@@ -62,7 +68,6 @@ body{
 }
 
 section{
-    background-color: rgba(0, 0, 0, 0.72);
     width:30%;
     min-height:25%;
     display:flex;
@@ -70,24 +75,16 @@ section{
     margin-left:auto;
     margin-right:auto;
 }
-form{
-    display:flex;
-    flex-direction:column;
-    padding: 15px;
-}
 
-
-input{
-    font-size: 120%;
-    height:35px;
-    padding: 5px 5px;
-    margin: 10px 0px;
-    background-color:#e0dada;
-    border:none;
-}
 
 
 @media screen and (max-width: 780px) {
+    section{
+        width:70%;
+    }
+}
+
+@media screen and (max-width: 560px) {
     section{
         width:95%;
     }

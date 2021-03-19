@@ -23,8 +23,6 @@ export default {
     methods: {
         async onLogin(credentials) {
 
-            alert('fuck it')
-
             const res = await fetch('api/users/login', {
                 method: 'POST',
                 headers: {

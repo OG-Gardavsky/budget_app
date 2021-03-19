@@ -6,15 +6,17 @@
         </div>
 
         <div id="accounts">
-        <span :key="account.accountId" v-for="account in accountsBalance">
-            <p>{{account.accountName}}</p>
-            <p>{{account.balance}} {{account.currency}}</p>
-        </span>
-
+            <span :key="account.accountId" v-for="account in accountsBalance" @click="showTransactionsOfSpecificAccount(account)">
+                <p>{{account.accountName}}</p>
+                <p >{{account.balance}} {{account.currency}}</p>
+            </span>
         </div>
-        <custom-button @on-click="refresh" text-of-button="refresh" />
-        <custom-button @on-click="neco" text-of-button="add Transaction" />
 
+        <md-button class="md-raised md-primary" @click="refresh">Refresh</md-button>
+        <md-button class="md-raised md-primary" @click="showAddTranscaction">Add transaction</md-button>
+
+
+        <modal-window :show-dialog="showDialog" @on-closeModal="closeAddTransaction"/>
 
         <div id="transactions">
             <div :key="transaction._id" v-for="transaction in transactions">
@@ -23,10 +25,9 @@
         </div>
 
 
-        <menu/>
+
+
     </div>
-
-
 
 </template>
 
@@ -35,12 +36,13 @@
 import router from "@/router";
 import Header from "@/components/Header";
 import CustomButton from "@/components/customButton";
+import ModalWindow from "@/components/ModalWindow";
 
 
 export default {
     name: 'Home',
     components: {
-        menu,
+        ModalWindow,
         CustomButton,
         Header,
     },
@@ -49,12 +51,26 @@ export default {
             accountsBalance: [],
             transactions: [],
             userInfo: {},
-            displayH2: true
+            displayH2: true,
+            showDialog: false
         }
     },
     methods: {
-        neco(){
-            alert('funguje to')
+        showAddTranscaction(){
+            this.showDialog = true;
+        },
+        closeAddTransaction(){
+            this.showDialog = false;
+        },
+        async showTransactionsOfSpecificAccount(account) {
+            const res = await fetch('api/accounts/id:' + account.accountId.toString() + '/transactions', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+            this.transactions = [];
+            this.transactions = await res.json();
         },
         async refresh (){
             this.displayH2 = false;
