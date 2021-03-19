@@ -1,25 +1,30 @@
 <template>
-      <div class="home">
-          <Header />
-          <h2 v-if="displayH2">Welcome to budget app, {{userInfo.name}}</h2>
-      </div>
+    <div>
+        <div class="home">
+            <Header />
+            <h2 v-if="displayH2">Welcome to budget app, {{userInfo.name}}</h2>
+        </div>
 
-    <div id="accounts">
+        <div id="accounts">
         <span :key="account.accountId" v-for="account in accountsBalance">
             <p>{{account.accountName}}</p>
             <p>{{account.balance}} {{account.currency}}</p>
         </span>
 
+        </div>
+        <custom-button @on-click="refresh" text-of-button="refresh" />
+        <custom-button @on-click="neco" text-of-button="add Transaction" />
+
+
+        <div id="transactions">
+            <div :key="transaction._id" v-for="transaction in transactions">
+                <p> {{transaction.name}} - {{transaction.type}} : {{transaction.amount}} {{transaction.currency}}</p>
+            </div>
+        </div>
+
+
+        <menu/>
     </div>
-    <custom-button @on-click="refresh" text-of-button="refresh" />
-    <custom-button @on-click="neco" text-of-button="add Transaction" />
-
-
-  <div id="transactions">
-      <div :key="transaction._id" v-for="transaction in transactions">
-          <p> {{transaction.name}} - {{transaction.type}} : {{transaction.amount}} {{transaction.currency}}</p>
-      </div>
-  </div>
 
 
 
@@ -35,6 +40,7 @@ import CustomButton from "@/components/customButton";
 export default {
     name: 'Home',
     components: {
+        menu,
         CustomButton,
         Header,
     },
