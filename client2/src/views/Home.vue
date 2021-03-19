@@ -36,7 +36,7 @@
 import router from "@/router";
 import Header from "@/components/Header";
 import CustomButton from "@/components/customButton";
-import ModalWindow from "@/components/ModalWindow";
+import ModalWindow from "@/components/AddTransaction";
 
 
 export default {
