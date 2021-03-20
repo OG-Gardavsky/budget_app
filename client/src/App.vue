@@ -1,18 +1,12 @@
 <template>
-<!--  <div id="nav">-->
-<!--    <router-link to="/">Home</router-link> -->
-<!--    <router-link to="/about">About</router-link>-->
-<!--  </div>-->
-  <router-view/>
+  <div id="app">
+    <router-view/>
+  </div>
 </template>
 
 <style lang="scss">
-body{
-    background-color: #e0e0e0;
-}
-
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family:Roboto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

@@ -1,10 +1,19 @@
 <template>
     <section>
-        <form @submit="onLogin">
-            <input  type="email" v-model="email" placeholder="Email" />
-            <input type="password" v-model="password" placeholder="Password" />
-            <custom-button text-of-button="Log in"/>
-        </form>
+
+        <md-field>
+            <label>Enter your email</label>
+            <md-input type="email" v-model="email" placeholder="Email" />
+        </md-field>
+
+        <md-field>
+            <label>Enter you password</label>
+            <md-input type="password" v-model="password" placeholder="Password" />
+        </md-field>
+
+
+        <md-button class="md-raised md-primary" @click="onLogin">Log in</md-button>
+
     </section>
 </template>
 
@@ -47,7 +56,6 @@ html, body{
     width:100%;
     height:100%;
     margin:0px;
-    font-family: 'Work Sans', sans-serif;
 }
 
 body{
@@ -56,45 +64,29 @@ body{
     flex-direction:column;
     justify-content:center;
     align-items:center;
-    color: #6c6c6c;
+    color: #797979;
 }
 
 section{
-    background-color: rgba(0, 0, 0, 0.72);
-    width:25%;
+    width:30%;
     min-height:25%;
     display:flex;
     flex-direction:column;
     margin-left:auto;
     margin-right:auto;
 }
-form{
-    display:flex;
-    flex-direction:column;
-    padding: 15px;
-}
-h2{
-    font-family: 'Archivo Black', sans-serif;
-    color:#e0dada;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-
-input{
-    height:35px;
-    padding: 5px 5px;
-    margin: 10px 0px;
-    background-color:#e0dada;
-    border:none;
-}
-
 
 
 
 @media screen and (max-width: 780px) {
     section{
-        width:90%;
+        width:70%;
+    }
+}
+
+@media screen and (max-width: 560px) {
+    section{
+        width:95%;
     }
 }
 
