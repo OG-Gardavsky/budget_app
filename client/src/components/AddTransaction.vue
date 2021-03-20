@@ -4,12 +4,6 @@
             <md-dialog-title>Add transaction</md-dialog-title>
 
             <md-dialog-content>
-
-<!--                <md-field>-->
-<!--                    <label>Enter type of transaction</label>-->
-<!--                    <md-input type="text" v-model="type" placeholder="Type" />-->
-<!--                </md-field>-->
-
                 <md-field>
                     <label>Transaction Type</label>
                     <md-select v-model="transactionType" required>
@@ -107,9 +101,9 @@ export default {
             });
 
             if (res.status === 201){
-
+                this.$emit('on-save');
                 this.$emit('on-closeModal');
-                this.clearVariables()
+                this.clearVariables();
             }
         },
         clearVariables(){

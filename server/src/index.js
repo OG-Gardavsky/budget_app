@@ -18,7 +18,7 @@ app.use(categoryRouter);
 
 
 
-const publicDirectory = path.join(__dirname, '../../client2/dist');
+const publicDirectory = path.join(__dirname, '../../client/dist');
 
 app.use('/', express.static(publicDirectory));
 

@@ -16,11 +16,12 @@
         <md-button class="md-raised md-primary" @click="showAddTranscaction">Add transaction</md-button>
 
 
-        <modal-window :show-dialog="showDialog" @on-closeModal="closeAddTransaction"/>
+        <modal-window :show-dialog="showDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
 
         <div id="transactions">
             <div :key="transaction._id" v-for="transaction in transactions">
-                <p> {{transaction.name}} - {{transaction.type}} : {{transaction.amount}} {{transaction.currency}}</p>
+                <p> {{transaction.name}} - {{transaction.type}} : {{transaction.amount}} {{transaction.currency}} </p>
+                <md-button class="md-primary" @click="deleteTransaction(transaction)">del</md-button>
             </div>
         </div>
 
@@ -71,6 +72,23 @@ export default {
             });
             this.transactions = [];
             this.transactions = await res.json();
+        },
+        async deleteTransaction(transaction){
+
+            const answer = window.confirm('Are you sure you want to delete transation with name ' + transaction.name);
+
+            if (!answer) {
+                return;
+            }
+
+            const res = await fetch('api/transactions/id:' + transaction._id, {
+                method: 'Delete',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+
+            await this.refresh()
         },
         async refresh (){
             this.displayH2 = false;
@@ -129,7 +147,8 @@ export default {
     created() {
         this.checkCredentials();
         this.displayFinancialInfo();
-    }
+    },
+
 }
 </script>
 
@@ -172,7 +191,10 @@ export default {
         max-width: 90%;
     }
 
-    div {
+    >div {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
         margin: 10px;
         border: 1px solid black;
         flex-direction: column;
