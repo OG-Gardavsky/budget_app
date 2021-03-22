@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// require('transactionTypes/basic.js')
 
 const options = { discriminatorKey: 'type' };
 
@@ -46,9 +45,10 @@ const transactionSchema = new mongoose.Schema({
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
 
-
-
-
+/**
+ *
+ * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+ */
 const basicTransactionSchema = new mongoose.Schema({
     subtype: {
         type: String,
@@ -64,23 +64,56 @@ const basicTransactionSchema = new mongoose.Schema({
     options
 );
 
-transactionSchema.pre('save', async function(next) {
+basicTransactionSchema.pre('save', async function(next) {
     const transaction = this;
 
     if (transaction.amount < 0 ) {
         throw new Error("All incoming data must contain positive 'amount' value");
     }
 
-    if (transaction.type === 'expense') {
+    if (transaction.subtype === 'expense') {
         transaction.amount = transaction.amount * (-1);
     }
 
     next();
 });
 
+Transaction.discriminator('basic', basicTransactionSchema);
 
-const basicTransaction = Transaction.discriminator('basic', basicTransactionSchema);
 
+/*****
+ * **************************************************
+ * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+ */
+const transferTransactionSchema = new mongoose.Schema({
+        subtype: {
+            type: String,
+            required: true,
+            enum: ['in', 'out']
+        },
+        sharedId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true
+        }
+    },
+    options
+);
+
+// transferTransactionSchema.pre('save', async function(next) {
+//     const transaction = this;
+//
+//     if (transaction.amount < 0 ) {
+//         throw new Error("All incoming data must contain positive 'amount' value");
+//     }
+//
+//     if (transaction.subtype === 'expense') {
+//         transaction.amount = transaction.amount * (-1);
+//     }
+//
+//     next();
+// });
+
+Transaction.discriminator('transfer', transferTransactionSchema);
 
 
 module.exports = Transaction;
