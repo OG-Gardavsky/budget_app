@@ -10,7 +10,7 @@ const baseUrl = '/api/transactions';
 /**
  * API creates transaction - of type 'income' or expense
  */
-router.post(baseUrl + '/incExp', auth, async (req, res) => {
+router.post(baseUrl + '/basic', auth, async (req, res) => {
 
     // chcecks if acccountId belongs to user
     await req.user.populate({
@@ -32,6 +32,7 @@ router.post(baseUrl + '/incExp', auth, async (req, res) => {
     const transaction = new Transaction({
         //... copies content of req.body
         ...req.body,
+        type: 'basic',
         owner: req.user._id
     });
 
@@ -43,6 +44,9 @@ router.post(baseUrl + '/incExp', auth, async (req, res) => {
     }
 });
 
+/**
+ *
+ */
 router.post(baseUrl + '/transfer', auth, async (req, res) => {
 
     // chcecks if acccountId belongs to user

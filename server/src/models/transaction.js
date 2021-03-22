@@ -1,22 +1,15 @@
 const mongoose = require('mongoose');
+// require('transactionTypes/basic.js')
+
+const options = { discriminatorKey: 'type' };
 
 const transactionSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: false,
-        trim: true
-    },
-    type: {
-        type: String,
-        required: true,
-        enum: ['income', 'expense', 'transferIn', 'transferOut']
-    },
-    //add check for .00 max 2 numbers after .00
     amount: {
         type: Number,
         required: true,
         trim: true,
         validate(value) {
+            //check for max 2 decimals
             const reg = new RegExp('^-?\\d*.\\d{0,2}$');
 
             if (!reg.test(value)) {
@@ -30,10 +23,10 @@ const transactionSchema = new mongoose.Schema({
         trim: true,
         enum: ['CZK', 'USD', 'EUR']
     },
-    categoryId: {
-        type: mongoose.Schema.Types.ObjectId,
+    name: {
+        type: String,
         required: false,
-        ref: 'User'
+        trim: true
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
@@ -45,12 +38,36 @@ const transactionSchema = new mongoose.Schema({
         required: false,
         ref: 'Category'
     }
-});
+},
+    options
+);
+
+
+const Transaction = mongoose.model('Transaction', transactionSchema);
+
+
+
+
+
+const basicTransactionSchema = new mongoose.Schema({
+    subtype: {
+        type: String,
+        required: true,
+        enum: ['income', 'expense']
+    },
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: 'User'
+    }
+},
+    options
+);
 
 transactionSchema.pre('save', async function(next) {
     const transaction = this;
 
-    if (transaction.amount < 0 && transaction.type !== 'transferOut') {
+    if (transaction.amount < 0 ) {
         throw new Error("All incoming data must contain positive 'amount' value");
     }
 
@@ -61,6 +78,9 @@ transactionSchema.pre('save', async function(next) {
     next();
 });
 
-const Transaction = mongoose.model('Transaction', transactionSchema);
+
+const basicTransaction = Transaction.discriminator('basic', basicTransactionSchema);
+
+
 
 module.exports = Transaction;

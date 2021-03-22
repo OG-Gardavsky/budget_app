@@ -94,7 +94,7 @@ export default {
                 body.currency = this.currency;
             }
 
-            const res = await fetch('api/transactions/incExp', {
+            const res = await fetch('api/transactions/basic', {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
