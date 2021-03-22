@@ -6,9 +6,13 @@ const accountRouter = require('./routers/account');
 const transactionRouter = require('./routers/transaction');
 const categoryRouter = require('./routers/category');
 const process = require('process');
+const helmet = require('helmet');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+
+app.use(helmet());
 
 app.use(express.json());
 app.use(userRouter);
