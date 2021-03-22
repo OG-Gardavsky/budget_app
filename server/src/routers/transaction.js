@@ -8,9 +8,9 @@ const router = new express.Router()
 const baseUrl = '/api/transactions';
 
 /**
- * API creates transaction
+ * API creates transaction - of type 'income' or expense
  */
-router.post(baseUrl, auth, async (req, res) => {
+router.post(baseUrl + '/incExp', auth, async (req, res) => {
 
     // chcecks if acccountId belongs to user
     await req.user.populate({
@@ -29,7 +29,6 @@ router.post(baseUrl, auth, async (req, res) => {
         return res.status(403).send({error: 'Entered acount does not belong to user or does not exist.'});
     }
 
-
     const transaction = new Transaction({
         //... copies content of req.body
         ...req.body,
@@ -39,6 +38,51 @@ router.post(baseUrl, auth, async (req, res) => {
     try {
         await transaction.save();
         res.status(201).send(transaction);
+    } catch (e) {
+        res.status(400).send(e.toString());
+    }
+});
+
+router.post(baseUrl + '/transfer', auth, async (req, res) => {
+
+    // chcecks if acccountId belongs to user
+    await req.user.populate({
+        path: 'accounts'
+    }).execPopulate();
+
+    if (req.user.accounts.length < 1) {
+        return res.status(404).send({error: 'User has no created accounts'});
+    }
+
+    const allowedAcountIds = [];
+    req.user.accounts.forEach((account) => allowedAcountIds.push(account._id.toString()));
+
+
+    if (!req.body.givingAcountId){
+        return res.status(400).send({error: "In requesr is missing required property 'givingAcountId'" });
+    }
+    if (!req.body.receivingAcountId){
+        return res.status(400).send({error: "In requesr is missing required property 'receivingAcountId'" });
+    }
+
+    const transferIn = new Transaction({
+        type:'transferIn',
+        accountId: req.body.receivingAcountId,
+        amount: req.body.amount,
+        owner: req.user._id
+    });
+
+    const transferOut = new Transaction({
+        type:'transferOut',
+        accountId: req.body.givingAcountId,
+        amount: req.body.amount * (-1),
+        owner: req.user._id
+    });
+
+    try {
+        await transferIn.save();
+        await transferOut.save();
+        res.status(201).send({message: 'Transfer was succesfull', transferIn, transferOut});
     } catch (e) {
         res.status(400).send(e.toString());
     }

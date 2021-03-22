@@ -13,29 +13,9 @@
                 </md-field>
 
                 <md-field>
-                    <label>Enter name of transaction</label>
-                    <md-input type="text" v-model="transactionName" placeholder="Name" required  />
-                </md-field>
-
-                <md-field>
-                    <label>Enter amount of transaction</label>
-                    <md-input type="number" v-model="amount" placeholder="Amount" required />
-                </md-field>
-
-
-                <md-field>
-                    <label>Currency</label>
-                    <md-select v-model="currency" required>
-                        <md-option value="CZK">CZK</md-option>
-                        <md-option value="USD">USD</md-option>
-                        <md-option value="EUR">EUR</md-option>
-                    </md-select>
-                </md-field>
-
-                <md-field>
                     <label>Category</label>
                     <md-select v-model="categoryId" required >
-                            <md-option  v-for="category in listOfCategories"  :value="category._id.toString()">{{ category.name }}</md-option>
+                        <md-option  v-for="category in listOfCategories"  :value="category._id.toString()">{{ category.name }}</md-option>
                     </md-select>
                 </md-field>
 
@@ -46,6 +26,24 @@
                     </md-select>
                 </md-field>
 
+                <md-field>
+                    <label>Enter amount of transaction</label>
+                    <md-input type="number" v-model="amount" placeholder="Amount" required />
+                </md-field>
+
+                <md-field>
+                    <label>Currency (optional)</label>
+                    <md-select v-model="currency">
+                        <md-option value="CZK">CZK</md-option>
+                        <md-option value="USD">USD</md-option>
+                        <md-option value="EUR">EUR</md-option>
+                    </md-select>
+                </md-field>
+
+                <md-field>
+                    <label>Enter name of transaction (optional)</label>
+                    <md-input type="text" v-model="transactionName" placeholder="Name(optional)" />
+                </md-field>
 
 
 
@@ -70,11 +68,10 @@ export default {
     },
     data() {
         return {
-            placeHolder: '',
             listOfCategories: [],
             listOfAccounts: [],
-            transactionType: '',
-            transactionName: '',
+            transactionType: null,
+            transactionName: null,
             amount: null,
             currency: null,
             categoryId: null,
@@ -83,21 +80,27 @@ export default {
     },
     methods: {
         async addTransaction(){
+            const body = {
+                type: this.transactionType,
+                amount: this.amount,
+                categoryId: this.categoryId,
+                accountId: this.accountId
+            }
 
-            const res = await fetch('api/transactions', {
+            if (this.transactionName !== null) {
+                 body.name = this.transactionName;
+            }
+            if (this.currency !== null) {
+                body.currency = this.currency;
+            }
+
+            const res = await fetch('api/transactions/incExp', {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
                 },
-                body: JSON.stringify({
-                    type: this.transactionType,
-                    name: this.transactionName,
-                    amount: this.amount,
-                    currency: this.currency,
-                    categoryId: this.categoryId,
-                    accountId: this.accountId
-                }),
+                body: JSON.stringify(body)
             });
 
             if (res.status === 201){

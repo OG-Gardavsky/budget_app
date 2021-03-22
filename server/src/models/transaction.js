@@ -9,7 +9,7 @@ const transactionSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['income', 'expense', 'investment', 'transfer']
+        enum: ['income', 'expense', 'transferIn', 'transferOut']
     },
     //add check for .00 max 2 numbers after .00
     amount: {
@@ -26,13 +26,13 @@ const transactionSchema = new mongoose.Schema({
     },
     currency: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
         enum: ['CZK', 'USD', 'EUR']
     },
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        required: false,
         ref: 'User'
     },
     owner: {
@@ -50,7 +50,7 @@ const transactionSchema = new mongoose.Schema({
 transactionSchema.pre('save', async function(next) {
     const transaction = this;
 
-    if (transaction.amount < 0) {
+    if (transaction.amount < 0 && transaction.type !== 'transferOut') {
         throw new Error("All incoming data must contain positive 'amount' value");
     }
 
