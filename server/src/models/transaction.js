@@ -1,22 +1,14 @@
 const mongoose = require('mongoose');
 
+const options = { discriminatorKey: 'type' };
+
 const transactionSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: false,
-        trim: true
-    },
-    type: {
-        type: String,
-        required: true,
-        enum: ['income', 'expense', 'investment', 'transfer']
-    },
-    //add check for .00 max 2 numbers after .00
     amount: {
         type: Number,
         required: true,
         trim: true,
         validate(value) {
+            //check for max 2 decimals
             const reg = new RegExp('^-?\\d*.\\d{0,2}$');
 
             if (!reg.test(value)) {
@@ -26,14 +18,14 @@ const transactionSchema = new mongoose.Schema({
     },
     currency: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
         enum: ['CZK', 'USD', 'EUR']
     },
-    categoryId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
+    name: {
+        type: String,
+        required: false,
+        trim: true
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
@@ -45,22 +37,83 @@ const transactionSchema = new mongoose.Schema({
         required: false,
         ref: 'Category'
     }
-});
+},
+    options
+);
 
-transactionSchema.pre('save', async function(next) {
+
+const Transaction = mongoose.model('Transaction', transactionSchema);
+
+
+/**
+ *
+ * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+ */
+const basicTransactionSchema = new mongoose.Schema({
+    subtype: {
+        type: String,
+        required: true,
+        enum: ['income', 'expense']
+    },
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: 'User'
+    }
+},
+    options
+);
+
+basicTransactionSchema.pre('save', async function(next) {
     const transaction = this;
 
-    if (transaction.amount < 0) {
+    if (transaction.amount < 0 ) {
         throw new Error("All incoming data must contain positive 'amount' value");
     }
 
-    if (transaction.type === 'expense') {
+    if (transaction.subtype === 'expense') {
         transaction.amount = transaction.amount * (-1);
     }
 
     next();
 });
 
-const Transaction = mongoose.model('Transaction', transactionSchema);
+Transaction.discriminator('basic', basicTransactionSchema);
+
+
+/*****
+ * **************************************************
+ * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+ */
+const transferTransactionSchema = new mongoose.Schema({
+        subtype: {
+            type: String,
+            required: true,
+            enum: ['in', 'out']
+        },
+        sharedId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true
+        }
+    },
+    options
+);
+
+// transferTransactionSchema.pre('save', async function(next) {
+//     const transaction = this;
+//
+//     if (transaction.amount < 0 ) {
+//         throw new Error("All incoming data must contain positive 'amount' value");
+//     }
+//
+//     if (transaction.subtype === 'expense') {
+//         transaction.amount = transaction.amount * (-1);
+//     }
+//
+//     next();
+// });
+
+Transaction.discriminator('transfer', transferTransactionSchema);
+
 
 module.exports = Transaction;

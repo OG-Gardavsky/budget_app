@@ -20,7 +20,7 @@
 
         <div id="transactions">
             <div :key="transaction._id" v-for="transaction in transactions">
-                <p> {{transaction.name}} - {{transaction.type}} : {{transaction.amount}} {{transaction.currency}} </p>
+                <p> {{transaction.name}} - {{transaction.subtype}} : {{transaction.amount}} {{transaction.currency}} </p>
                 <md-button class="md-primary" @click="deleteTransaction(transaction)">del</md-button>
             </div>
         </div>
