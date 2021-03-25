@@ -39,7 +39,7 @@ export default {
                 await router.push('home');
 
             } else {
-                alert('unable to login');
+                this.displayCustomError('unable to login');
             }
 
         },

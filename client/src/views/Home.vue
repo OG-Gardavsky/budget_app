@@ -132,13 +132,13 @@ export default {
         async checkCredentials() {
             //code checks if user is authenticated - return 0 if everything is fine
             if (localStorage.getItem('userToken') === null) {
-                alert('You are not authenticated, please logged in');
+                this.displayCustomError('You are not authenticated, please logged in');
                 return router.push('/');
             }
             await this.getUserInfo();
             if (this.userInfo.hasOwnProperty('error')) {
                 localStorage.removeItem('userToken');
-                alert('You are not authenticated, please logged in');
+                this.displayCustomError('You are not authenticated, please logged in');
                 return router.push('/');
             }
             return 0;

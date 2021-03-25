@@ -7,7 +7,7 @@
         </md-field>
 
         <md-field>
-            <label>Enter you password</label>
+            <label>Enter your password</label>
             <md-input type="password" v-model="password" placeholder="Password" />
         </md-field>
 
@@ -36,7 +36,7 @@ export default {
             e.preventDefault();
 
             if (this.email === '' || this.password ===''){
-                return alert('fill email and password');
+                return this.displayCustomError('fill email and password');
             }
 
             const credentials = {
