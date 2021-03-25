@@ -2,6 +2,13 @@
     <div id="mainContent">
         <h1>Please register.</h1>
         <sign-up-page @on-signup="onSignUp" />
+
+        <p>Back to</p>
+
+        <md-button>
+            <router-link :to="'/'">Login</router-link>
+        </md-button>
+
     </div>
 </template>
 

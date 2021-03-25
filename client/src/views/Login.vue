@@ -2,6 +2,12 @@
   <div id="mainContent">
       <h1>Log in, please.</h1>
       <LoginPage @on-login="onLogin"/>
+
+      <p>do not have an account?</p>
+      <md-button>
+          <router-link :to="'signUp'">Sign up</router-link>
+      </md-button>
+
   </div>
 
 </template>
@@ -11,7 +17,7 @@ import LoginPage from "@/components/LoginPage";
 import router from "@/router";
 
 export default {
-    name: 'Login',
+    name: 'login',
     components: {
       LoginPage
     },
