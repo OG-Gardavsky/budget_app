@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
             if (!validator.isEmail(value)) {
                 throw new Error('Email is not valid');
             }
-        }        
+        }
     },
     password: {
         type: String,
@@ -144,6 +144,8 @@ userSchema.statics.findByCredentials = async (email, password) => {
  */
 userSchema.pre('save', async function(next) {
     const user = this;
+
+    user.email = user.email.toLowerCase();
 
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8);
