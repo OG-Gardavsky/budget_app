@@ -1,5 +1,6 @@
 <template>
     <div>
+
         <div class="home">
             <Header />
             <h2 v-if="displayH2">Welcome to budget app, {{userInfo.name}}</h2>
@@ -10,23 +11,29 @@
                 <p>{{account.accountName}}</p>
                 <p >{{account.balance}} {{account.currency}}</p>
             </span>
+
+            <md-button class="md-button md-primary" @click="showAddAccount">add <br/> account</md-button>
+            <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
+
         </div>
+
+
 
         <md-button class="md-raised md-primary" @click="refresh">Refresh</md-button>
         <md-button class="md-raised md-primary" @click="showAddTranscaction">Add transaction</md-button>
 
 
-        <modal-window :show-dialog="showDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
+        <add-transaction :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
 
         <div id="transactions">
-            <div :key="transaction._id" v-for="transaction in transactions">
+            <div :key="transaction._id" v-for="transaction in transactions" @click="displayCustomError('clickls na to')">
                 <p> {{transaction.name}} - {{transaction.subtype}} : {{transaction.amount}} {{transaction.currency}} </p>
-                <md-button class="md-primary" @click="deleteTransaction(transaction)">del</md-button>
+                <md-button class="md-raised" @click="deleteTransaction(transaction)">del</md-button>
             </div>
         </div>
 
 
-
+        <CustomMenu />
 
     </div>
 
@@ -37,13 +44,19 @@
 import router from "@/router";
 import Header from "@/components/Header";
 import CustomButton from "@/components/customButton";
-import ModalWindow from "@/components/AddTransaction";
+import AddTransaction from "@/components/AddTransaction";
+import LoadingSpinner from "@/components/loadingSpinner";
+import CustomMenu from "@/components/CustomMenu";
+import AddAccount from "@/components/AddAccount";
 
 
 export default {
     name: 'Home',
     components: {
-        ModalWindow,
+        AddAccount,
+        CustomMenu,
+        LoadingSpinner,
+        AddTransaction,
         CustomButton,
         Header,
     },
@@ -53,15 +66,22 @@ export default {
             transactions: [],
             userInfo: {},
             displayH2: true,
-            showDialog: false
+            showAddTransactionDialog: false,
+            showAddAccountDialog: false,
         }
     },
     methods: {
         showAddTranscaction(){
-            this.showDialog = true;
+            this.showAddTransactionDialog = true;
         },
         closeAddTransaction(){
-            this.showDialog = false;
+            this.showAddTransactionDialog = false;
+        },
+        showAddAccount(){
+            this.showAddAccountDialog = true;
+        },
+        closeAddAccount(){
+            this.showAddAccountDialog = false;
         },
         async showTransactionsOfSpecificAccount(account) {
             const res = await fetch('api/accounts/id:' + account.accountId.toString() + '/transactions', {
@@ -119,29 +139,6 @@ export default {
                 }
             });
             this.transactions = await res.json();
-        },
-        async getUserInfo() {
-            const res = await fetch('api/users', {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
-                }
-            });
-            this.userInfo = await res.json();
-        },
-        async checkCredentials() {
-            //code checks if user is authenticated - return 0 if everything is fine
-            if (localStorage.getItem('userToken') === null) {
-                this.displayCustomError('You are not authenticated, please logged in');
-                return router.push('/');
-            }
-            await this.getUserInfo();
-            if (this.userInfo.hasOwnProperty('error')) {
-                localStorage.removeItem('userToken');
-                this.displayCustomError('You are not authenticated, please logged in');
-                return router.push('/');
-            }
-            return 0;
         }
     },
     created() {

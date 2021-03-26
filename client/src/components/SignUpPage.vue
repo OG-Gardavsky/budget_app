@@ -13,6 +13,16 @@
 
 
         <md-field>
+            <label>Choose default currency for your account</label>
+            <md-select v-model="currency">
+                <md-option value="CZK">CZK</md-option>
+                <md-option value="USD">USD</md-option>
+                <md-option value="EUR">EUR</md-option>
+            </md-select>
+        </md-field>
+
+
+        <md-field>
             <label>Enter your password - minimal 10 characters</label>
             <md-input type="password" v-model="password" placeholder="Password" />
         </md-field>
@@ -36,7 +46,8 @@ export default {
             email: '',
             name: '',
             password: '',
-            passwordCheck: ''
+            passwordCheck: '',
+            currency: null
         }
     },
     methods: {
@@ -63,7 +74,7 @@ export default {
                 email: this.email,
                 name: this.name,
                 password: this.password,
-                primarCurrency: 'CZK'
+                primarCurrency: this.currency
             }
 
             this.$emit('on-signup', credentials);
