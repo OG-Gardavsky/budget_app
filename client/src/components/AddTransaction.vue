@@ -1,13 +1,12 @@
 <template>
     <div>
-        <md-dialog :md-active.sync="showDialog">
+        <md-dialog :md-active.sync="showAddTransactionDialog">
+
             <md-dialog-title>Add transaction</md-dialog-title>
 
             <md-tabs md-dynamic-height>
 
-
                 <md-tab md-label="basic">
-
 
                     <md-field>
                         <label>Transaction Type</label>
@@ -56,10 +55,7 @@
                         <md-button class="md-primary md-raised" @click="createBasicTransaction">Add transaction</md-button>
                     </md-dialog-actions>
 
-
                 </md-tab>
-
-
 
 
 
@@ -69,7 +65,6 @@
                         <label>Enter amount of transaction</label>
                         <md-input type="number" v-model="amount" placeholder="Amount" required />
                     </md-field>
-
 
                     <md-field>
                         <label>From Account:</label>
@@ -93,13 +88,7 @@
 
                 </md-tab>
 
-
-
-
             </md-tabs>
-
-
-
 
         </md-dialog >
     </div>
@@ -107,9 +96,9 @@
 
 <script>
 export default {
-    name: "ModalWindow",
+    name: "AddTransaction",
     props: {
-        showDialog: Boolean
+        showAddTransactionDialog: Boolean
     },
     data() {
         return {
@@ -165,6 +154,8 @@ export default {
                 this.$emit('on-save');
                 this.$emit('on-closeModal');
                 this.clearVariables();
+            } else {
+                this.displayCustomError('Error during saving');
             }
         },
         clearVariables(){

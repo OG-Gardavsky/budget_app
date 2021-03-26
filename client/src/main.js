@@ -11,10 +11,21 @@ Vue.use(VueMaterial)
 Vue.config.productionTip = false;
 
 Vue.mixin({
+    data() {
+        return {
+            spinnerDisplayed: true
+        }
+    },
     methods: {
         displayCustomError(errorMesage) {
             alert(errorMesage);
         },
+        showSpinner() {
+            this.spinnerDisplayed = true;
+        },
+        hideSpinner() {
+            this.spinnerDisplayed = false
+        }
     },
 })
 
