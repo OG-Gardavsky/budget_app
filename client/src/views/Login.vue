@@ -49,17 +49,6 @@ export default {
                 this.displayCustomError('unable to login');
             }
 
-        },
-        async getUserInfo() {
-
-            const res = await fetch('api/users', {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
-                }
-            });
-
-            this.userInfo = await res.json();
         }
     },
     async created() {
