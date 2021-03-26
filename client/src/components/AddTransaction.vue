@@ -10,7 +10,7 @@
 
                     <md-field>
                         <label>Transaction Type</label>
-                        <md-select v-model="transactionType" required>
+                        <md-select v-model="transcationSubtype" required>
                             <md-option value="income">Income</md-option>
                             <md-option value="expense">Expense</md-option>
                         </md-select>
@@ -104,7 +104,7 @@ export default {
         return {
             listOfCategories: [],
             listOfAccounts: [],
-            transactionType: null,
+            transcationSubtype: null,
             transactionName: null,
             amount: null,
             currency: null,
@@ -126,7 +126,7 @@ export default {
         },
         async createBasicTransaction(){
             const body = {
-                type: this.transactionType,
+                subtype: this.transcationSubtype,
                 amount: this.amount,
                 categoryId: this.categoryId,
                 accountId: this.accountId
@@ -159,7 +159,7 @@ export default {
             }
         },
         clearVariables(){
-            this.transactionType = null;
+            this.transcationSubtype = null;
             this.transactionName = null;
             this.amount = null;
             this.currency = null;
