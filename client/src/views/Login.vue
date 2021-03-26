@@ -3,10 +3,11 @@
       <h1>Log in, please.</h1>
       <LoginPage @on-login="onLogin"/>
 
-      <p>do not have an account?</p>
-      <md-button>
-          <router-link :to="'signUp'">Sign up</router-link>
-      </md-button>
+      <p>Do not have an account?</p>
+
+      <router-link :to="'signUp'">
+          <md-button class="md-raised">Sign up</md-button>
+      </router-link>
 
   </div>
 

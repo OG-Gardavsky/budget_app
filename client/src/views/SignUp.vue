@@ -3,11 +3,11 @@
         <h1>Please register.</h1>
         <sign-up-page @on-signup="onSignUp" />
 
-        <p>Back to</p>
+        <p>Wanna go back to</p>
 
-        <md-button>
-            <router-link :to="'/'">Login</router-link>
-        </md-button>
+        <router-link :to="'/'">
+            <md-button class="md-raised">Log In</md-button>
+        </router-link>
 
     </div>
 </template>
