@@ -26,7 +26,7 @@
         <add-transaction :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
 
         <div id="transactions">
-            <div :key="transaction._id" v-for="transaction in transactions" @click="displayCustomError('clickls na to')">
+            <div :key="transaction._id" v-for="transaction in transactions" >
                 <p> {{transaction.name}} - {{transaction.subtype}} : {{transaction.amount}} {{transaction.currency}} </p>
                 <md-button class="md-raised" @click="deleteTransaction(transaction)">del</md-button>
             </div>
