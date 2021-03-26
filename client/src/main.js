@@ -8,9 +8,17 @@ import 'vue-material/dist/theme/default.css'
 
 Vue.use(VueMaterial)
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
+
+Vue.mixin({
+    methods: {
+        displayCustomError(errorMesage) {
+            alert(errorMesage);
+        },
+    },
+})
 
 new Vue({
-  router,
-  render: h => h(App)
+    router,
+    render: h => h(App)
 }).$mount('#app')
