@@ -6,33 +6,27 @@
 
             <router-link to="categories">
                 <md-card md-with-hover>
-                    <md-ripple>
-                        <md-card-header>
-                            <div class="md-title">Category management</div>
-                        </md-card-header>
-                    </md-ripple>
+                    <md-card-header>
+                        <div class="md-title">Category management</div>
+                    </md-card-header>
                 </md-card>
             </router-link>
 
 
             <router-link to="blank" >
                 <md-card md-with-hover>
-                    <md-ripple>
                         <md-card-header>
                             <div class="md-title">Investments</div>
                         </md-card-header>
-                    </md-ripple>
                 </md-card>
             </router-link>
 
 
             <router-link to="blank" >
                 <md-card md-with-hover>
-                    <md-ripple>
-                        <md-card-header>
-                            <div class="md-title">Debts</div>
-                        </md-card-header>
-                    </md-ripple>
+                    <md-card-header>
+                        <div class="md-title">Debts</div>
+                    </md-card-header>
                 </md-card>
             </router-link>
 

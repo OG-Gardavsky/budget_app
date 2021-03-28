@@ -6,9 +6,15 @@
         <add-category  :show-dialog="showAddDialog" @on-closeModal="hideDialog" @on-save="getListOfCategories"/>
 
         <div id="categories">
-            <span :key="category._id" v-for="category in listOfCategories">
-                <p>{{category.name}}</p>
-            </span>
+
+            <div :key="category._id" v-for="category in listOfCategories">
+                <md-card md-with-hover>
+                    <md-card-header>
+                        <div class="md-title">{{category.name}}</div>
+                    </md-card-header>
+                </md-card>
+            </div>
+
         </div>
 
         <CustomMenu />

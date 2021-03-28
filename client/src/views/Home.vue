@@ -1,35 +1,38 @@
 <template>
     <div>
-
-        <div class="home">
-            <Header />
-            <h2 v-if="displayH2">Welcome to budget app, {{userInfo.name}}</h2>
-        </div>
+        <Header />
 
         <div id="accounts">
-            <span :key="account.accountId" v-for="account in accountsBalance" @click="showTransactionsOfSpecificAccount(account)">
-                <p>{{account.accountName}}</p>
-                <p >{{account.balance}} {{account.currency}}</p>
-            </span>
+            <div :key="account.accountId" v-for="account in accountsBalance" @click="showTransactionsOfSpecificAccount(account)">
+                <md-card md-with-hover class="accountCard">
+                    <md-card-header>
+                        <div class="md-title">{{account.accountName}}</div>
+                        <div class="md-subhead">{{account.balance}} {{account.currency}}</div>
+                    </md-card-header>
+                </md-card>
+            </div>
 
-            <md-button class="md-button md-primary" @click="showAddAccount">add <br/> account</md-button>
+            <md-card md-with-hover style="max-height: 100px">
+                <md-card-content>
+                    <md-button class="md-button md-primary" @click="showAddAccount">add <br/> account</md-button>
+                </md-card-content>
+            </md-card>
             <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
-
         </div>
 
 
-
-        <md-button class="md-raised md-primary" @click="refresh">Refresh</md-button>
-<!--        <md-button class="md-raised md-primary" @click="showAddTranscaction">Add transaction</md-button>-->
-
-
-<!--        <add-transaction :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />-->
-
         <div id="transactions">
-            <div :key="transaction._id" v-for="transaction in transactions" >
-                <p> {{transaction.name}} - {{transaction.subtype}} : {{transaction.amount}} {{transaction.currency}} </p>
-                <md-button class="md-raised" @click="deleteTransaction(transaction)">del</md-button>
-            </div>
+            <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions">
+                <md-card-header>
+                    <div class="md-title">{{transaction.type}} {{transaction.subtype}}</div>
+                    <div class="md-subhead"> {{transaction.amount}} {{transaction.currency}}</div>
+                </md-card-header>
+                <md-card-actions>
+                    <md-button class="md-raised" @click="deleteTransaction(transaction)">del</md-button>
+                </md-card-actions>
+
+            </md-card>
+
         </div>
 
 
@@ -151,22 +154,28 @@ export default {
     max-width: 60%;
     margin: 20px auto;
     overflow: scroll;
-    //background-color: #6c6c6c;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    //align-items: ;
 
     @media screen and (max-width: 560px) {
         max-width: 100%;
     }
 
-    span {
-        min-width: 90px;
-        max-width: 130px;
-        margin: 10px;
-        border: 1px solid black;
-        padding: 0px 10px;
+    .md-title {
+        font-size: 130%;
+    }
+
+    .accountCard {
+        min-height: 100px;
+        min-width: 120px;
+        overflow:hidden;
+    }
+
+    >div{
+        width: 140px;
+        height: 130px;
+        margin: 5px;
         flex-direction: column;
     }
 
@@ -188,8 +197,9 @@ export default {
         flex-direction: row;
         justify-content: space-between;
         margin: 10px;
-        border: 1px solid black;
+        //border: 1px solid black;
         flex-direction: column;
+
     }
 
 }
