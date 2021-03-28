@@ -26,11 +26,11 @@
 <!--        <md-button class="md-primary md-raised md-accent" v-if="deleteAccountBtn" @click="konzol">Delete account</md-button>-->
 
 
-
         <div id="transactions">
             <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions">
                 <md-card-header>
-                    <div class="md-title">{{transaction.type}} {{transaction.subtype}}</div>
+                    <div class="md-title">{{pairCategoryTransaction(transaction)}} - {{transaction.type}} {{transaction.subtype}}</div>
+                    <div class="md-subhead"> {{transaction.name}}</div>
                     <div class="md-subhead"> {{transaction.amount}} {{transaction.currency}}</div>
                 </md-card-header>
                 <md-card-actions>
@@ -43,6 +43,8 @@
 
 
         <CustomMenu :refresh="refresh" />
+
+
 
     </div>
 
@@ -73,7 +75,7 @@ export default {
         return {
             accountsBalance: [],
             transactions: [],
-
+            listOfCategories: [],
             userInfo: {},
             showAddAccountDialog: false,
             deleteAccountBtn: false,
@@ -118,7 +120,6 @@ export default {
             await this.refresh();
         },
         async refresh (){
-            this.displayH2 = false;
             const result = await this.checkCredentials();
             if (result !== 0){
                 return;
@@ -128,6 +129,7 @@ export default {
         displayFinancialInfo(){
             this.showTransactionsOfAllAccounts();
             this.showBalanceOfAccounts();
+            this.getListOfCategories();
         },
         async showBalanceOfAccounts() {
             const res = await fetch('api/accounts/balance', {
@@ -146,6 +148,22 @@ export default {
                 }
             });
             this.transactions = await res.json();
+        },
+        async getListOfCategories(account) {
+            const res = await fetch('api/categories', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+            this.listOfCategories = await res.json();
+        },
+        pairCategoryTransaction (transaction) {
+            if (transaction.categoryId === undefined){
+                return null;
+            }
+            const match = this.listOfCategories.find(obj => obj._id.toString() === transaction.categoryId.toString());
+            return match.name;
         }
     },
     created() {
