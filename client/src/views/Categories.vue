@@ -1,20 +1,21 @@
 <template>
     <div>
-        <Header />
 
+        <Header />
         <md-button class="md-primary md-raised" @click="displayDialog">add category</md-button>
         <add-category  :show-dialog="showAddDialog" @on-closeModal="hideDialog" @on-save="getListOfCategories"/>
 
         <div id="categories">
-
-            <div :key="category._id" v-for="category in listOfCategories">
-                <md-card md-with-hover>
+            <div :key="category._id" v-for="category in listOfCategories" >
+                <md-card md-with-hover class="categoryCard">
                     <md-card-header>
                         <div class="md-title">{{category.name}}</div>
                     </md-card-header>
+                    <md-card-actions>
+                        <md-button class="md-raised" @click="deleteCategory(category)">del</md-button>
+                    </md-card-actions>
                 </md-card>
             </div>
-
         </div>
 
         <CustomMenu />
@@ -35,6 +36,15 @@ export default {
         }
     },
     methods: {
+        refresh() {
+            this.getListOfCategories();
+        },
+        displayDialog() {
+            this.showAddDialog = true;
+        },
+        hideDialog() {
+            this.showAddDialog = false;
+        },
         async getListOfCategories(account) {
             const res = await fetch('api/categories', {
                 method: 'GET',
@@ -44,14 +54,30 @@ export default {
             });
             this.listOfCategories = await res.json();
         },
-        displayDialog() {
-            this.showAddDialog = true;
-        },
-        hideDialog() {
-            this.showAddDialog = false;
+        async deleteCategory(category) {
+            const answer = window.confirm('Are you sure you want to delete transation with name ' + category.name);
+
+            if (!answer) {
+                return;
+            }
+
+            const res = await fetch('api/categories/id:' + category._id, {
+                method: 'Delete',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+
+
+            if (res.status !== 200){
+                return this.displayCustomError('Error during deleting of ' + category.name);
+            }
+
+            await this.refresh();
         }
     },
     created() {
+        this.checkCredentials();
         this.getListOfCategories();
     }
 }
@@ -69,15 +95,9 @@ export default {
         max-width: 90%;
     }
 
-    span {
+    #categoryCard{
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        margin: 10px;
-        border: 1px solid black;
-        flex-direction: column;
     }
-
 }
 
 

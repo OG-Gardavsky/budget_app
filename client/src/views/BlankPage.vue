@@ -15,7 +15,10 @@ import Header from "@/components/Header";
 import CustomMenu from "@/components/CustomMenu";
 export default {
     name: "BlankPage",
-    components: {CustomMenu, Header}
+    components: {CustomMenu, Header},
+    created() {
+        this.checkCredentials();
+    }
 }
 </script>
 

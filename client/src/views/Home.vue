@@ -3,7 +3,9 @@
         <Header />
 
         <div id="accounts">
-            <div :key="account.accountId" v-for="account in accountsBalance" @click="showTransactionsOfSpecificAccount(account)">
+            <div :key="account.accountId" v-for="account in accountsBalance"
+                 @click="showTransactionsOfSpecificAccount(account)" >
+
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
                         <div class="md-title">{{account.accountName}}</div>
@@ -20,11 +22,15 @@
             <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
         </div>
 
+<!--        ; currentAccount = account; deleteAccountBtn=true   -->
+<!--        <md-button class="md-primary md-raised md-accent" v-if="deleteAccountBtn" @click="konzol">Delete account</md-button>-->
+
 
         <div id="transactions">
             <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions">
                 <md-card-header>
-                    <div class="md-title">{{transaction.type}} {{transaction.subtype}}</div>
+                    <div class="md-title">{{pairCategoryTransaction(transaction)}} - {{transaction.type}} {{transaction.subtype}}</div>
+                    <div class="md-subhead"> {{transaction.name}}</div>
                     <div class="md-subhead"> {{transaction.amount}} {{transaction.currency}}</div>
                 </md-card-header>
                 <md-card-actions>
@@ -37,6 +43,8 @@
 
 
         <CustomMenu :refresh="refresh" />
+
+
 
     </div>
 
@@ -67,9 +75,11 @@ export default {
         return {
             accountsBalance: [],
             transactions: [],
+            listOfCategories: [],
             userInfo: {},
-            displayH2: true,
             showAddAccountDialog: false,
+            deleteAccountBtn: false,
+            currentAccount: '',
         }
     },
     methods: {
@@ -90,7 +100,6 @@ export default {
             this.transactions = await res.json();
         },
         async deleteTransaction(transaction){
-
             const answer = window.confirm('Are you sure you want to delete transation with name ' + transaction.name);
 
             if (!answer) {
@@ -104,10 +113,13 @@ export default {
                 }
             });
 
-            await this.refresh()
+            if (res.status !== 200){
+                return this.displayCustomError('Error during deleting of ' + transaction.name);
+            }
+
+            await this.refresh();
         },
         async refresh (){
-            this.displayH2 = false;
             const result = await this.checkCredentials();
             if (result !== 0){
                 return;
@@ -117,6 +129,7 @@ export default {
         displayFinancialInfo(){
             this.showTransactionsOfAllAccounts();
             this.showBalanceOfAccounts();
+            this.getListOfCategories();
         },
         async showBalanceOfAccounts() {
             const res = await fetch('api/accounts/balance', {
@@ -135,6 +148,22 @@ export default {
                 }
             });
             this.transactions = await res.json();
+        },
+        async getListOfCategories(account) {
+            const res = await fetch('api/categories', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+            this.listOfCategories = await res.json();
+        },
+        pairCategoryTransaction (transaction) {
+            if (transaction.categoryId === undefined){
+                return null;
+            }
+            const match = this.listOfCategories.find(obj => obj._id.toString() === transaction.categoryId.toString());
+            return match.name;
         }
     },
     created() {
