@@ -1,17 +1,16 @@
 <template>
     <div>
-        <md-dialog :md-active.sync="showDialog">
+        <md-dialog :md-active.sync="showAddTransactionDialog">
+
             <md-dialog-title>Add transaction</md-dialog-title>
 
             <md-tabs md-dynamic-height>
 
-
                 <md-tab md-label="basic">
-
 
                     <md-field>
                         <label>Transaction Type</label>
-                        <md-select v-model="transactionType" required>
+                        <md-select v-model="transcationSubtype" required>
                             <md-option value="income">Income</md-option>
                             <md-option value="expense">Expense</md-option>
                         </md-select>
@@ -56,10 +55,7 @@
                         <md-button class="md-primary md-raised" @click="createBasicTransaction">Add transaction</md-button>
                     </md-dialog-actions>
 
-
                 </md-tab>
-
-
 
 
 
@@ -69,7 +65,6 @@
                         <label>Enter amount of transaction</label>
                         <md-input type="number" v-model="amount" placeholder="Amount" required />
                     </md-field>
-
 
                     <md-field>
                         <label>From Account:</label>
@@ -93,13 +88,7 @@
 
                 </md-tab>
 
-
-
-
             </md-tabs>
-
-
-
 
         </md-dialog >
     </div>
@@ -107,15 +96,15 @@
 
 <script>
 export default {
-    name: "ModalWindow",
+    name: "AddTransaction",
     props: {
-        showDialog: Boolean
+        showAddTransactionDialog: Boolean
     },
     data() {
         return {
             listOfCategories: [],
             listOfAccounts: [],
-            transactionType: null,
+            transcationSubtype: null,
             transactionName: null,
             amount: null,
             currency: null,
@@ -137,7 +126,7 @@ export default {
         },
         async createBasicTransaction(){
             const body = {
-                type: this.transactionType,
+                subtype: this.transcationSubtype,
                 amount: this.amount,
                 categoryId: this.categoryId,
                 accountId: this.accountId
@@ -165,10 +154,12 @@ export default {
                 this.$emit('on-save');
                 this.$emit('on-closeModal');
                 this.clearVariables();
+            } else {
+                this.displayCustomError('Error during saving');
             }
         },
         clearVariables(){
-            this.transactionType = null;
+            this.transcationSubtype = null;
             this.transactionName = null;
             this.amount = null;
             this.currency = null;
