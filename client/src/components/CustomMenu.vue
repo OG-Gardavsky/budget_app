@@ -1,58 +1,71 @@
 <template>
     <div>
 
-        <md-menu md-direction="bottom-start">
 
-            <router-link :to="'home'">
-                <md-button class="md-raised md-primary">home</md-button>
-            </router-link>
+        <!--        <md-bottom-bar md-sync-route>-->
+        <!--            <md-bottom-bar-item to="home" exact md-label="Home" md-icon="home" />-->
 
-            <router-link :to="'categories'">
-                <md-button class="md-raised md-primary">categories</md-button>
-            </router-link>
+        <!--            <md-bottom-bar-item to="" md-label="Categories" md-icon="category" />-->
 
+        <!--            <md-bottom-bar-item to="categories" md-label="Stasts" md-icon="bar_chart" />-->
 
+        <!--            <md-bottom-bar-item class="md-raised md-icon-button md-primary" md-icon="add" />-->
 
 
 
-            <router-link>
-                <md-button class="md-raised md-primary" @click="testMethod">statistics</md-button>
-            </router-link>
+        <!--            <md-bottom-bar-item to="" md-label="debts" md-icon="compare_arrows" />-->
 
-            <router-link>
-                <md-button class="md-raised md-primary md-active" @click="testMethod">invest</md-button>
-            </router-link>
+        <!--        </md-bottom-bar>-->
 
-            <router-link>
-                <md-button class="md-raised md-primary">add transaction</md-button>
-            </router-link>
 
-            <router-link>
-                <md-button class="md-raised md-primary" @click="testMethod">debts</md-button>
-            </router-link>
 
-        </md-menu>
+        <add-transaction :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
+
+        <md-bottom-bar md-sync-route  >
+            <md-bottom-bar-item to="home" exact md-label="Home" md-icon="home" />
+
+            <md-bottom-bar-item to="blank" md-label="Stasts" md-icon="bar_chart" @click="displayCustomError('this will be added')" />
+
+            <md-bottom-bar-item @click="showAddTranscaction" md-label="Transaction" class="md-raised md-primary" md-icon="add" />
+
+            <md-bottom-bar-item to="more" md-label="more" md-icon="more_horiz" />
+
+
+        </md-bottom-bar>
+
 
 
 
     </div>
+
 </template>
 
 <script>
+import AddTransaction from "@/components/AddTransaction";
 export default {
     name: "CustomMenu",
-    methods: {
-        testMethod(){
-            this.displayCustomError('this will show something in future');
+    components: {AddTransaction},
+    props: {
+        refresh: Object
+    },
+    data(){
+        return{
+            showAddTransactionDialog: false
         }
+    },
+    methods: {
+        showAddTranscaction(){
+            this.showAddTransactionDialog = true;
+        },
+        closeAddTransaction(){
+            this.showAddTransactionDialog = false;
+        },
     }
 }
 </script>
 
 <style scoped>
     div {
-        background-color: #9e9e9e;
-        /*background-color: black;*/
         opacity: 100;
         position: fixed;
         bottom: 0;
@@ -60,8 +73,7 @@ export default {
         left: 0;
         z-index: 100;
     }
-
-    md-button {
-        padding: 3px;
+    md-bottom-bar{
+       align-items: center;
     }
 </style>

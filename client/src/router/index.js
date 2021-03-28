@@ -4,6 +4,8 @@ import login from "@/views/Login";
 import Home from "@/views/Home";
 import SignUp from "@/views/SignUp";
 import Categories from "@/views/Categories";
+import More from "@/views/More";
+import BlankPage from "@/views/BlankPage";
 
 Vue.use(VueRouter)
 
@@ -27,6 +29,16 @@ const routes = [
         path: '/categories',
         name: 'categories',
         component: Categories
+    },
+    {
+        path: '/more',
+        name: 'more',
+        component: More
+    },
+    {
+        path: '/blank',
+        name: 'blank',
+        component: BlankPage
     }
 ]
 

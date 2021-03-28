@@ -20,10 +20,10 @@
 
 
         <md-button class="md-raised md-primary" @click="refresh">Refresh</md-button>
-        <md-button class="md-raised md-primary" @click="showAddTranscaction">Add transaction</md-button>
+<!--        <md-button class="md-raised md-primary" @click="showAddTranscaction">Add transaction</md-button>-->
 
 
-        <add-transaction :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
+<!--        <add-transaction :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />-->
 
         <div id="transactions">
             <div :key="transaction._id" v-for="transaction in transactions" >
@@ -33,7 +33,7 @@
         </div>
 
 
-        <CustomMenu />
+        <CustomMenu :refresh="refresh" />
 
     </div>
 
@@ -66,17 +66,10 @@ export default {
             transactions: [],
             userInfo: {},
             displayH2: true,
-            showAddTransactionDialog: false,
             showAddAccountDialog: false,
         }
     },
     methods: {
-        showAddTranscaction(){
-            this.showAddTransactionDialog = true;
-        },
-        closeAddTransaction(){
-            this.showAddTransactionDialog = false;
-        },
         showAddAccount(){
             this.showAddAccountDialog = true;
         },
@@ -183,6 +176,8 @@ export default {
     align-items: center;
     max-width: 60%;
     margin: 0px auto;
+
+    padding-bottom: 50px;
 
     @media screen and (max-width: 560px) {
         max-width: 90%;
