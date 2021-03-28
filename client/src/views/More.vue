@@ -43,7 +43,10 @@ import Header from "@/components/Header";
 import CustomMenu from "@/components/CustomMenu";
 export default {
     name: "More",
-    components: {CustomMenu, Header}
+    components: {CustomMenu, Header},
+    created() {
+        this.checkCredentials();
+    }
 }
 </script>
 

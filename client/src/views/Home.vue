@@ -3,7 +3,9 @@
         <Header />
 
         <div id="accounts">
-            <div :key="account.accountId" v-for="account in accountsBalance" @click="showTransactionsOfSpecificAccount(account)">
+            <div :key="account.accountId" v-for="account in accountsBalance"
+                 @click="showTransactionsOfSpecificAccount(account)" >
+
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
                         <div class="md-title">{{account.accountName}}</div>
@@ -19,6 +21,10 @@
             </md-card>
             <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
         </div>
+
+<!--        ; currentAccount = account; deleteAccountBtn=true   -->
+<!--        <md-button class="md-primary md-raised md-accent" v-if="deleteAccountBtn" @click="konzol">Delete account</md-button>-->
+
 
 
         <div id="transactions">
@@ -67,9 +73,11 @@ export default {
         return {
             accountsBalance: [],
             transactions: [],
+
             userInfo: {},
-            displayH2: true,
             showAddAccountDialog: false,
+            deleteAccountBtn: false,
+            currentAccount: '',
         }
     },
     methods: {
@@ -90,7 +98,6 @@ export default {
             this.transactions = await res.json();
         },
         async deleteTransaction(transaction){
-
             const answer = window.confirm('Are you sure you want to delete transation with name ' + transaction.name);
 
             if (!answer) {
@@ -104,7 +111,11 @@ export default {
                 }
             });
 
-            await this.refresh()
+            if (res.status !== 200){
+                return this.displayCustomError('Error during deleting of ' + transaction.name);
+            }
+
+            await this.refresh();
         },
         async refresh (){
             this.displayH2 = false;
