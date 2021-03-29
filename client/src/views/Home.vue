@@ -2,7 +2,7 @@
     <div>
         <Header />
 
-        <div id="accounts">
+        <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
                  @click="showTransactionsOfSpecificAccount(account)" >
 
@@ -20,7 +20,7 @@
                 </md-card-content>
             </md-card>
             <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
-        </div>
+        </md-content>
 
 <!--        ; currentAccount = account; deleteAccountBtn=true   -->
 <!--        <md-button class="md-primary md-raised md-accent" v-if="deleteAccountBtn" @click="konzol">Delete account</md-button>-->
@@ -30,8 +30,8 @@
             <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions">
                 <md-card-header>
                     <div class="md-title">{{pairCategoryTransaction(transaction)}} - {{transaction.type}} {{transaction.subtype}}</div>
-                    <div class="md-subhead"> {{transaction.name}}</div>
-                    <div class="md-subhead"> {{transaction.amount}} {{transaction.currency}}</div>
+                    <div class="md-subhead" v-if="transaction.name"> {{transaction.name}}</div>
+                    <div class="md-subhead" > {{transaction.amount}} {{transaction.currency}}</div>
                 </md-card-header>
                 <md-card-actions>
                     <md-button class="md-raised" @click="deleteTransaction(transaction)">del</md-button>
@@ -159,10 +159,13 @@ export default {
             this.listOfCategories = await res.json();
         },
         pairCategoryTransaction (transaction) {
-            if (transaction.categoryId === undefined){
+            if (!transaction.categoryId){
                 return null;
             }
             const match = this.listOfCategories.find(obj => obj._id.toString() === transaction.categoryId.toString());
+            if (!match.name){
+                return null;
+            }
             return match.name;
         }
     },
