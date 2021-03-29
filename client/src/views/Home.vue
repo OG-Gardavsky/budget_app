@@ -29,7 +29,7 @@
         <div id="transactions">
             <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions">
                 <md-card-header>
-                    <div class="md-title">{{pairCategoryTransaction(transaction)}} - {{transaction.type}} {{transaction.subtype}}</div>
+                    <div class="md-title">{{transaction.type}} {{transaction.subtype}}</div>
                     <div class="md-subhead" v-if="transaction.name"> {{transaction.name}}</div>
                     <div class="md-subhead" > {{transaction.amount}} {{transaction.currency}}</div>
                 </md-card-header>
