@@ -128,12 +128,12 @@ export default {
             if (result !== 0){
                 return;
             }
-            this.displayFinancialInfo();
+            await this.displayFinancialInfo();
         },
-        displayFinancialInfo(){
-            this.showTransactionsOfAllAccounts();
-            this.showBalanceOfAccounts();
-            this.getListOfCategories();
+        async displayFinancialInfo(){
+            await this.getListOfCategories();
+            await this.showBalanceOfAccounts();
+            await this.showTransactionsOfAllAccounts();
         },
         async showBalanceOfAccounts() {
             const res = await fetch('api/accounts/balance', {
@@ -153,7 +153,7 @@ export default {
             });
             this.transactions = await res.json();
         },
-        async getListOfCategories(account) {
+        async getListOfCategories() {
             const res = await fetch('api/categories', {
                 method: 'GET',
                 headers: {
@@ -173,9 +173,9 @@ export default {
             return match.name;
         }
     },
-    created() {
-        this.checkCredentials();
-        this.displayFinancialInfo();
+    async created() {
+        await this.checkCredentials();
+        await this.displayFinancialInfo();
     },
 
 }

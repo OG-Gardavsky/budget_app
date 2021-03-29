@@ -171,7 +171,7 @@ export default {
         closeDialog(){
             this.$emit('on-closeModal');
         },
-        async getListOfAccounts(account) {
+        async getListOfAccounts() {
             const res = await fetch('api/accounts', {
                 method: 'GET',
                 headers: {
@@ -180,7 +180,7 @@ export default {
             });
             this.listOfAccounts = await res.json();
         },
-        async getListOfCategories(account) {
+        async getListOfCategories() {
             const res = await fetch('api/categories', {
                 method: 'GET',
                 headers: {
