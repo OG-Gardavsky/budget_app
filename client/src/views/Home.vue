@@ -29,7 +29,11 @@
         <div id="transactions">
             <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions">
                 <md-card-header>
-                    <div class="md-title">{{pairCategoryTransaction(transaction)}} - {{transaction.type}} {{transaction.subtype}}</div>
+                    <div class="md-title">
+                        <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
+                        <span v-if="transaction.type === 'transfer'">{{transaction.type}}</span>
+                        {{transaction.subtype}}
+                    </div>
                     <div class="md-subhead" v-if="transaction.name"> {{transaction.name}}</div>
                     <div class="md-subhead" > {{transaction.amount}} {{transaction.currency}}</div>
                 </md-card-header>
@@ -163,6 +167,7 @@ export default {
                 return null;
             }
             const match = this.listOfCategories.find(obj => obj._id.toString() === transaction.categoryId.toString());
+
             if (!match.name){
                 return null;
             }
