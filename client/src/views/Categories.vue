@@ -91,6 +91,8 @@ export default {
     max-width: 60%;
     margin: 0px auto;
 
+    padding-bottom: 60px;
+
     @media screen and (max-width: 560px) {
         max-width: 90%;
     }
