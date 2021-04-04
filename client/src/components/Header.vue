@@ -1,6 +1,7 @@
 <template>
     <div>
         <h1>Budget app</h1>
+
         <md-button class="md-primary md-raised" @click="logOut">log out</md-button>
     </div>
 </template>

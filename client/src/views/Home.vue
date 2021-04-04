@@ -1,39 +1,54 @@
 <template>
     <div>
+        <Header />
 
-        <div class="home">
-            <Header />
-            <h2 v-if="displayH2">Welcome to budget app, {{userInfo.name}}</h2>
-        </div>
+        <md-content class="md-scrollbar" id="accounts">
+            <div :key="account.accountId" v-for="account in accountsBalance"
+                 @click="showTransactionsOfSpecificAccount(account)" >
 
-        <div id="accounts">
-            <span :key="account.accountId" v-for="account in accountsBalance" @click="showTransactionsOfSpecificAccount(account)">
-                <p>{{account.accountName}}</p>
-                <p >{{account.balance}} {{account.currency}}</p>
-            </span>
+                <md-card md-with-hover class="accountCard">
+                    <md-card-header>
+                        <div class="md-title">{{account.accountName}}</div>
+                        <div class="md-subhead">{{account.balance}} {{account.currency}}</div>
+                    </md-card-header>
+                </md-card>
+            </div>
 
-            <md-button class="md-button md-primary" @click="showAddAccount">add <br/> account</md-button>
+            <md-card md-with-hover style="max-height: 100px">
+                <md-card-content>
+                    <md-button class="md-button md-primary" @click="showAddAccount">add <br/> account</md-button>
+                </md-card-content>
+            </md-card>
             <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
+        </md-content>
 
-        </div>
+<!--        ; currentAccount = account; deleteAccountBtn=true   -->
+<!--        <md-button class="md-primary md-raised md-accent" v-if="deleteAccountBtn" @click="konzol">Delete account</md-button>-->
 
-
-
-        <md-button class="md-raised md-primary" @click="refresh">Refresh</md-button>
-<!--        <md-button class="md-raised md-primary" @click="showAddTranscaction">Add transaction</md-button>-->
-
-
-<!--        <add-transaction :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />-->
 
         <div id="transactions">
-            <div :key="transaction._id" v-for="transaction in transactions" >
-                <p> {{transaction.name}} - {{transaction.subtype}} : {{transaction.amount}} {{transaction.currency}} </p>
-                <md-button class="md-raised" @click="deleteTransaction(transaction)">del</md-button>
-            </div>
+            <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions">
+                <md-card-header>
+                    <div class="md-title">
+                        <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
+                        <span v-if="transaction.type === 'transfer'">{{transaction.type}}</span>
+                        {{transaction.subtype}}
+                    </div>
+                    <div class="md-subhead" v-if="transaction.name"> {{transaction.name}}</div>
+                    <div class="md-subhead" > {{transaction.amount}} {{transaction.currency}}</div>
+                </md-card-header>
+                <md-card-actions>
+                    <md-button class="md-raised" @click="deleteTransaction(transaction)">del</md-button>
+                </md-card-actions>
+
+            </md-card>
+
         </div>
 
 
         <CustomMenu :refresh="refresh" />
+
+
 
     </div>
 
@@ -64,9 +79,11 @@ export default {
         return {
             accountsBalance: [],
             transactions: [],
+            listOfCategories: [],
             userInfo: {},
-            displayH2: true,
             showAddAccountDialog: false,
+            deleteAccountBtn: false,
+            currentAccount: '',
         }
     },
     methods: {
@@ -87,7 +104,6 @@ export default {
             this.transactions = await res.json();
         },
         async deleteTransaction(transaction){
-
             const answer = window.confirm('Are you sure you want to delete transation with name ' + transaction.name);
 
             if (!answer) {
@@ -101,19 +117,23 @@ export default {
                 }
             });
 
-            await this.refresh()
+            if (res.status !== 200){
+                return this.displayCustomError('Error during deleting of ' + transaction.name);
+            }
+
+            await this.refresh();
         },
         async refresh (){
-            this.displayH2 = false;
             const result = await this.checkCredentials();
             if (result !== 0){
                 return;
             }
-            this.displayFinancialInfo();
+            await this.displayFinancialInfo();
         },
-        displayFinancialInfo(){
-            this.showTransactionsOfAllAccounts();
-            this.showBalanceOfAccounts();
+        async displayFinancialInfo(){
+            await this.getListOfCategories();
+            await this.showBalanceOfAccounts();
+            await this.showTransactionsOfAllAccounts();
         },
         async showBalanceOfAccounts() {
             const res = await fetch('api/accounts/balance', {
@@ -132,11 +152,31 @@ export default {
                 }
             });
             this.transactions = await res.json();
+        },
+        async getListOfCategories() {
+            const res = await fetch('api/categories', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+            this.listOfCategories = await res.json();
+        },
+        pairCategoryTransaction (transaction) {
+            if (!transaction.categoryId){
+                return null;
+            }
+            const match = this.listOfCategories.find(obj => obj._id.toString() === transaction.categoryId.toString());
+
+            if (!match.name){
+                return null;
+            }
+            return match.name;
         }
     },
-    created() {
-        this.checkCredentials();
-        this.displayFinancialInfo();
+    async created() {
+        await this.checkCredentials();
+        await this.displayFinancialInfo();
     },
 
 }
@@ -151,22 +191,28 @@ export default {
     max-width: 60%;
     margin: 20px auto;
     overflow: scroll;
-    //background-color: #6c6c6c;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    //align-items: ;
 
     @media screen and (max-width: 560px) {
         max-width: 100%;
     }
 
-    span {
-        min-width: 90px;
-        max-width: 130px;
-        margin: 10px;
-        border: 1px solid black;
-        padding: 0px 10px;
+    .md-title {
+        font-size: 130%;
+    }
+
+    .accountCard {
+        min-height: 100px;
+        min-width: 120px;
+        overflow:hidden;
+    }
+
+    >div{
+        width: 140px;
+        height: 130px;
+        margin: 5px;
         flex-direction: column;
     }
 
@@ -188,8 +234,9 @@ export default {
         flex-direction: row;
         justify-content: space-between;
         margin: 10px;
-        border: 1px solid black;
+        //border: 1px solid black;
         flex-direction: column;
+
     }
 
 }

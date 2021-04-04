@@ -35,7 +35,7 @@ const transactionSchema = new mongoose.Schema({
     accountId: {
         type: mongoose.Schema.Types.ObjectId,
         required: false,
-        ref: 'Category'
+        ref: 'Account'
     }
 },
     options
@@ -58,7 +58,7 @@ const basicTransactionSchema = new mongoose.Schema({
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         required: false,
-        ref: 'User'
+        ref: 'Category'
     }
 },
     options
