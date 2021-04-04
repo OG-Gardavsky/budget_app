@@ -45,22 +45,17 @@
                 </md-card-actions>
 
 
-                <UpdateOfTransaction
-                    :show-dialog="showUpdateBasicTransactionDialog"
-                    @on-closeModal="showUpdateBasicTransactionDialog = false"
-                    :transaction-to-update="currentTransaction"
-                    @refresh="refresh"
-                />
+
 
             </md-card>
         </div>
 
-<!--        <UpdateOfTransaction-->
-<!--            :show-dialog="showUpdateBasicTransactionDialog"-->
-<!--            @on-closeModal="showUpdateBasicTransactionDialog = false"-->
-<!--            :transaction-to-update="currentTransaction"-->
-<!--            @refresh="refresh"-->
-<!--        />-->
+        <UpdateOfTransaction v-if="showUpdateBasicTransactionDialog === true"
+            :show-dialog="showUpdateBasicTransactionDialog"
+            @on-closeModal="showUpdateBasicTransactionDialog = false"
+            :transaction-to-update="currentTransaction"
+            @on-save="refresh"
+        />
 
 
 
@@ -83,7 +78,7 @@ import AddTransaction from "@/components/AddTransaction";
 import LoadingSpinner from "@/components/loadingSpinner";
 import CustomMenu from "@/components/CustomMenu";
 import AddAccount from "@/components/AddAccount";
-import UpdateOfTransaction from "@/components/transactions_updates/UpdateOfTransaction";
+import UpdateOfTransaction from "@/components/UpdateOfTransaction";
 
 
 export default {

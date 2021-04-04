@@ -7,6 +7,8 @@
 
             <div v-if="transactionToUpdate.type === 'basic' ">
 
+<!--                <h1>{{transactionToUpdate._id}}</h1>-->
+
                 <md-field>
                     <label>Transaction Type</label>
                     <md-select v-model="transactionSubtype" required :value="transactionToUpdate.subtype">
@@ -75,6 +77,7 @@ export default {
         return {
             listOfCategories: [],
             listOfAccounts: [],
+            transactionId: null,
             transactionSubtype: null,
             transactionName: null,
             amount: null,
@@ -87,64 +90,62 @@ export default {
         closeDialog(){
             this.$emit('on-closeModal');
         },
-        // clearVariables(){
-        //     this.transactionSubtype = null;
-        //     this.transactionName = null;
-        //     this.amount = null;
-        //     this.currency = null;
-        //     this.categoryId = null;
-        //     this.accountId = null;
-        // },
-        // async updateBasicTransaction(){
-        //     const body = {
-        //         subtype: this.transactionSubtype,
-        //         amount: this.amount,
-        //         categoryId: this.categoryId,
-        //         accountId: this.accountId
-        //     }
-        //     if (this.transactionName !== null) {
-        //         body.name = this.transactionName;
-        //     }
-        //     if (this.currency !== null) {
-        //         body.currency = this.currency;
-        //     }
-        //
-        //     await this.updateTransaction(body, 'basic');
-        // },
-        // async updateTransaction(body, type){
-        //     const res = await fetch('api/transactions/' + type, {
-        //         method: 'PUT',
-        //         headers: {
-        //             'Content-type': 'application/json',
-        //             'Authorization': 'Bearer ' + localStorage.getItem('userToken')
-        //         },
-        //         body: JSON.stringify(body)
-        //     });
-        //
-        //     if (res.status === 200){
-        //         this.$emit('on-save');
-        //         this.$emit('on-closeModal');
-        //         this.clearVariables();
-        //     } else {
-        //         this.displayCustomError('Error during update');
-        //     }
-        // },
+        clearVariables(){
+            this.transactionSubtype = null;
+            this.transactionName = null;
+            this.amount = null;
+            this.currency = null;
+            this.categoryId = null;
+            this.accountId = null;
+        },
+        async updateBasicTransaction(){
+            const body = {
+                subtype: this.transactionSubtype,
+                amount: this.amount,
+                categoryId: this.categoryId,
+                accountId: this.accountId
+            }
+            if (this.transactionName !== null) {
+                body.name = this.transactionName;
+            }
+            if (this.currency !== null) {
+                body.currency = this.currency;
+            }
+
+            await this.updateTransaction(body, 'basic', this.transactionId);
+        },
+        async updateTransaction(body, type, transactionId){
+            const res = await fetch('api/transactions/' + type + '/id:' + transactionId, {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (res.status === 200){
+                this.$emit('on-save');
+                this.$emit('on-closeModal');
+                this.clearVariables();
+            } else {
+                this.displayCustomError('Error during update');
+            }
+        },
 
     },
     async created() {
         await this.getListOfAccounts();
         await this.getListOfCategories();
 
-        // this.transactionSubtype = this.transactionToUpdate.subtype;
-        this.transactionSubtype = 'expense';
-        // this.transactionName = this.transactionToUpdate.name;
-        this.transactionName = 'this.transactionToUpdate.name';
-        this.amount = this.transactionToUpdate.amount;
+        this.transactionId = this.transactionToUpdate._id;
+        this.transactionSubtype = this.transactionToUpdate.subtype;
+        this.transactionName = this.transactionToUpdate.name;
+        this.amount = Math.abs(this.transactionToUpdate.amount);
         this.currency = this.transactionToUpdate.currency;
         this.transactionSubtype = this.transactionToUpdate.subtype;
         this.categoryId = this.transactionToUpdate.categoryId;
         this.accountId = this.transactionToUpdate.accountId;
-
 
     }
 }
