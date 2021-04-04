@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../models/user');
 const auth = require('../middleware/auth');
+const bcrypt = require('bcryptjs');
 
 const router = new express.Router();
 
@@ -41,14 +42,6 @@ router.post(baseUrl + '/login', async(req, res) => {
  */
 router.get(baseUrl, auth, async (req, res) => {
     try{
-        // console.log(req.user)
-
-        // const user = await User.findOne({_id:req.user._id });
-        //
-        // if (!user) {
-        //     return res.status(404).send();
-        // }
-
         res.status(200).send(req.user);
 
     } catch (e) {
@@ -68,7 +61,7 @@ router.post(baseUrl + '/logout', auth, async (req, res) => {
         })
         await req.user.save();
 
-        res.send()
+        res.send();
     } catch (e) {
         res.status(500).send();
     }
@@ -89,6 +82,36 @@ router.post(baseUrl + '/logoutAll', auth, async (req, res) => {
     }
 });
 
+
+router.put(baseUrl + '/password', auth, async (req, res) => {
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['oldPassword', 'newPassword'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields \'oldPassword\' and \'newPassword\' ' });
+    }
+
+    if (req.body.newPassword.length < 10) {
+        return res.status(400).send({ error: 'New password is too short' });
+    }
+
+    try {
+        const isOldPasswValid = await bcrypt.compare(req.body.oldPassword, req.user.password);
+        if (!isOldPasswValid){
+            return res.status(400).send({error: 'Old password does not match '});
+        }
+
+        req.user.password = req.body.newPassword;
+        req.user.tokens = [];
+        req.user.save();
+
+        res.send({message: 'password changed succesfully'});
+    } catch (e) {
+        res.status(500).send();
+    }
+});
 
 /**
  * API deletes current user account
