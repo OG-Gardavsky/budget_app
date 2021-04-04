@@ -36,13 +36,29 @@
                 </md-card-header>
                 <md-card-actions>
                     <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
-                    <md-button class="md-raised" @click="showUpdateBasicTransactionDialog = true">edit</md-button>
+                    <md-button class="md-raised"
+                           @click="showUpdateBasicTransactionDialog = true"
+                    >
+                        edit
+                    </md-button>
+
+<!--                    ; currentTransaction = transaction; displayCustomError(currentTransaction.subtype)-->
+
+
                 </md-card-actions>
+
+                <UpdateOfTransaction
+                    :show-dialog="showUpdateBasicTransactionDialog"
+                    @on-closeModal="showUpdateBasicTransactionDialog = false"
+                    :transaction-to-update="transaction"
+                    @refresh="refresh"
+                />
 
             </md-card>
         </div>
 
-        <UpdateOfBasicTransaction :show-dialog="showUpdateBasicTransactionDialog" @on-closeModal="showUpdateBasicTransactionDialog = false"/>
+
+
 
 
         <CustomMenu :refresh="refresh" />
@@ -62,13 +78,13 @@ import AddTransaction from "@/components/AddTransaction";
 import LoadingSpinner from "@/components/loadingSpinner";
 import CustomMenu from "@/components/CustomMenu";
 import AddAccount from "@/components/AddAccount";
-import UpdateOfBasicTransaction from "@/components/transactions_updates/UpdateOfBasicTransaction";
+import UpdateOfTransaction from "@/components/transactions_updates/UpdateOfTransaction";
 
 
 export default {
     name: 'Home',
     components: {
-        UpdateOfBasicTransaction,
+        UpdateOfTransaction,
         AddAccount,
         CustomMenu,
         LoadingSpinner,
@@ -85,7 +101,8 @@ export default {
             showAddAccountDialog: false,
             deleteAccountBtn: false,
             currentAccount: '',
-            showUpdateBasicTransactionDialog: false
+            showUpdateBasicTransactionDialog: false,
+            currentTransaction: {}
         }
     },
     methods: {

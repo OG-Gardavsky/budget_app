@@ -5,11 +5,15 @@
 
             <md-dialog-title>Update of transacation</md-dialog-title>
 
+            <div v-if="transactionToUpdate.type === 'basic'">
+                <h1>Basic transakce</h1>
+                <md-field>
+                    <label>Enter Name for Account</label>
+                    <md-input type="text"  placeholder="Name" required />
+                </md-field>
+            </div>
 
-            <md-field>
-                <label>Enter Name for Account</label>
-                <md-input type="text"  placeholder="Name" required />
-            </md-field>
+
 
 
             <md-dialog-actions>
@@ -24,11 +28,12 @@
 
 <script>
 export default {
-    name: "UpdateOfBasicTransaction",
+    name: "UpdateOfTransaction",
     props: {
         showDialog: Boolean,
         transactionId: String,
-        refresh: Object
+        refresh: Object,
+        transactionToUpdate: Object
     },
     data() {
         return {
