@@ -1,7 +1,7 @@
 <template>
     <div>
 
-        <add-transaction :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
+        <add-transaction v-if="showAddTransactionDialog === true" :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
 
         <md-bottom-bar md-sync-route  >
             <md-bottom-bar-item to="home" exact md-label="Home" md-icon="home" />

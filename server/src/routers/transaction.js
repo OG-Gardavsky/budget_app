@@ -115,6 +115,33 @@ router.get(baseUrl, auth, async (req, res) => {
     }
 });
 
+/**
+ * API updates basic transaction
+ */
+router.put(baseUrl + '/basic/id::id' , auth, async (req, res) => {
+
+    const transactionId = req.params.id;
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['subtype', 'amount', 'categoryId', 'accountId', 'name', 'currency'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields \'subtype\', \'amount\', \'categoryId\', \'accountId\', \'name\', \'currency\' ' });
+    }
+
+    try {
+        const transaction = await Transaction.findOne({_id: transactionId, owner: req.user._id});
+
+        updates.forEach((update) => transaction[update] = req.body[update]);
+        await transaction.save();
+        res.send(transaction);
+
+    } catch (e) {
+        res.status(500).send();
+    }
+});
+
 
 
 /**

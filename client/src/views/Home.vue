@@ -22,12 +22,9 @@
             <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
         </md-content>
 
-<!--        ; currentAccount = account; deleteAccountBtn=true   -->
-<!--        <md-button class="md-primary md-raised md-accent" v-if="deleteAccountBtn" @click="konzol">Delete account</md-button>-->
-
 
         <div id="transactions">
-            <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions">
+            <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions" >
                 <md-card-header>
                     <div class="md-title">
                         <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
@@ -38,12 +35,30 @@
                     <div class="md-subhead" > {{transaction.amount}} {{transaction.currency}}</div>
                 </md-card-header>
                 <md-card-actions>
-                    <md-button class="md-raised" @click="deleteTransaction(transaction)">del</md-button>
+                    <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
+                    <md-button class="md-raised"
+                           @click="showUpdateBasicTransactionDialog = true; currentTransaction = transaction"
+                    >
+                        edit
+                    </md-button>
+
                 </md-card-actions>
 
-            </md-card>
 
+
+
+            </md-card>
         </div>
+
+        <UpdateOfTransaction v-if="showUpdateBasicTransactionDialog === true"
+            :show-dialog="showUpdateBasicTransactionDialog"
+            @on-closeModal="showUpdateBasicTransactionDialog = false"
+            :transaction-to-update="currentTransaction"
+            @on-save="refresh"
+        />
+
+
+
 
 
         <CustomMenu :refresh="refresh" />
@@ -63,11 +78,13 @@ import AddTransaction from "@/components/AddTransaction";
 import LoadingSpinner from "@/components/loadingSpinner";
 import CustomMenu from "@/components/CustomMenu";
 import AddAccount from "@/components/AddAccount";
+import UpdateOfTransaction from "@/components/UpdateOfTransaction";
 
 
 export default {
     name: 'Home',
     components: {
+        UpdateOfTransaction,
         AddAccount,
         CustomMenu,
         LoadingSpinner,
@@ -84,6 +101,8 @@ export default {
             showAddAccountDialog: false,
             deleteAccountBtn: false,
             currentAccount: '',
+            showUpdateBasicTransactionDialog: false,
+            currentTransaction: {}
         }
     },
     methods: {
