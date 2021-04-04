@@ -6,6 +6,7 @@ import SignUp from "@/views/SignUp";
 import Categories from "@/views/Categories";
 import More from "@/views/More";
 import BlankPage from "@/views/BlankPage";
+import Profile from "@/views/Profile";
 
 Vue.use(VueRouter)
 
@@ -24,6 +25,11 @@ const routes = [
         path: '/signup',
         name: 'signUp',
         component: SignUp
+    },
+    {
+        path: '/profile',
+        name: 'profile',
+        component: Profile
     },
     {
         path: '/categories',
