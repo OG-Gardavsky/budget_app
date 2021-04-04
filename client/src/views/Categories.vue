@@ -13,10 +13,22 @@
                     </md-card-header>
                     <md-card-actions>
                         <md-button class="md-raised" @click="deleteCategory(category)">del</md-button>
+                        <md-button class="md-raised"
+                                   @click="showUpdateDialog = true; currentCategory = category"
+                        >
+                            edit
+                        </md-button>
                     </md-card-actions>
                 </md-card>
             </div>
         </div>
+
+        <update-category v-if="showUpdateDialog === true"
+            :show-dialog="showUpdateDialog"
+            :category-to-update="currentCategory"
+            @on-closeModal="showUpdateDialog = false"
+            @on-save="getListOfCategories"
+        />
 
         <CustomMenu />
     </div>
@@ -26,13 +38,16 @@
 import Header from "@/components/Header";
 import CustomMenu from "@/components/CustomMenu";
 import AddCategory from "@/components/AddCategory";
+import UpdateCategory from "@/components/UpdateCategory";
 export default {
     name: "Categories",
-    components: {AddCategory, CustomMenu, Header},
+    components: {UpdateCategory, AddCategory, CustomMenu, Header},
     data(){
         return{
             listOfCategories: [],
-            showAddDialog: false
+            showAddDialog: false,
+            showUpdateDialog: false,
+            currentCategory: {}
         }
     },
     methods: {

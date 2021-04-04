@@ -7,8 +7,6 @@
 
             <div v-if="transactionToUpdate.type === 'basic' ">
 
-<!--                <h1>{{transactionToUpdate._id}}</h1>-->
-
                 <md-field>
                     <label>Transaction Type</label>
                     <md-select v-model="transactionSubtype" required :value="transactionToUpdate.subtype">

@@ -149,10 +149,10 @@ export default {
             }
             await this.displayFinancialInfo();
         },
-        async displayFinancialInfo(){
-            await this.getListOfCategories();
-            await this.showBalanceOfAccounts();
-            await this.showTransactionsOfAllAccounts();
+        displayFinancialInfo(){
+            this.getListOfCategories();
+            this.showBalanceOfAccounts();
+            this.showTransactionsOfAllAccounts();
         },
         async showBalanceOfAccounts() {
             const res = await fetch('api/accounts/balance', {
