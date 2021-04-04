@@ -127,7 +127,7 @@ router.put(baseUrl + '/basic/id::id' , auth, async (req, res) => {
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
     if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields \'subtype\', \'amount\', \'categoryId\', \'accountId\', \'name\', \'currency\' ' });
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields ' + allowedUpdates.toString()});
     }
 
     try {
