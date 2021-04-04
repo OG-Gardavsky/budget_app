@@ -27,6 +27,11 @@ const transactionSchema = new mongoose.Schema({
         required: false,
         trim: true
     },
+    date: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,

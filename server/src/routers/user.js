@@ -83,6 +83,9 @@ router.post(baseUrl + '/logoutAll', auth, async (req, res) => {
 });
 
 
+/**
+ * API changes user password
+ */
 router.put(baseUrl + '/password', auth, async (req, res) => {
 
     const updates = Object.keys(req.body);
