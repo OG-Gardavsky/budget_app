@@ -37,25 +37,30 @@
                 <md-card-actions>
                     <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
                     <md-button class="md-raised"
-                           @click="showUpdateBasicTransactionDialog = true"
+                           @click="showUpdateBasicTransactionDialog = true; currentTransaction = transaction"
                     >
                         edit
                     </md-button>
 
-<!--                    ; currentTransaction = transaction; displayCustomError(currentTransaction.subtype)-->
-
-
                 </md-card-actions>
+
 
                 <UpdateOfTransaction
                     :show-dialog="showUpdateBasicTransactionDialog"
                     @on-closeModal="showUpdateBasicTransactionDialog = false"
-                    :transaction-to-update="transaction"
+                    :transaction-to-update="currentTransaction"
                     @refresh="refresh"
                 />
 
             </md-card>
         </div>
+
+<!--        <UpdateOfTransaction-->
+<!--            :show-dialog="showUpdateBasicTransactionDialog"-->
+<!--            @on-closeModal="showUpdateBasicTransactionDialog = false"-->
+<!--            :transaction-to-update="currentTransaction"-->
+<!--            @refresh="refresh"-->
+<!--        />-->
 
 
 

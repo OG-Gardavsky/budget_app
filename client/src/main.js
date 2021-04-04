@@ -49,7 +49,25 @@ Vue.mixin({
                 return router.push('/');
             }
             return 0;
-        }
+        },
+        async getListOfAccounts() {
+            const res = await fetch('api/accounts', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+            this.listOfAccounts = await res.json();
+        },
+        async getListOfCategories() {
+            const res = await fetch('api/categories', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+            this.listOfCategories = await res.json();
+        },
     },
 })
 
