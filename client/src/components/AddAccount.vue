@@ -21,6 +21,11 @@
                 </md-field>
 
                 <md-field>
+                    <label>Enter initial balance of Account</label>
+                    <md-input type="number" v-model="initialBalance" placeholder="Initial Balance" required />
+                </md-field>
+
+                <md-field>
                     <label>Currency </label>
                     <md-select v-model="currency" required>
                         <md-option value="CZK">CZK</md-option>
@@ -46,7 +51,8 @@ export default {
         return {
             type: null,
             name: null,
-            currency: null
+            currency: null,
+            initialBalance: null
         }
     },
     props: {
@@ -60,6 +66,7 @@ export default {
             this.type = null;
             this.name = null;
             this.currency = null;
+            this.initialBalance = null;
         },
         async addAccount(){
 
@@ -70,7 +77,8 @@ export default {
             const body = {
                 type: this.type,
                 name: this.name,
-                currency: this.currency
+                currency: this.currency,
+                initialBalance: this.initialBalance
             }
 
             const res = await fetch('api/accounts', {

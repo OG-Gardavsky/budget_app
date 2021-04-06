@@ -90,7 +90,8 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
         const accountsToSend = [];
         req.user.accounts.forEach((account) => {
             const match = accountsBalance.find(obj => obj._id.toString() === account._id.toString());
-            const balance = !match ? 0:match.balance;
+            let balance = !match ? Number(0) : Number(match.balance);
+            balance = balance + Number(account.initialBalance);
             accountsToSend.push( { accountId: account._id, accountName: account.name, balance: balance,  currency: account.currency} );
         });
 

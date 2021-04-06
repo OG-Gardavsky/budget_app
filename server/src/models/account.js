@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-//add initial balance field
+
 const acountSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -11,6 +11,11 @@ const acountSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: ['debit', 'credit', 'cash', 'invest']
+    },
+    initialBalance: {
+        type: String,
+        required: true,
+        default: 0
     },
     currency: {
         type: String,
