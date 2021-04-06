@@ -4,7 +4,7 @@
 
         <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
-                 @click="showTransactionsOfSpecificAccount(account)" >
+                 @click="showTransactionsOfSpecificAccount(account); currentAccount = account" >
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
@@ -21,6 +21,12 @@
             </md-card>
             <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
         </md-content>
+
+        <div v-if="currentAccount !== null">
+            <md-button class="md-button md-primary md-raised">edit account</md-button>
+            <md-button class="md-button md-primary md-raised" @click="deleteAccount">delete account</md-button>
+        </div>
+
 
 
         <div id="transactions">
@@ -100,7 +106,7 @@ export default {
             userInfo: {},
             showAddAccountDialog: false,
             deleteAccountBtn: false,
-            currentAccount: '',
+            currentAccount: null,
             showUpdateBasicTransactionDialog: false,
             currentTransaction: {}
         }
@@ -138,6 +144,26 @@ export default {
 
             if (res.status !== 200){
                 return this.displayCustomError('Error during deleting of ' + transaction.name);
+            }
+
+            await this.refresh();
+        },
+        async deleteAccount(){
+            const answer = window.confirm('Are you sure you want to delete account: ' + this.currentAccount.accountName + '?');
+
+            if (!answer) {
+                return;
+            }
+
+            const res = await fetch('api/accounts/id:' + this.currentAccount.accountId, {
+                method: 'Delete',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+
+            if (res.status !== 200){
+                return this.displayCustomError('Error during deleting of ' + this.currentAccount.accountName);
             }
 
             await this.refresh();

@@ -13,7 +13,7 @@ const acountSchema = new mongoose.Schema({
         enum: ['debit', 'credit', 'cash', 'invest']
     },
     initialBalance: {
-        type: String,
+        type: Number,
         required: true,
         default: 0
     },
