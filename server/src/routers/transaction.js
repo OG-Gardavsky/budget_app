@@ -60,18 +60,18 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
     }
 
 
-    if (!req.body.givingAcountId){
+    if (!req.body.givingAccountId){
         return res.status(400).send({error: "In requesr is missing required property 'givingAcountId'" });
     }
-    if (!req.body.receivingAcountId){
+    if (!req.body.receivingAccountId){
         return res.status(400).send({error: "In requesr is missing required property 'receivingAcountId'" });
     }
 
     const allowedAcountIds = [];
     req.user.accounts.forEach((account) => allowedAcountIds.push(account._id.toString()));
 
-    const belongsGivingAccToUser = allowedAcountIds.includes(req.body.givingAcountId);
-    const belongsreceivingAccToUser = allowedAcountIds.includes(req.body.receivingAcountId);
+    const belongsGivingAccToUser = allowedAcountIds.includes(req.body.givingAccountId);
+    const belongsreceivingAccToUser = allowedAcountIds.includes(req.body.receivingAccountId);
 
     if (!belongsreceivingAccToUser || !belongsGivingAccToUser) {
         return res.status(403).send({error: 'Entered acounts does not belong to user or does not exist.'});
@@ -83,7 +83,7 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
         type:'transfer',
         subtype: 'in',
         sharedId,
-        accountId: req.body.receivingAcountId,
+        accountId: req.body.receivingAccountId,
         amount: Math.abs(req.body.amount),
         owner: req.user._id
     });
@@ -92,7 +92,7 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
         type:'transfer',
         subtype: 'out',
         sharedId,
-        accountId: req.body.givingAcountId,
+        accountId: req.body.givingAccountId,
         amount: Math.abs(req.body.amount) * (-1),
         owner: req.user._id
     });
@@ -117,6 +117,39 @@ router.get(baseUrl, auth, async (req, res) => {
         }).execPopulate();
 
         res.send(req.user.transactions);
+
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
+
+/**
+ * API gets transfer info, based on sharedId
+ */
+router.get(baseUrl + '/transfer/sharedId::id', auth, async (req, res) => {
+    const sharedId = req.params.id;
+
+    try {
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id});
+
+        if (transactions.length !== 2){
+            return res.status(400).send({ error: 'Entered transaction does not work'});
+        }
+
+        const bodyToSend = {};
+
+        transactions.forEach((transaction) => {
+            if (transaction.subtype === 'in') {
+                bodyToSend.receivingAccountId = transaction.accountId;
+                bodyToSend.amount = transaction.amount;
+                bodyToSend.name = transaction.name;
+            } else if (transaction.subtype === 'out') {
+                bodyToSend.givingAccountId = transaction.accountId;
+            }
+        });
+
+
+        res.send(bodyToSend);
 
     } catch (e) {
         res.status(500).send(e);
@@ -150,12 +183,15 @@ router.put(baseUrl + '/basic/id::id' , auth, async (req, res) => {
     }
 });
 
-router.put(baseUrl + '/transfer/shareId::id' , auth, async (req, res) => {
+/**
+ * API updates transfers
+ */
+router.put(baseUrl + '/transfer/sharedId::id' , auth, async (req, res) => {
 
     const sharedId = req.params.id;
 
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['amount', 'name', 'givingAcountId', 'receivingAcountId'];
+    const allowedUpdates = ['amount', 'name', 'givingAccountId', 'receivingAccountId'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
     if (!isValidOperation) {
