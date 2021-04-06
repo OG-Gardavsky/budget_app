@@ -5,7 +5,7 @@
 
             <md-dialog-title>Update of transacation</md-dialog-title>
 
-            <div v-if="transactionToUpdate.type === 'basic' ">
+            <div v-if="transactionType === 'basic' ">
 
                 <md-field>
                     <label>Transaction Type</label>
@@ -51,10 +51,39 @@
             </div>
 
 
+            <div v-if="transactionType === 'transfer'">
+
+                <md-field>
+                    <label>Enter amount of transaction</label>
+                    <md-input type="number" v-model="amount" placeholder="Amount" required />
+                </md-field>
+
+                <md-field>
+                    <label>From Account:</label>
+                    <md-select v-model="givingAccountId" required >
+                        <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                    </md-select>
+                </md-field>
+
+                <md-field>
+                    <label>To Account:</label>
+                    <md-select v-model="receivingAccountId" required >
+                        <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                    </md-select>
+                </md-field>
+
+                <md-field>
+                    <label>Enter name of transaction (optional)</label>
+                    <md-input type="text" v-model="transactionName" placeholder="Name(optional)" />
+                </md-field>
+
+
+            </div>
+
 
             <md-dialog-actions>
                 <md-button class="md-primary" @click="closeDialog">Close</md-button>
-                <md-button class="md-primary" @click="updateBasicTransaction">update</md-button>
+                <md-button class="md-primary" @click="updateTransactionRouter(transactionType)">update</md-button>
             </md-dialog-actions>
 
         </div>
@@ -75,13 +104,17 @@ export default {
         return {
             listOfCategories: [],
             listOfAccounts: [],
+            transactionType: null,
             transactionId: null,
             transactionSubtype: null,
             transactionName: null,
             amount: null,
             currency: null,
             categoryId: null,
-            accountId: null
+            accountId: null,
+            givingAccountId: null,
+            receivingAccountId: null,
+            transferDetails: null
         }
     },
     methods: {
@@ -89,12 +122,39 @@ export default {
             this.$emit('on-closeModal');
         },
         clearVariables(){
+            this.transactionType = null,
             this.transactionSubtype = null;
             this.transactionName = null;
             this.amount = null;
             this.currency = null;
             this.categoryId = null;
             this.accountId = null;
+
+            this.givingAccountId = null;
+            this.receivingAccountId = null;
+            this.transferDetails = null;
+        },
+        async updateTransactionRouter (type) {
+            switch (this.transactionType){
+                case 'basic':
+                    await this.updateBasicTransaction(this.transactionType);
+                    break;
+                case 'transfer':
+                    await this.updateTransfer(this.transactionType);
+                    break
+            }
+        },
+        async updateTransfer(){
+            const body = {
+                givingAccountId: this.givingAccountId,
+                receivingAccountId: this.receivingAccountId,
+                amount: this.amount
+            }
+            if (this.transactionName !== null) {
+                body.name = this.transactionName;
+            }
+
+            await this.updateTransaction(body, 'transfer', 'sharedId', this.transactionToUpdate.sharedId);
         },
         async updateBasicTransaction(){
             const body = {
@@ -110,10 +170,10 @@ export default {
                 body.currency = this.currency;
             }
 
-            await this.updateTransaction(body, 'basic', this.transactionId);
+            await this.updateTransaction(body, 'basic', 'id', this.transactionId);
         },
-        async updateTransaction(body, type, transactionId){
-            const res = await fetch('api/transactions/' + type + '/id:' + transactionId, {
+        async updateTransaction(body, type, idType, transactionId){
+            const res = await fetch('api/transactions/' + type + '/' + idType + ':' + transactionId, {
                 method: 'PUT',
                 headers: {
                     'Content-type': 'application/json',
@@ -130,20 +190,54 @@ export default {
                 this.displayCustomError('Error during update');
             }
         },
+        async getTransferInfo(sharedId) {
+            const res = await fetch('api/transactions/transfer/sharedId:' + sharedId, {
+                method: 'GET',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                },
+            });
+
+            if (res.status !== 200){
+                return  this.displayCustomError('Error during retrieving transfer data');
+            }
+            this.transferDetails = await res.json();
+        }
 
     },
     async created() {
+        this.transactionType = this.transactionToUpdate.type;
+
         await this.getListOfAccounts();
         await this.getListOfCategories();
 
-        this.transactionId = this.transactionToUpdate._id;
-        this.transactionSubtype = this.transactionToUpdate.subtype;
-        this.transactionName = this.transactionToUpdate.name;
-        this.amount = Math.abs(this.transactionToUpdate.amount);
-        this.currency = this.transactionToUpdate.currency;
-        this.transactionSubtype = this.transactionToUpdate.subtype;
-        this.categoryId = this.transactionToUpdate.categoryId;
-        this.accountId = this.transactionToUpdate.accountId;
+
+
+        if (this.transactionType === 'basic') {
+            this.transactionId = this.transactionToUpdate._id;
+            this.transactionSubtype = this.transactionToUpdate.subtype;
+            this.currency = this.transactionToUpdate.currency;
+            this.transactionSubtype = this.transactionToUpdate.subtype;
+            this.categoryId = this.transactionToUpdate.categoryId;
+            this.accountId = this.transactionToUpdate.accountId;
+            this.amount = Math.abs(this.transactionToUpdate.amount);
+            this.transactionName = this.transactionToUpdate.name;
+
+        } else if (this.transactionType === 'transfer') {
+            await this.getTransferInfo(this.transactionToUpdate.sharedId);
+
+            this.givingAccountId = this.transferDetails.givingAccountId;
+            this.receivingAccountId = this.transferDetails.receivingAccountId;
+
+            this.amount = this.transferDetails.amount
+            this.transactionName = this.transferDetails.name;
+
+        }
+
+
+
+
 
     }
 }

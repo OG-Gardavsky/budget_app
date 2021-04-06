@@ -68,16 +68,21 @@
 
                     <md-field>
                         <label>From Account:</label>
-                        <md-select v-model="givingAcountId" required >
+                        <md-select v-model="givingAccountId" required >
                             <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                         </md-select>
                     </md-field>
 
                     <md-field>
                         <label>To Account:</label>
-                        <md-select v-model="receivingAcountId" required >
+                        <md-select v-model="receivingAccountId" required >
                             <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                         </md-select>
+                    </md-field>
+
+                    <md-field>
+                        <label>Enter name of transaction (optional)</label>
+                        <md-input type="text" v-model="transactionName" placeholder="Name(optional)" />
                     </md-field>
 
 
@@ -110,16 +115,17 @@ export default {
             currency: null,
             categoryId: null,
             accountId: null,
-            givingAcountId: null,
-            receivingAcountId: null
+            givingAccountId: null,
+            receivingAccountId: null
         }
     },
     methods: {
         async createTransfer(){
             const body = {
                 amount: this.amount,
-                givingAcountId: this.givingAcountId,
-                receivingAcountId: this.receivingAcountId
+                name: this.transactionName,
+                givingAccountId: this.givingAccountId,
+                receivingAccountId: this.receivingAccountId
             }
 
             await this.createTransaction(body, 'transfer');
@@ -165,8 +171,8 @@ export default {
             this.currency = null;
             this.categoryId = null;
             this.accountId = null;
-            this.givingAcountId = null;
-            this.receivingAcountId = null;
+            this.givingAccountId = null;
+            this.receivingAccountId = null;
         },
         closeDialog(){
             this.$emit('on-closeModal');
