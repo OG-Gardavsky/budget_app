@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const Transaction = require('./transaction');
 
-//add initial balance field
+
 const acountSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -11,6 +12,11 @@ const acountSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: ['debit', 'credit', 'cash', 'invest']
+    },
+    initialBalance: {
+        type: Number,
+        required: true,
+        default: 0
     },
     currency: {
         type: String,
@@ -32,6 +38,15 @@ acountSchema.virtual('transactions', {
 });
 
 //pre-save - at je to jmenove unikatni per user
+
+/**
+ * removing transactions with account
+ */
+acountSchema.pre('remove', async function (next) {
+    const account = this;
+    await Transaction.deleteMany({ accountId: account._id });
+    next();
+});
 
 const Account = mongoose.model('Account', acountSchema);
 

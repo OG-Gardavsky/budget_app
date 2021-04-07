@@ -1,8 +1,33 @@
 <template>
-    <div>
+    <div id="rootDiv">
         <h1>Budget app</h1>
 
-        <md-button class="md-primary md-raised" @click="logOut">log out</md-button>
+        <span>
+
+            <md-menu >
+                <md-button class="md-icon-button md-raised md-primary" md-menu-trigger>
+                    <md-icon>account_circle</md-icon>
+                </md-button>
+
+                <md-menu-content md-sync-route>
+
+                    <md-menu-item to="profile" >
+                        <md-icon>account_circle</md-icon>
+                        <span>Profile</span>
+                    </md-menu-item>
+
+                     <md-menu-item @click="logOut" >
+                        <md-icon>logout</md-icon>
+                        <span>Log out</span>
+                    </md-menu-item>
+
+                </md-menu-content>
+
+            </md-menu>
+
+        </span>
+
+
     </div>
 </template>
 
@@ -37,7 +62,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
     html, body{
         width:100%;
@@ -46,7 +71,7 @@ export default {
         border-bottom: 1px solid #797979;
     }
 
-    div {
+    #rootDiv {
         width:100%;
         height:100%;
         margin:0px;
@@ -54,21 +79,15 @@ export default {
         flex-direction: row;
         justify-content: space-between;
         border-bottom: 1px solid #797979;
-        /*position: sticky;*/
         background-color: #9e9e9e;
-    }
 
+        h1 {
+            margin: 10px
+        }
 
-    button{
-        background-color: #032d03;
-        margin: 10px
-    }
-
-    h1 {
-        margin: 10px
-    }
-    button:hover{
-        background-color: #054e05;
+        .md-button{
+            margin: 10px;
+        }
     }
 
 </style>

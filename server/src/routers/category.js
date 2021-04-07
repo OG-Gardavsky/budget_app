@@ -43,6 +43,32 @@ router.get(baseUrl, auth, async (req, res) => {
 });
 
 
+router.put(baseUrl + '/id::id' , auth, async (req, res) => {
+
+    const categoryId = req.params.id;
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['name'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields ' + allowedUpdates.toString() });
+    }
+
+    try {
+        const category = await Category.findOne({_id: categoryId, owner: req.user._id});
+
+        updates.forEach((update) => category[update] = req.body[update]);
+        await category.save();
+        res.send(category);
+
+    } catch (e) {
+        res.status(500).send();
+    }
+});
+
+
+
 /**
  * API deletes category by ID
  */

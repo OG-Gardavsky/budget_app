@@ -2,6 +2,7 @@ const express = require('express');
 const Transaction = require('../models/transaction');
 const auth = require('../middleware/auth');
 const ObjectID = require("bson-objectid");
+const {ObjectId} = require("bson");
 
 const router = new express.Router()
 
@@ -58,15 +59,22 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
         return res.status(404).send({error: 'User has no created accounts'});
     }
 
+
+    if (!req.body.givingAccountId){
+        return res.status(400).send({error: "In requesr is missing required property 'givingAcountId'" });
+    }
+    if (!req.body.receivingAccountId){
+        return res.status(400).send({error: "In requesr is missing required property 'receivingAcountId'" });
+    }
+
     const allowedAcountIds = [];
     req.user.accounts.forEach((account) => allowedAcountIds.push(account._id.toString()));
 
+    const belongsGivingAccToUser = allowedAcountIds.includes(req.body.givingAccountId);
+    const belongsreceivingAccToUser = allowedAcountIds.includes(req.body.receivingAccountId);
 
-    if (!req.body.givingAcountId){
-        return res.status(400).send({error: "In requesr is missing required property 'givingAcountId'" });
-    }
-    if (!req.body.receivingAcountId){
-        return res.status(400).send({error: "In requesr is missing required property 'receivingAcountId'" });
+    if (!belongsreceivingAccToUser || !belongsGivingAccToUser) {
+        return res.status(403).send({error: 'Entered acounts does not belong to user or does not exist.'});
     }
 
     const sharedId = ObjectID();
@@ -75,8 +83,8 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
         type:'transfer',
         subtype: 'in',
         sharedId,
-        accountId: req.body.receivingAcountId,
-        amount: req.body.amount,
+        accountId: req.body.receivingAccountId,
+        amount: Math.abs(req.body.amount),
         owner: req.user._id
     });
 
@@ -84,8 +92,8 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
         type:'transfer',
         subtype: 'out',
         sharedId,
-        accountId: req.body.givingAcountId,
-        amount: req.body.amount * (-1),
+        accountId: req.body.givingAccountId,
+        amount: Math.abs(req.body.amount) * (-1),
         owner: req.user._id
     });
 
@@ -114,6 +122,114 @@ router.get(baseUrl, auth, async (req, res) => {
         res.status(500).send(e);
     }
 });
+
+/**
+ * API gets transfer info, based on sharedId
+ */
+router.get(baseUrl + '/transfer/sharedId::id', auth, async (req, res) => {
+    const sharedId = req.params.id;
+
+    try {
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id});
+
+        if (transactions.length !== 2){
+            return res.status(400).send({ error: 'Entered transaction does not work'});
+        }
+
+        const bodyToSend = {};
+
+        transactions.forEach((transaction) => {
+            if (transaction.subtype === 'in') {
+                bodyToSend.receivingAccountId = transaction.accountId;
+                bodyToSend.amount = transaction.amount;
+                bodyToSend.name = transaction.name;
+            } else if (transaction.subtype === 'out') {
+                bodyToSend.givingAccountId = transaction.accountId;
+            }
+        });
+
+
+        res.send(bodyToSend);
+
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
+
+/**
+ * API updates basic transaction
+ */
+router.put(baseUrl + '/basic/id::id' , auth, async (req, res) => {
+
+    const transactionId = req.params.id;
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['subtype', 'amount', 'categoryId', 'accountId', 'name', 'currency'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields ' + allowedUpdates.toString()});
+    }
+
+    try {
+        const transaction = await Transaction.findOne({_id: transactionId, owner: req.user._id});
+
+        updates.forEach((update) => transaction[update] = req.body[update]);
+        await transaction.save();
+        res.send(transaction);
+
+    } catch (e) {
+        res.status(500).send();
+    }
+});
+
+/**
+ * API updates transfers
+ */
+router.put(baseUrl + '/transfer/sharedId::id' , auth, async (req, res) => {
+
+    const sharedId = req.params.id;
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['amount', 'name', 'givingAccountId', 'receivingAccountId'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields ' + allowedUpdates.toString()});
+    }
+
+    try {
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id});
+
+
+        if (transactions.length !== 2){
+            return res.status(400).send({ error: 'Entered accounts either does not work or does not belong to user'});
+        }
+
+        transactions.forEach(async (transaction) => {
+            updates.forEach((update) => {
+                if (update=== 'amount') {
+                    Math.abs(req.body[update]);
+                    if (transaction.subtype === 'out') {
+                        req.body[update] = req.body[update] * (-1);
+                    }
+                }
+                transaction[update] = req.body[update]
+            });
+            await transaction.save();
+        });
+
+        // await transactions.save();
+
+        res.send(transactions);
+
+    } catch (e) {
+        res.status(500).send();
+        console.log(e)
+    }
+});
+
+
 
 
 

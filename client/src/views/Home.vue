@@ -4,11 +4,11 @@
 
         <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
-                 @click="showTransactionsOfSpecificAccount(account)" >
+                 @click="showTransactionsOfSpecificAccount(account); currentAccount = account" >
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
-                        <div class="md-title">{{account.accountName}}</div>
+                        <div class="md-title">{{account.name}}</div>
                         <div class="md-subhead">{{account.balance}} {{account.currency}}</div>
                     </md-card-header>
                 </md-card>
@@ -22,12 +22,23 @@
             <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
         </md-content>
 
-<!--        ; currentAccount = account; deleteAccountBtn=true   -->
-<!--        <md-button class="md-primary md-raised md-accent" v-if="deleteAccountBtn" @click="konzol">Delete account</md-button>-->
+        <div v-if="currentAccount !== null">
+            <md-button class="md-button md-primary md-raised" @click="deleteAccount">delete account</md-button>
+            <md-button class="md-button md-primary md-raised" @click="showUpdateAccountDialog = true">edit account</md-button>
+
+            <UpdateAccount v-if="showUpdateAccountDialog === true"
+                :show-update-account-dialog="showUpdateAccountDialog"
+                :account-to-update="currentAccount"
+                @on-save="refresh" @on-closeModal="showUpdateAccountDialog = false"
+            />
+        </div>
+
+
+
 
 
         <div id="transactions">
-            <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions">
+            <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions" >
                 <md-card-header>
                     <div class="md-title">
                         <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
@@ -38,12 +49,30 @@
                     <div class="md-subhead" > {{transaction.amount}} {{transaction.currency}}</div>
                 </md-card-header>
                 <md-card-actions>
-                    <md-button class="md-raised" @click="deleteTransaction(transaction)">del</md-button>
+                    <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
+                    <md-button class="md-raised"
+                           @click="showUpdateBasicTransactionDialog = true; currentTransaction = transaction"
+                    >
+                        edit
+                    </md-button>
+
                 </md-card-actions>
 
-            </md-card>
 
+
+
+            </md-card>
         </div>
+
+        <UpdateOfTransaction v-if="showUpdateBasicTransactionDialog === true"
+            :show-dialog="showUpdateBasicTransactionDialog"
+            @on-closeModal="showUpdateBasicTransactionDialog = false"
+            :transaction-to-update="currentTransaction"
+            @on-save="refresh"
+        />
+
+
+
 
 
         <CustomMenu :refresh="refresh" />
@@ -63,11 +92,15 @@ import AddTransaction from "@/components/AddTransaction";
 import LoadingSpinner from "@/components/loadingSpinner";
 import CustomMenu from "@/components/CustomMenu";
 import AddAccount from "@/components/AddAccount";
+import UpdateOfTransaction from "@/components/UpdateOfTransaction";
+import UpdateAccount from "@/components/UpdateAccount";
 
 
 export default {
     name: 'Home',
     components: {
+        UpdateAccount,
+        UpdateOfTransaction,
         AddAccount,
         CustomMenu,
         LoadingSpinner,
@@ -83,7 +116,10 @@ export default {
             userInfo: {},
             showAddAccountDialog: false,
             deleteAccountBtn: false,
-            currentAccount: '',
+            currentAccount: null,
+            showUpdateBasicTransactionDialog: false,
+            showUpdateAccountDialog: false,
+            currentTransaction: {}
         }
     },
     methods: {
@@ -94,7 +130,7 @@ export default {
             this.showAddAccountDialog = false;
         },
         async showTransactionsOfSpecificAccount(account) {
-            const res = await fetch('api/accounts/id:' + account.accountId.toString() + '/transactions', {
+            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
@@ -123,6 +159,26 @@ export default {
 
             await this.refresh();
         },
+        async deleteAccount(){
+            const answer = window.confirm('Are you sure you want to delete account: ' + this.currentAccount.name + '? Include all transactions');
+
+            if (!answer) {
+                return;
+            }
+
+            const res = await fetch('api/accounts/id:' + this.currentAccount._id, {
+                method: 'Delete',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+
+            if (res.status !== 200){
+                return this.displayCustomError('Error during deleting of ' + this.currentAccount.name);
+            }
+
+            await this.refresh();
+        },
         async refresh (){
             const result = await this.checkCredentials();
             if (result !== 0){
@@ -130,10 +186,10 @@ export default {
             }
             await this.displayFinancialInfo();
         },
-        async displayFinancialInfo(){
-            await this.getListOfCategories();
-            await this.showBalanceOfAccounts();
-            await this.showTransactionsOfAllAccounts();
+        displayFinancialInfo(){
+            this.getListOfCategories();
+            this.showBalanceOfAccounts();
+            this.showTransactionsOfAllAccounts();
         },
         async showBalanceOfAccounts() {
             const res = await fetch('api/accounts/balance', {

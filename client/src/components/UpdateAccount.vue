@@ -1,19 +1,11 @@
 <template>
-    <md-dialog :md-active.sync="showAddAccountDialog">
+    <md-dialog :md-active.sync="showUpdateAccountDialog">
 
-        <md-dialog-title>Add Account</md-dialog-title>
+        <md-dialog-title>Update Account</md-dialog-title>
 
         <md-tabs md-dynamic-height>
 
-            <md-tab md-label="basic">
-                <md-field>
-                    <label>choose Account type</label>
-                    <md-select v-model="type" required>
-                        <md-option value="debit">debit</md-option>
-                        <md-option value="credit">credit</md-option>
-                        <md-option value="cash">cash</md-option>
-                    </md-select>
-                </md-field>
+            <md-tab>
 
                 <md-field>
                     <label>Enter Name for Account</label>
@@ -36,7 +28,7 @@
 
                 <md-dialog-actions>
                     <md-button class="md-primary" @click="closeDialog">Close</md-button>
-                    <md-button class="md-primary" @click="addAccount">add account</md-button>
+                    <md-button class="md-primary" @click="updateAccount">update account</md-button>
                 </md-dialog-actions>
             </md-tab>
 
@@ -46,43 +38,45 @@
 
 <script>
 export default {
-    name: "AddAccount",
+    name: "UpdateAccount",
     data() {
         return {
             type: null,
             name: null,
             currency: null,
-            initialBalance: null
+            initialBalance: null,
+            accountId: null
         }
     },
     props: {
-        showAddAccountDialog: Boolean
+        showUpdateAccountDialog: Boolean,
+        accountToUpdate: Object
     },
     methods: {
         closeDialog(){
             this.$emit('on-closeModal');
+            this.clearVariables();
         },
         clearVariables(){
-            this.type = null;
             this.name = null;
             this.currency = null;
             this.initialBalance = null;
+            this.accountId = null;
         },
-        async addAccount(){
+        async updateAccount(){
 
-            if (this.type === null || this.name === null || this.currency === null) {
+            if (this.name === null || this.currency === null || this.initialBalance === null || this.accountId === null) {
                 return this.displayCustomError('Please fill all fields');
             }
 
             const body = {
-                type: this.type,
                 name: this.name,
                 currency: this.currency,
                 initialBalance: this.initialBalance
             }
 
-            const res = await fetch('api/accounts', {
-                method: 'POST',
+            const res = await fetch('api/accounts/id:' + this.accountId, {
+                method: 'PUT',
                 headers: {
                     'Content-type': 'application/json',
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
@@ -90,14 +84,23 @@ export default {
                 body: JSON.stringify(body)
             });
 
-            if (res.status === 201){
+            if (res.status === 200){
                 this.$emit('on-save');
                 this.$emit('on-closeModal');
                 this.clearVariables();
             } else {
                 this.displayCustomError('Error during saving');
             }
-        },
+        }
+    },
+    created() {
+
+        console.log(this.accountToUpdate)
+
+        this.accountId = this.accountToUpdate._id;
+        this.name = this.accountToUpdate.name;
+        this.currency = this.accountToUpdate.currency;
+        this.initialBalance = this.accountToUpdate.initialBalance;
 
     }
 }

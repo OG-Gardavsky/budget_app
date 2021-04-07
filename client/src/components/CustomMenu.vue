@@ -1,30 +1,12 @@
 <template>
     <div>
 
-
-        <!--        <md-bottom-bar md-sync-route>-->
-        <!--            <md-bottom-bar-item to="home" exact md-label="Home" md-icon="home" />-->
-
-        <!--            <md-bottom-bar-item to="" md-label="Categories" md-icon="category" />-->
-
-        <!--            <md-bottom-bar-item to="categories" md-label="Stasts" md-icon="bar_chart" />-->
-
-        <!--            <md-bottom-bar-item class="md-raised md-icon-button md-primary" md-icon="add" />-->
-
-
-
-        <!--            <md-bottom-bar-item to="" md-label="debts" md-icon="compare_arrows" />-->
-
-        <!--        </md-bottom-bar>-->
-
-
-
-        <add-transaction :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
+        <add-transaction v-if="showAddTransactionDialog === true" :show-add-transaction-dialog="showAddTransactionDialog" @on-closeModal="closeAddTransaction" @on-save="refresh"  />
 
         <md-bottom-bar md-sync-route  >
             <md-bottom-bar-item to="home" exact md-label="Home" md-icon="home" />
 
-            <md-bottom-bar-item to="blank" md-label="Stasts" md-icon="bar_chart" @click="displayCustomError('this will be added')" />
+            <md-bottom-bar-item to="blank" md-label="Stasts" md-icon="bar_chart" />
 
             <md-bottom-bar-item @click="showAddTranscaction" md-label="Transaction" class="md-raised md-primary" md-icon="add" />
 
