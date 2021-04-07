@@ -4,11 +4,11 @@
 
         <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
-                 @click="showTransactionsOfSpecificAccount(account)" >
+                 @click="showTransactionsOfSpecificAccount(account); currentAccount = account" >
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
-                        <div class="md-title">{{account.accountName}}</div>
+                        <div class="md-title">{{account.name}}</div>
                         <div class="md-subhead">{{account.balance}} {{account.currency}}</div>
                     </md-card-header>
                 </md-card>
@@ -21,6 +21,20 @@
             </md-card>
             <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
         </md-content>
+
+        <div v-if="currentAccount !== null">
+            <md-button class="md-button md-primary md-raised" @click="deleteAccount">delete account</md-button>
+            <md-button class="md-button md-primary md-raised" @click="showUpdateAccountDialog = true">edit account</md-button>
+
+            <UpdateAccount v-if="showUpdateAccountDialog === true"
+                :show-update-account-dialog="showUpdateAccountDialog"
+                :account-to-update="currentAccount"
+                @on-save="refresh" @on-closeModal="showUpdateAccountDialog = false"
+            />
+        </div>
+
+
+
 
 
         <div id="transactions">
@@ -79,11 +93,13 @@ import LoadingSpinner from "@/components/loadingSpinner";
 import CustomMenu from "@/components/CustomMenu";
 import AddAccount from "@/components/AddAccount";
 import UpdateOfTransaction from "@/components/UpdateOfTransaction";
+import UpdateAccount from "@/components/UpdateAccount";
 
 
 export default {
     name: 'Home',
     components: {
+        UpdateAccount,
         UpdateOfTransaction,
         AddAccount,
         CustomMenu,
@@ -100,8 +116,9 @@ export default {
             userInfo: {},
             showAddAccountDialog: false,
             deleteAccountBtn: false,
-            currentAccount: '',
+            currentAccount: null,
             showUpdateBasicTransactionDialog: false,
+            showUpdateAccountDialog: false,
             currentTransaction: {}
         }
     },
@@ -113,7 +130,7 @@ export default {
             this.showAddAccountDialog = false;
         },
         async showTransactionsOfSpecificAccount(account) {
-            const res = await fetch('api/accounts/id:' + account.accountId.toString() + '/transactions', {
+            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
@@ -138,6 +155,26 @@ export default {
 
             if (res.status !== 200){
                 return this.displayCustomError('Error during deleting of ' + transaction.name);
+            }
+
+            await this.refresh();
+        },
+        async deleteAccount(){
+            const answer = window.confirm('Are you sure you want to delete account: ' + this.currentAccount.name + '? Include all transactions');
+
+            if (!answer) {
+                return;
+            }
+
+            const res = await fetch('api/accounts/id:' + this.currentAccount._id, {
+                method: 'Delete',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+
+            if (res.status !== 200){
+                return this.displayCustomError('Error during deleting of ' + this.currentAccount.name);
             }
 
             await this.refresh();
