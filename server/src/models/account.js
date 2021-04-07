@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Transaction = require('./transaction');
 
 
 const acountSchema = new mongoose.Schema({
@@ -37,6 +38,15 @@ acountSchema.virtual('transactions', {
 });
 
 //pre-save - at je to jmenove unikatni per user
+
+/**
+ * removing transactions with account
+ */
+acountSchema.pre('remove', async function (next) {
+    const account = this;
+    await Transaction.deleteMany({ accountId: account._id });
+    next();
+});
 
 const Account = mongoose.model('Account', acountSchema);
 

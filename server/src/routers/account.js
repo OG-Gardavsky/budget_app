@@ -2,6 +2,7 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const Account = require('../models/account');
 const Transaction = require('../models/transaction');
+const {ObjectId} = require("bson");
 
 const router = new express.Router();
 
@@ -62,6 +63,40 @@ router.get(baseUrl + '/id::id', auth, async (req, res) => {
     }
 });
 
+
+/**
+ * API updates info of given account
+ */
+router.put(baseUrl + '/id::id' , auth, async (req, res) => {
+
+    const accountId = req.params.id;
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['name', 'type', 'initialBalance', 'currency'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields ' + allowedUpdates.toString()});
+    }
+
+    try {
+        const account = await Account.findOne({_id: accountId, owner: req.user._id});
+
+        if (!account){
+            return res.status(400).send({ error: 'No account found'});
+        }
+
+        updates.forEach((update) => account[update] = req.body[update]);
+        await account.save();
+        res.send(account);
+
+    } catch (e) {
+        res.status(500).send(e);
+        console.log(e)
+    }
+});
+
+
 /**
  * API gets balance of accounts
  */
@@ -92,7 +127,7 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
             const match = accountsBalance.find(obj => obj._id.toString() === account._id.toString());
             let balance = !match ? Number(0) : Number(match.balance);
             balance = balance + Number(account.initialBalance);
-            accountsToSend.push( { accountId: account._id, accountName: account.name, balance: balance,  currency: account.currency} );
+            accountsToSend.push( { _id: account._id, name: account.name, balance: balance,  currency: account.currency, initialBalance: account.initialBalance} );
         });
 
         res.send(accountsToSend);
