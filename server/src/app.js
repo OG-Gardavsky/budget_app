@@ -5,6 +5,7 @@ const userRouter = require('./routers/user');
 const accountRouter = require('./routers/account');
 const transactionRouter = require('./routers/transaction');
 const categoryRouter = require('./routers/category');
+const statsRouter = require('./routers/stats');
 const process = require('process');
 const helmet = require('helmet');
 
@@ -19,6 +20,7 @@ app.use(userRouter);
 app.use(accountRouter);
 app.use(transactionRouter);
 app.use(categoryRouter);
+app.use(statsRouter);
 
 
 
