@@ -10,10 +10,19 @@ const baseUrl = '/api/stats';
 /**
  * API creates new account
  */
-router.get(baseUrl, auth, async (req, res) => {
+router.get(baseUrl + '/type::type', auth, async (req, res) => {
+
+    let transactionsType = req.params.type.toLowerCase();
+    const allowedTypes = ['income', 'expense'];
+
+    if (!allowedTypes.includes(transactionsType)) {
+        return res.status(400).send({ error: 'Invalid params, types can be only ' + allowedTypes.toString() });
+    }
+
+
     try {
         const categoryStats = await Transaction.aggregate([
-                { $match: { owner: req.user._id, subtype: 'expense'} },
+                { $match: { owner: req.user._id, subtype: transactionsType} },
                 {"$group" :
                         {
                             _id:"$categoryId",
