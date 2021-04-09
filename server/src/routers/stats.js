@@ -7,8 +7,55 @@ const router = new express.Router();
 
 const baseUrl = '/api/stats';
 
+
+router.get(baseUrl + '/total/type::type', auth, async (req, res) => {
+    let transactionsType = req.params.type.toLowerCase();
+    const allowedTypes = ['income', 'expense'];
+    if (!allowedTypes.includes(transactionsType)) {
+        return res.status(400).send({ error: 'Invalid params, types can be only ' + allowedTypes.toString() });
+    }
+
+    if (!req.query.month) {
+        return res.status(400).send({ error: 'missing paramt \'month\' - should be in range 1-12'});
+    }
+    const month = Number(req.query.month);
+    if (month < 1 || month > 12) {
+        return res.status(400).send({ error: 'invalid range of month - should be 1-12'});
+    }
+
+    const year = req.query.year ? Number(req.query.year) : new Date().getFullYear();
+
+    try {
+        const totalSum = await Transaction.aggregate([
+                { $match: { owner: req.user._id, type: 'basic', subtype: transactionsType}},
+                { "$project": {
+                        "amount": 1,
+                        "month": { "$month": "$accountingDate" },
+                        "year": { "$year": "$accountingDate" }
+                    }},
+                { $match: { month: month, year : year }},
+                {"$group" :
+                        {
+                            _id: "$month",
+                            sum: { $sum: '$amount' }
+                        }
+                }
+            ],
+            (e) => {
+                if (e) {
+                    throw new Error('error in DB agregation');
+                }
+            }
+        );
+
+        res.send(totalSum);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
+
 /**
- * API creates new account
+ * API gets stats grupped by category for basic transactions - income/expense
  */
 router.get(baseUrl + '/type::type', auth, async (req, res) => {
     let transactionsType = req.params.type.toLowerCase();
@@ -35,13 +82,13 @@ router.get(baseUrl + '/type::type', auth, async (req, res) => {
                         "categoryId": 1,
                         "month": { "$month": "$accountingDate" },
                         "year": { "$year": "$accountingDate" }
-                }},
+                    }},
                 { $match: { month: month, year : year }},
                 {"$group" :
-                    {
-                        _id:"$categoryId",
-                        sum: { $sum: '$amount' }
-                    }
+                        {
+                            _id:"$categoryId",
+                            sum: { $sum: '$amount' }
+                        }
                 }
             ],
             (e) => {
@@ -65,7 +112,6 @@ router.get(baseUrl + '/type::type', auth, async (req, res) => {
         res.send(summedCategories);
     } catch (e) {
         res.status(500).send(e);
-        console.log(e);
     }
 });
 
