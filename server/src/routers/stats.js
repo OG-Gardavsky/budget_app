@@ -33,8 +33,8 @@ router.get(baseUrl + '/type::type', auth, async (req, res) => {
                 { "$project": {
                         "amount": 1,
                         "categoryId": 1,
-                        "month": { "$month": "$date" },
-                        "year": { "$year": "$date" }
+                        "month": { "$month": "$accountingDate" },
+                        "year": { "$year": "$accountingDate" }
                 }},
                 { $match: { month: month, year : year }},
                 {"$group" :
@@ -46,7 +46,6 @@ router.get(baseUrl + '/type::type', auth, async (req, res) => {
             ],
             (e) => {
                 if (e) {
-                    console.log(e);
                     throw new Error('error in DB agregation');
                 }
             }
