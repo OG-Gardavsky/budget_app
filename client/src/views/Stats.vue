@@ -23,8 +23,8 @@
             </md-card-content>
         </md-card>
 
-        <md-card id="chartCard">
-            <mdb-doughnut-chart id="chart"
+        <md-card id="chartCard" style="margin-bottom: 150px">
+            <mdb-doughnut-chart id="chart" v-if="doughnutChartData.labels !== null"
                                 :data="doughnutChartData"
                                 :options="doughnutChartOptions"
             ></mdb-doughnut-chart>
@@ -57,10 +57,10 @@ export default {
             totalSum: null,
 
             doughnutChartData: {
-                labels: ["Food", "Green", "Yellow"],
+                labels: null,
                 datasets: [
                     {
-                        data: [300, 50, 100],
+                        data: null,
                         backgroundColor: [
                             "#F7464A",
                             "#46BFBD",
@@ -86,6 +86,9 @@ export default {
     },
     watch: {
         transactionType : function () {
+            this.doughnutChartData.labels = null;
+            this.doughnutChartData.datasets[0].data = null;
+
             this.getTotalSum();
             this.getStatsByCategory();
         }
@@ -103,7 +106,11 @@ export default {
                 return this.displayCustomError('Error during loading statistics');
             }
 
-            this.statDataByCategory = await res.json();
+            const data = await res.json();
+            this.statDataByCategory = data;
+
+            this.doughnutChartData.labels = data.map(category => category.categoryName);
+            this.doughnutChartData.datasets[0].data = data.map(category => category.sum);
         },
         async getTotalSum() {
             const res = await fetch('api/stats/total/type:' + this.transactionType + '?month=' + this.currentMonth, {
@@ -123,8 +130,20 @@ export default {
     },
     async created() {
         await this.checkCredentials();
+
         this.currentMonth = new Date().getMonth() + 1;
         this.transactionType = 'expense';
+
+        // await this.getStatsByCategory();
+        //
+        // console.log(this.doughnutChartData.labels)
+
+        // this.doughnutChartData.labels = this.statDataByCategory.map(category => category.categoryName);
+        // console.log(this.doughnutChartData.labels)
+        //
+        // this.doughnutChartData.datasets.data = this.statDataByCategory.map(category => category.sum);
+
+
     }
 }
 </script>
