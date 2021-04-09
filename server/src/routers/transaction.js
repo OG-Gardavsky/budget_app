@@ -164,7 +164,7 @@ router.put(baseUrl + '/basic/id::id' , auth, async (req, res) => {
     const transactionId = req.params.id;
 
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['subtype', 'amount', 'categoryId', 'accountId', 'name', 'currency'];
+    const allowedUpdates = ['subtype', 'amount', 'categoryId', 'accountId', 'name', 'currency', 'accountingDate'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
     if (!isValidOperation) {
@@ -191,7 +191,7 @@ router.put(baseUrl + '/transfer/sharedId::id' , auth, async (req, res) => {
     const sharedId = req.params.id;
 
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['amount', 'name', 'givingAccountId', 'receivingAccountId'];
+    const allowedUpdates = ['amount', 'name', 'givingAccountId', 'receivingAccountId', 'accountingDate'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
     if (!isValidOperation) {

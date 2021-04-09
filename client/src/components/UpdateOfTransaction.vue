@@ -44,6 +44,11 @@
                 </md-field>
 
                 <md-field>
+                    <md-label>Accounting date</md-label>
+                    <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
+                </md-field>
+
+                <md-field>
                     <label>Enter name of transaction (optional)</label>
                     <md-input type="text" v-model="transactionName" placeholder="Name(optional)"/>
                 </md-field>
@@ -70,6 +75,11 @@
                     <md-select v-model="receivingAccountId" required >
                         <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                     </md-select>
+                </md-field>
+
+                <md-field>
+                    <md-label>Accounting date</md-label>
+                    <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
                 </md-field>
 
                 <md-field>
@@ -114,7 +124,8 @@ export default {
             accountId: null,
             givingAccountId: null,
             receivingAccountId: null,
-            transferDetails: null
+            transferDetails: null,
+            accountingDate: null
         }
     },
     methods: {
@@ -133,6 +144,7 @@ export default {
             this.givingAccountId = null;
             this.receivingAccountId = null;
             this.transferDetails = null;
+            this.accountingDate = null;
         },
         async updateTransactionRouter (type) {
             switch (this.transactionType){
@@ -148,7 +160,8 @@ export default {
             const body = {
                 givingAccountId: this.givingAccountId,
                 receivingAccountId: this.receivingAccountId,
-                amount: this.amount
+                amount: this.amount,
+                accountingDate: this.accountingDate
             }
             if (this.transactionName !== null) {
                 body.name = this.transactionName;
@@ -161,7 +174,8 @@ export default {
                 subtype: this.transactionSubtype,
                 amount: this.amount,
                 categoryId: this.categoryId,
-                accountId: this.accountId
+                accountId: this.accountId,
+                accountingDate: this.accountingDate
             }
             if (this.transactionName !== null) {
                 body.name = this.transactionName;
@@ -234,6 +248,9 @@ export default {
             this.transactionName = this.transferDetails.name;
 
         }
+
+        this.accountingDate =  new Date(this.transactionToUpdate.accountingDate);
+
 
 
 
