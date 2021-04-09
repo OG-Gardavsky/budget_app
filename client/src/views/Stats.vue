@@ -59,6 +59,7 @@ export default {
         }
     },
     async created() {
+        await this.checkCredentials();
         this.currentMonth = new Date().getMonth() + 1;
         this.transactionType = 'expense';
     }
