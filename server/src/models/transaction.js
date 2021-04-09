@@ -29,6 +29,7 @@ const transactionSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
+        // timezone:
         required: true,
         default: Date.now
     },

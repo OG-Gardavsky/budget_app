@@ -33,7 +33,8 @@ export default {
     data() {
         return {
             transactionType: null,
-            statData: null
+            statData: null,
+            currentMonth : null
         }
     },
     watch: {
@@ -43,8 +44,7 @@ export default {
     },
     methods: {
         async showStats() {
-
-            const res = await fetch('api/stats/type:' + this.transactionType, {
+            const res = await fetch('api/stats/type:' + this.transactionType + '?month=' + this.currentMonth, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
@@ -56,14 +56,11 @@ export default {
             }
 
             this.statData = await res.json();
-
         }
     },
     async created() {
-        this.transactionType = 'income';
-
-        await this.showStats();
-
+        this.currentMonth = new Date().getMonth() + 1;
+        this.transactionType = 'expense';
     }
 }
 </script>
