@@ -105,7 +105,7 @@ router.get(baseUrl + '/type::type', auth, async (req, res) => {
         const summedCategories = [];
         req.user.categories.forEach((category) => {
             const match = categoryStats.find(obj => obj._id.toString() === category._id.toString());
-            if (!match) { return };
+            if (!match) { return }
             summedCategories.push( { categoryName: category.name, categoryId: category._id, sum: match.sum } );
         });
 
