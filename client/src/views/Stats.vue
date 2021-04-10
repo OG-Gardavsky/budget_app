@@ -16,6 +16,23 @@
             </md-content>
         </md-card>
 
+        <md-card >
+            <md-content id="datePicker">
+
+                <md-button class="md-icon-button  md-primary" md-menu-trigger @click="setPreviousMonth">
+                    <md-icon>arrow_back_ios</md-icon>
+                </md-button>
+
+
+                <div class="md-title">{{dateData.months[currentMonth-1]}} {{currentYear}}</div>
+
+                <md-button class="md-icon-button  md-primary" md-menu-trigger @click="setNextMonth">
+                    <md-icon>arrow_forward_ios</md-icon>
+                </md-button>
+
+            </md-content>
+        </md-card>
+
 
         <md-card id="totalSum">
             <md-card-content>
@@ -23,7 +40,7 @@
             </md-card-content>
         </md-card>
 
-        <md-card id="chartCard" style="margin-bottom: 150px">
+        <md-card id="chartCard" v-if="doughnutChartData.labels !== null" >
             <mdb-doughnut-chart id="chart" v-if="doughnutChartData.labels !== null"
                                 :data="doughnutChartData"
                                 :options="doughnutChartOptions"
@@ -53,8 +70,8 @@ export default {
         return {
             transactionType: null,
             statDataByCategory: null,
-            currentMonth : null,
             totalSum: null,
+
 
             doughnutChartData: {
                 labels: null,
@@ -80,22 +97,49 @@ export default {
             },
             doughnutChartOptions: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: true
+            },
+
+            currentMonth : null,
+            currentYear: null,
+
+            dateData : {
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
             }
         }
     },
     watch: {
         transactionType : function () {
+            this.refresh();
+        },
+        currentMonth : function () {
+            this.refresh();
+        }
+    },
+    methods: {
+        refresh() {
             this.doughnutChartData.labels = null;
             this.doughnutChartData.datasets[0].data = null;
 
             this.getTotalSum();
             this.getStatsByCategory();
-        }
-    },
-    methods: {
+        },
+        setNextMonth() {
+            if (this.currentMonth === 12) {
+                this.currentMonth = 1;
+                return  this.currentYear += 1;
+            }
+            this.currentMonth += 1;
+        },
+        setPreviousMonth() {
+            if (this.currentMonth === 1) {
+                this.currentMonth = 12;
+                return  this.currentYear -= 1;
+            }
+            this.currentMonth -= 1;
+        },
         async getStatsByCategory() {
-            const res = await fetch('api/stats/type:' + this.transactionType + '?month=' + this.currentMonth, {
+            const res = await fetch('api/stats/type:' + this.transactionType + '?month=' + this.currentMonth + '&year=' + this.currentYear, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
@@ -113,7 +157,7 @@ export default {
             this.doughnutChartData.datasets[0].data = data.map(category => category.sum);
         },
         async getTotalSum() {
-            const res = await fetch('api/stats/total/type:' + this.transactionType + '?month=' + this.currentMonth, {
+            const res = await fetch('api/stats/total/type:' + this.transactionType + '?month=' + this.currentMonth + '&year=' + this.currentYear, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
@@ -125,23 +169,17 @@ export default {
             }
 
             const sumObject = await res.json();
-            this.totalSum = sumObject[0].sum;
+
+
+            this.totalSum = sumObject.length === 0 ? 0 : sumObject[0].sum;
         }
     },
     async created() {
         await this.checkCredentials();
 
         this.currentMonth = new Date().getMonth() + 1;
+        this.currentYear = new Date().getFullYear();
         this.transactionType = 'expense';
-
-        // await this.getStatsByCategory();
-        //
-        // console.log(this.doughnutChartData.labels)
-
-        // this.doughnutChartData.labels = this.statDataByCategory.map(category => category.categoryName);
-        // console.log(this.doughnutChartData.labels)
-        //
-        // this.doughnutChartData.datasets.data = this.statDataByCategory.map(category => category.sum);
 
 
     }
@@ -163,7 +201,14 @@ export default {
     padding: 10px;
 }
 
-#transactionType {
-    padding: 0px 20px;
+#datePicker {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#chartCard {
+    margin-bottom: 40px;
 }
 </style>
