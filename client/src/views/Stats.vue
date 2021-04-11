@@ -40,12 +40,14 @@
             </md-card-content>
         </md-card>
 
-        <md-card id="chartCard" v-if="doughnutChartData.labels !== null" >
-            <mdb-doughnut-chart id="chart" v-if="doughnutChartData.labels !== null"
-                                :data="doughnutChartData"
-                                :options="doughnutChartOptions"
-            ></mdb-doughnut-chart>
-        </md-card>
+        <div id="chartCard">
+            <md-card v-if="doughnutChartData.labels !== null" >
+                <mdb-doughnut-chart id="chart" v-if="doughnutChartData.labels !== null"
+                                    :data="doughnutChartData"
+                                    :options="doughnutChartOptions"
+                ></mdb-doughnut-chart>
+            </md-card>
+        </div>
 
 
 
@@ -170,7 +172,6 @@ export default {
 
             const sumObject = await res.json();
 
-
             this.totalSum = sumObject.length === 0 ? 0 : sumObject[0].sum;
         }
     },
@@ -179,8 +180,8 @@ export default {
 
         this.currentMonth = new Date().getMonth() + 1;
         this.currentYear = new Date().getFullYear();
-        this.transactionType = 'expense';
 
+        this.transactionType = 'expense';
 
     }
 }
@@ -209,6 +210,6 @@ export default {
 }
 
 #chartCard {
-    margin-bottom: 40px;
+    padding-bottom: 53px;
 }
 </style>
