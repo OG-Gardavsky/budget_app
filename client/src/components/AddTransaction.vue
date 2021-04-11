@@ -30,6 +30,8 @@
                         </md-select>
                     </md-field>
 
+
+
                     <md-field>
                         <label>Enter amount of transaction</label>
                         <md-input type="number" v-model="amount" placeholder="Amount" required />
@@ -42,6 +44,11 @@
                             <md-option value="USD">USD</md-option>
                             <md-option value="EUR">EUR</md-option>
                         </md-select>
+                    </md-field>
+
+                    <md-field>
+                        <md-label>Accounting date</md-label>
+                        <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true" />
                     </md-field>
 
                     <md-field>
@@ -81,6 +88,11 @@
                     </md-field>
 
                     <md-field>
+                        <md-label>Accounting date</md-label>
+                        <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
+                    </md-field>
+
+                    <md-field>
                         <label>Enter name of transaction (optional)</label>
                         <md-input type="text" v-model="transactionName" placeholder="Name(optional)" />
                     </md-field>
@@ -116,7 +128,8 @@ export default {
             categoryId: null,
             accountId: null,
             givingAccountId: null,
-            receivingAccountId: null
+            receivingAccountId: null,
+            accountingDate: null
         }
     },
     methods: {
@@ -125,7 +138,8 @@ export default {
                 amount: this.amount,
                 name: this.transactionName,
                 givingAccountId: this.givingAccountId,
-                receivingAccountId: this.receivingAccountId
+                receivingAccountId: this.receivingAccountId,
+                accountingDate: this.accountingDate
             }
 
             await this.createTransaction(body, 'transfer');
@@ -135,7 +149,8 @@ export default {
                 subtype: this.transcationSubtype,
                 amount: this.amount,
                 categoryId: this.categoryId,
-                accountId: this.accountId
+                accountId: this.accountId,
+                accountingDate: this.accountingDate
             }
             if (this.transactionName !== null) {
                 body.name = this.transactionName;
@@ -173,12 +188,16 @@ export default {
             this.accountId = null;
             this.givingAccountId = null;
             this.receivingAccountId = null;
+            this.accountingDate = null;
         },
         closeDialog(){
             this.$emit('on-closeModal');
         }
     },
     async created() {
+
+        this.accountingDate = new Date();
+
         await this.getListOfAccounts();
         await this.getListOfCategories();
     }

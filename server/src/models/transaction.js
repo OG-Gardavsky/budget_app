@@ -27,8 +27,9 @@ const transactionSchema = new mongoose.Schema({
         required: false,
         trim: true
     },
-    date: {
+    accountingDate: {
         type: Date,
+        // timezone:
         required: true,
         default: Date.now
     },

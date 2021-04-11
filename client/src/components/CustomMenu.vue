@@ -6,7 +6,7 @@
         <md-bottom-bar md-sync-route  >
             <md-bottom-bar-item to="home" exact md-label="Home" md-icon="home" />
 
-            <md-bottom-bar-item to="blank" md-label="Stasts" md-icon="bar_chart" />
+            <md-bottom-bar-item to="stats" md-label="Stasts" md-icon="bar_chart" />
 
             <md-bottom-bar-item @click="showAddTranscaction" md-label="Transaction" class="md-raised md-primary" md-icon="add" />
 
