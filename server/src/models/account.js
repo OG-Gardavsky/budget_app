@@ -12,13 +12,18 @@ const accountSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['debit', 'credit', 'cash', 'invest']
+        enum: ['debit', 'credit', 'cash', 'invest', 'debt']
     },
     currency: {
         type: String,
         required: true,
         trim: true,
         enum: ['CZK', 'USD', 'EUR']
+    },
+    initialBalance: {
+        type: Number,
+        required: true,
+        default: 0
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
@@ -49,38 +54,27 @@ accountSchema.pre('remove', async function (next) {
 const Account = mongoose.model('Account', accountSchema);
 
 
+// /**
+//  *
+//  * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+//  */
+// const cashSchema = new mongoose.Schema({
+//     initialBalance: {
+//         type: Number,
+//         required: true,
+//         default: 0
+//     }
+// },
+//     options
+// );
+//
+// Account.discriminator('cash', cashSchema);
+
 /**
- *
- * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+ * TODO credit card
+ * params initial balace + limit
+ *  check for initial balance < limit
  */
-const cashSchema = new mongoose.Schema({
-    initialBalance: {
-        type: Number,
-        required: true,
-        default: 0
-    }
-},
-    options
-);
-
-Account.discriminator('cash', cashSchema);
-
-/**
- *
- * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
- */
-const debitSchema = new mongoose.Schema({
-        initialBalance: {
-            type: Number,
-            required: true,
-            default: 0
-        }
-    },
-    options
-);
-Account.discriminator('debit', debitSchema);
-
-
 
 
 
