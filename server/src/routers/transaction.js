@@ -46,7 +46,7 @@ router.post(baseUrl + '/basic', auth, async (req, res) => {
 });
 
 /**
- *
+ * API creates transfer between 2 accounts
  */
 router.post(baseUrl + '/transfer', auth, async (req, res) => {
 
@@ -61,10 +61,10 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
 
 
     if (!req.body.givingAccountId){
-        return res.status(400).send({error: "In requesr is missing required property 'givingAcountId'" });
+        return res.status(400).send({error: "In request is missing required property 'givingAcountId'" });
     }
     if (!req.body.receivingAccountId){
-        return res.status(400).send({error: "In requesr is missing required property 'receivingAcountId'" });
+        return res.status(400).send({error: "In request is missing required property 'receivingAcountId'" });
     }
 
     const allowedAcountIds = [];
@@ -100,9 +100,89 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
     try {
         await transferIn.save();
         await transferOut.save();
-        res.status(201).send({message: 'Transfer was succesfull', transferIn, transferOut});
+        res.status(201).send({message: 'Transfer was successful', transferIn, transferOut});
     } catch (e) {
-        res.status(400).send(e.toString());
+        res.status(400).send(e);
+    }
+});
+
+/**
+ * API takes care of debts
+ */
+router.post(baseUrl + '/debt', auth, async (req, res) => {
+
+    const receivedBodyKeys = Object.keys(req.body);
+    const requiredBodyKeys = ['subtype', 'basicAccountId', 'debtAccountId', 'amount'];
+    const isValidOperation = requiredBodyKeys.every(key => receivedBodyKeys.includes(key));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request need to be theese fields ' + requiredBodyKeys.toString()});
+    }
+
+    if (req.body.amount < 0) {
+        return res.status(400).send({ error: 'Amount has to be > 0' } );
+    }
+
+
+    try {
+        await req.user.populate({
+            path: 'accounts',
+            match: {
+                _id: { $in: [req.body.basicAccountId, req.body.debtAccountId] }
+            }
+        }).execPopulate();
+
+        if (req.user.accounts.length !== 2) {
+            return res.status(400).send({ error: 'invalid account IDs entered'});
+        }
+
+        const basicAccount = req.user.accounts.find(acc => acc._id.toString() === req.body.basicAccountId.toString())
+        const debtAccount = req.user.accounts.find(acc => acc._id.toString() === req.body.debtAccountId.toString())
+
+        if (!['credit', 'debit', 'cash'].includes(basicAccount.type) ) {
+            return res.status(400).send({ error: 'basicAccountId should correspond to ID of account type: debit, credit cash'});
+        }  else if (debtAccount.type !== 'debt') {
+            return res.status(400).send({ error: 'debtAccountId should correspond to ID of account type: debt'});
+        }
+
+        const sharedId = ObjectID();
+        const commonTransactionBody = {
+            type: 'debt',
+            sharedId,
+            owner: req.user._id
+        }
+
+        const basicAccountTransactionBody = Object.assign({}, commonTransactionBody) ;
+        basicAccountTransactionBody.accountId = basicAccount._id;
+
+        const debtAccountTransactionBody = Object.assign({}, commonTransactionBody);
+        debtAccountTransactionBody.accountId = debtAccount._id;
+
+        if (req.body.subtype === 'lend') {
+            basicAccountTransactionBody.subtype = 'lend';
+            debtAccountTransactionBody.subtype = 'lend';
+
+            basicAccountTransactionBody.amount = req.body.amount * (-1) ;
+            debtAccountTransactionBody.amount = req.body.amount;
+        } else if (req.body.subtype === 'borrow') {
+            basicAccountTransactionBody.subtype = 'borrow';
+            debtAccountTransactionBody.subtype = 'borrow';
+
+            basicAccountTransactionBody.amount = req.body.amount;
+            debtAccountTransactionBody.amount = req.body.amount * (-1);
+        }
+
+
+        const basicTransaction = new Transaction(basicAccountTransactionBody);
+        const debtTransaction = new Transaction(debtAccountTransactionBody);
+
+
+        await basicTransaction.save();
+        await debtTransaction.save();
+
+        res.status(201).send({message: 'Debt was successfully created.', basicTransaction, debtTransaction});
+    } catch (e) {
+        res.status(400).send(e);
     }
 });
 
@@ -119,7 +199,7 @@ router.get(baseUrl, auth, async (req, res) => {
         res.send(req.user.transactions);
 
     } catch (e) {
-        res.status(500).send(e);
+        res.status(500).send();
     }
 });
 
@@ -152,7 +232,7 @@ router.get(baseUrl + '/transfer/sharedId::id', auth, async (req, res) => {
         res.send(bodyToSend);
 
     } catch (e) {
-        res.status(500).send(e);
+        res.status(500).send();
     }
 });
 
@@ -219,13 +299,10 @@ router.put(baseUrl + '/transfer/sharedId::id' , auth, async (req, res) => {
             await transaction.save();
         });
 
-        // await transactions.save();
-
         res.send(transactions);
 
     } catch (e) {
         res.status(500).send();
-        console.log(e)
     }
 });
 
@@ -259,7 +336,6 @@ router.delete(baseUrl + '/id::id', auth, async (req, res) => {
         res.send(transaction);
     } catch (e) {
         res.status(500).send();
-        console.log(e)
     }
 })
 
