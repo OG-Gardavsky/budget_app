@@ -123,6 +123,9 @@ router.post(baseUrl + '/debt', auth, async (req, res) => {
         return res.status(400).send({ error: 'Amount has to be > 0' } );
     }
 
+    if ( !['lend', 'borrow'].includes(req.body.subtype) ) {
+        return res.status(400).send({ error: "invalid subtype, should be just 'lend' or 'borrow'"});
+    }
 
     try {
         await req.user.populate({
@@ -148,39 +151,28 @@ router.post(baseUrl + '/debt', auth, async (req, res) => {
         const sharedId = ObjectID();
         const commonTransactionBody = {
             type: 'debt',
+            subtype: req.body.subtype,
             sharedId,
             owner: req.user._id
         }
 
         const basicAccountTransactionBody = Object.assign({}, commonTransactionBody) ;
+        basicAccountTransactionBody.amount = req.body.subtype === 'lend' ? req.body.amount * (-1) : req.body.amount;
         basicAccountTransactionBody.accountId = basicAccount._id;
 
         const debtAccountTransactionBody = Object.assign({}, commonTransactionBody);
+        debtAccountTransactionBody.amount = req.body.subtype === 'borrow' ? req.body.amount * (-1) : req.body.amount;
         debtAccountTransactionBody.accountId = debtAccount._id;
-
-        if (req.body.subtype === 'lend') {
-            basicAccountTransactionBody.subtype = 'lend';
-            debtAccountTransactionBody.subtype = 'lend';
-
-            basicAccountTransactionBody.amount = req.body.amount * (-1) ;
-            debtAccountTransactionBody.amount = req.body.amount;
-        } else if (req.body.subtype === 'borrow') {
-            basicAccountTransactionBody.subtype = 'borrow';
-            debtAccountTransactionBody.subtype = 'borrow';
-
-            basicAccountTransactionBody.amount = req.body.amount;
-            debtAccountTransactionBody.amount = req.body.amount * (-1);
-        }
 
 
         const basicTransaction = new Transaction(basicAccountTransactionBody);
         const debtTransaction = new Transaction(debtAccountTransactionBody);
 
-
         await basicTransaction.save();
         await debtTransaction.save();
 
         res.status(201).send({message: 'Debt was successfully created.', basicTransaction, debtTransaction});
+
     } catch (e) {
         res.status(400).send(e);
     }
