@@ -340,28 +340,29 @@ router.put(baseUrl + '/debt/sharedId::id' , auth, async (req, res) => {
             return res.status(400).send({ error: 'Entered accounts either does not work or does not belong to user'});
         }
 
-        const accountTypeQuery =  { _id: { $in: [req.body.basicAccountId, req.body.debtAccountId] } };
-
         await req.user.populate({
-            path: 'accounts',
-            match: accountTypeQuery
+            path: 'accounts'
         }).execPopulate();
 
-        // return res.send(req.user.accounts)
+        const allUsersAccountsId = req.user.accounts.map(acc => acc._id.toString())
+        const areValidAccounts = [req.body.basicAccountId, req.body.debtAccountId].every(account => allUsersAccountsId.includes(account));
+        if (!areValidAccounts) {
+            return res.status(400).send({ error: 'entered accounts does not belong to user'});
+        }
+
+        const basicAccount = req.user.accounts.find(account => account._id.toString() === req.body.basicAccountId && ['credit', 'debit', 'cash'].includes(account.type));
+        const debtAccount = req.user.accounts.find(account => account._id.toString() === req.body.debtAccountId &&  account.type === 'debt');
+
+        if (!basicAccount || !debtAccount) {
+            return res.status(400).send({ error: 'entered accounts are not of correct type'});
+        }
+
+        const basicAccountsIds = req.user.accounts.filter(acc => ['credit', 'debit', 'cash'].includes(acc.type)).map(acc => acc._id.toString());
+        const debtAccountsIds = req.user.accounts.filter(acc => acc.type === 'debt' ).map(acc => acc._id.toString());
 
 
-
-        const basicAccount = req.user.accounts.find(account => ['credit', 'debit', 'cash'].includes(account.type));
-        const debtAccount = req.user.accounts.find(account => account.type === 'debt');
-
-        return res.send({ basicAccount, debtAccount })
-
-        const basicAccountTransaction = transactions.find(transaction => transaction.accountId.toString() === basicAccount._id.toString());
-        const debtAccountTransaction = transactions.find(transaction => transaction.accountId.toString() === debtAccount._id.toString());
-
-        return res.send({basicAccountTransaction, debtAccountTransaction})
-
-
+        const basicAccountTransaction = transactions.find(transaction => basicAccountsIds.includes(transaction.accountId.toString()) );
+        const debtAccountTransaction = transactions.find(transaction => debtAccountsIds.includes(transaction.accountId.toString()) );
 
         updates.forEach((update) => {
             if (update === 'subtype') {
