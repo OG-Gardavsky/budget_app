@@ -97,6 +97,13 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
         owner: req.user._id
     });
 
+    if (req.body.accountingDate) {
+        transferIn.accountingDate = req.body.accountingDate;
+        transferOut.accountingDate = req.body.accountingDate;
+    }
+
+
+
     try {
         await transferIn.save();
         await transferOut.save();
@@ -154,6 +161,10 @@ router.post(baseUrl + '/debt', auth, async (req, res) => {
             subtype: req.body.subtype,
             sharedId,
             owner: req.user._id
+        }
+
+        if (req.body.accountingDate) {
+            commonTransactionBody.accountingDate = req.body.accountingDate;
         }
 
         const basicAccountTransactionBody = Object.assign({}, commonTransactionBody) ;
@@ -271,25 +282,34 @@ router.put(baseUrl + '/transfer/sharedId::id' , auth, async (req, res) => {
     }
 
     try {
-        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id});
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'transfer'});
 
-
-        if (transactions.length !== 2){
+        if (![1,2].includes(transactions.length)) {
             return res.status(400).send({ error: 'Entered accounts either does not work or does not belong to user'});
         }
 
-        transactions.forEach(async (transaction) => {
-            updates.forEach((update) => {
-                if (update=== 'amount') {
-                    Math.abs(req.body[update]);
-                    if (transaction.subtype === 'out') {
-                        req.body[update] = req.body[update] * (-1);
-                    }
-                }
-                transaction[update] = req.body[update]
-            });
-            await transaction.save();
+        const transferIn = transactions.find(transaction => transaction.subtype === 'in');
+        const transferOut = transactions.find(transaction => transaction.subtype === 'out');
+
+        updates.forEach((update) => {
+            if (update === 'amount') {
+                transferIn.amount = Math.abs(req.body[update]);
+                transferOut.amount = Math.abs(req.body[update]) * (-1);
+                return;
+            } else if (update === 'givingAccountId') {
+                transferOut.accountId = req.body[update];
+                return;
+            } else if (update === 'receivingAccountId') {
+                transferIn.accountId = req.body[update];
+                return;
+            }
+
+            transferIn[update] = req.body[update];
+            transferOut[update] = req.body[update];
         });
+
+        await transferIn.save();
+        await transferOut.save();
 
         res.send(transactions);
 
@@ -297,6 +317,99 @@ router.put(baseUrl + '/transfer/sharedId::id' , auth, async (req, res) => {
         res.status(500).send();
     }
 });
+
+/**
+ *  API updates debt records
+ */
+router.put(baseUrl + '/debt/sharedId::id' , auth, async (req, res) => {
+
+    const sharedId = req.params.id;
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['subtype', 'basicAccountId', 'debtAccountId', 'amount', 'accountingDate', 'name'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields ' + allowedUpdates.toString()});
+    }
+
+    try {
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'debt'});
+
+        if (![1,2].includes(transactions.length)) {
+            return res.status(400).send({ error: 'Entered accounts either does not work or does not belong to user'});
+        }
+
+        const accountTypeQuery =  { _id: { $in: [req.body.basicAccountId, req.body.debtAccountId] } };
+
+        await req.user.populate({
+            path: 'accounts',
+            match: accountTypeQuery
+        }).execPopulate();
+
+        // return res.send(req.user.accounts)
+
+
+
+        const basicAccount = req.user.accounts.find(account => ['credit', 'debit', 'cash'].includes(account.type));
+        const debtAccount = req.user.accounts.find(account => account.type === 'debt');
+
+        return res.send({ basicAccount, debtAccount })
+
+        const basicAccountTransaction = transactions.find(transaction => transaction.accountId.toString() === basicAccount._id.toString());
+        const debtAccountTransaction = transactions.find(transaction => transaction.accountId.toString() === debtAccount._id.toString());
+
+        return res.send({basicAccountTransaction, debtAccountTransaction})
+
+
+
+        updates.forEach((update) => {
+            if (update === 'subtype') {
+
+                if (req.body.subtype !== basicAccountTransaction.subtype) {
+                    basicAccountTransaction.amount *= (-1);
+                    debtAccountTransaction.amount *= (-1);
+
+                    basicAccountTransaction.subtype = req.body.subtype;
+                    debtAccountTransaction.subtype = req.body.subtype;
+
+                    return;
+                }
+                return;
+
+            } else if (update === 'amount') {
+
+                if (basicAccountTransaction.subtype === 'lend') {
+                    basicAccountTransaction.amount = req.body.amount * (-1);
+                    debtAccountTransaction.amount = req.body.amount;
+                } else if (basicAccountTransaction.subtype === 'borrow') {
+                    basicAccountTransaction.amount = req.body.amount ;
+                    debtAccountTransaction.amount = req.body.amount * (-1);
+                }
+
+                return;
+            } else if (update === 'basicAccountId') {
+                basicAccountTransaction.accountId = req.body[update];
+                return;
+            } else if (update === 'debtAccountId') {
+                debtAccountTransaction.accountId = req.body[update];
+                return;
+            }
+            basicAccountTransaction[update] = req.body[update];
+            debtAccountTransaction[update] = req.body[update];
+        });
+
+        await basicAccountTransaction.save();
+        await debtAccountTransaction.save();
+
+        res.send({message: 'udpate was succesfull', basicAccountTransaction, debtAccountTransaction } );
+
+    } catch (e) {
+        res.status(500).send(e);
+        console.log(e);
+    }
+});
+
 
 
 
@@ -316,8 +429,7 @@ router.delete(baseUrl + '/id::id', auth, async (req, res) => {
             return res.status(404).send();
         }
 
-
-        if (transaction.type === 'transfer') {
+        if (['transfer', 'debt'].includes(transaction.type)) {
             const transactions = await Transaction.find({sharedId: transaction.sharedId, owner: req.user._id});
             await Transaction.deleteMany({sharedId: transaction.sharedId, owner: req.user._id});
             return res.send(transactions);
