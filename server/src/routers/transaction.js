@@ -213,10 +213,10 @@ router.get(baseUrl + '/transfer/sharedId::id', auth, async (req, res) => {
     const sharedId = req.params.id;
 
     try {
-        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id});
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'transfer'});
 
         if (transactions.length !== 2){
-            return res.status(400).send({ error: 'Entered transaction does not work'});
+            return res.status(400).send({ error: 'Entered transaction does not exist.'});
         }
 
         const bodyToSend = {};
@@ -230,6 +230,45 @@ router.get(baseUrl + '/transfer/sharedId::id', auth, async (req, res) => {
                 bodyToSend.givingAccountId = transaction.accountId;
             }
         });
+
+        res.send(bodyToSend);
+
+    } catch (e) {
+        res.status(500).send();
+    }
+});
+
+/**
+ * API gets debts info, based on sharedId
+ */
+router.get(baseUrl + '/debt/sharedId::id', auth, async (req, res) => {
+    const sharedId = req.params.id;
+
+    try {
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'debt'});
+
+        if (transactions.length !== 2){
+            return res.status(400).send({ error: 'Entered transaction does not exist.'});
+        }
+
+        const bodyToSend = {};
+
+        await req.user.populate({
+            path: 'accounts'
+        }).execPopulate();
+
+        const basicAccountsIds = req.user.accounts.filter(acc => ['credit', 'debit', 'cash'].includes(acc.type)).map(acc => acc._id.toString());
+        const debtAccountsIds = req.user.accounts.filter(acc => acc.type === 'debt' ).map(acc => acc._id.toString());
+
+        const basicAccountTransaction = transactions.find(transaction => basicAccountsIds.includes(transaction.accountId.toString()) );
+        const debtAccountTransaction = transactions.find(transaction => debtAccountsIds.includes(transaction.accountId.toString()) );
+
+
+        bodyToSend.subtype = basicAccountTransaction.subtype;
+        bodyToSend.basicAccountId = basicAccountTransaction.accountId;
+        bodyToSend.debtAccountId = debtAccountTransaction.accountId;
+        bodyToSend.amount = Math.abs(basicAccountTransaction.amount);
+        bodyToSend.name = basicAccountTransaction.name;
 
 
         res.send(bodyToSend);
@@ -360,7 +399,6 @@ router.put(baseUrl + '/debt/sharedId::id' , auth, async (req, res) => {
         const basicAccountsIds = req.user.accounts.filter(acc => ['credit', 'debit', 'cash'].includes(acc.type)).map(acc => acc._id.toString());
         const debtAccountsIds = req.user.accounts.filter(acc => acc.type === 'debt' ).map(acc => acc._id.toString());
 
-
         const basicAccountTransaction = transactions.find(transaction => basicAccountsIds.includes(transaction.accountId.toString()) );
         const debtAccountTransaction = transactions.find(transaction => debtAccountsIds.includes(transaction.accountId.toString()) );
 
@@ -410,10 +448,6 @@ router.put(baseUrl + '/debt/sharedId::id' , auth, async (req, res) => {
         console.log(e);
     }
 });
-
-
-
-
 
 
 /**
