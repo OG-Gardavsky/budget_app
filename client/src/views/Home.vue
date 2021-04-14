@@ -4,7 +4,7 @@
 
         <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
-                 @click=" currentAccount = account ; currentLimitOfTransactions = defaultLimitOfTransactions" >
+                 @click=" currentAccount = account ; showTransactionsOfSpecificAccount(account); currentLimitOfTransactions = defaultLimitOfTransactions" >
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
