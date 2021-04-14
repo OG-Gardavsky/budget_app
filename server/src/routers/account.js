@@ -30,11 +30,26 @@ router.post(baseUrl, auth, async (req, res) => {
  * API gets accounts associated with user
  */
 router.get(baseUrl, auth, async (req, res) => {
+
+    const accountTypeQuery = {};
+    const allowedTypes = ['basic', 'invest', 'debt'];
+
+    if (req.query.type) {
+        const typeInRequest = req.query.type.toLowerCase();
+        if (!allowedTypes.includes(typeInRequest)) {
+            return res.status(400).send({ error: 'Invalid params, types can be only ' + allowedTypes.toString() });
+        }
+        accountTypeQuery.type = typeInRequest === 'basic' ? { $in: ['debit','cash', 'credit'] }  : typeInRequest;
+    }
+
+
     try {
 
         await req.user.populate({
-            path: 'accounts'
+            path: 'accounts',
+            match: accountTypeQuery
         }).execPopulate();
+
 
         res.send(req.user.accounts);
 
@@ -100,9 +115,29 @@ router.put(baseUrl + '/id::id' , auth, async (req, res) => {
  * API gets balance of accounts
  */
 router.get(baseUrl + '/balance', auth, async (req, res) => {
+
+    const accountTypeQuery = {};
+    const allowedTypes = ['basic', 'invest', 'debt'];
+
+    if (req.query.type) {
+        const typeInRequest = req.query.type.toLowerCase();
+        if (!allowedTypes.includes(typeInRequest)) {
+            return res.status(400).send({ error: 'Invalid params, types can be only ' + allowedTypes.toString() });
+        }
+        accountTypeQuery.type = typeInRequest === 'basic' ? { $in: ['debit','cash', 'credit'] }  : typeInRequest;
+    }
+
+
     try {
+
+        await req.user.populate({
+            path: 'accounts',
+            match: accountTypeQuery
+        }).execPopulate();
+        const accountIds = req.user.accounts.map(acc => acc._id);
+
         const accountsBalance = await Transaction.aggregate([
-                { $match: { owner: req.user._id} },
+                { $match: { owner: req.user._id,  accountId: { $in: accountIds } } },
                 {"$group" :
                         {
                             _id:"$accountId",
@@ -116,10 +151,6 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
                 }
             }
         );
-
-        await req.user.populate({
-            path: 'accounts'
-        }).execPopulate();
 
         const accountsToSend = [];
         req.user.accounts.forEach((account) => {

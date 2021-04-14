@@ -51,7 +51,7 @@
 
 
 
-        <CustomMenu />
+        <CustomMenu :refresh="refresh" />
     </div>
 </template>
 

@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const Transaction = require('./transaction');
 
+const options = { discriminatorKey: 'type' };
 
-const acountSchema = new mongoose.Schema({
+const accountSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -11,12 +12,7 @@ const acountSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['debit', 'credit', 'cash', 'invest']
-    },
-    initialBalance: {
-        type: Number,
-        required: true,
-        default: 0
+        enum: ['debit', 'credit', 'cash', 'invest', 'debt']
     },
     currency: {
         type: String,
@@ -24,14 +20,21 @@ const acountSchema = new mongoose.Schema({
         trim: true,
         enum: ['CZK', 'USD', 'EUR']
     },
+    initialBalance: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
     }
-});
+},
+    options
+);
 
-acountSchema.virtual('transactions', {
+accountSchema.virtual('transactions', {
     ref: 'Transaction',
     localField: '_id',
     foreignField: 'accountId'
@@ -42,12 +45,37 @@ acountSchema.virtual('transactions', {
 /**
  * removing transactions with account
  */
-acountSchema.pre('remove', async function (next) {
+accountSchema.pre('remove', async function (next) {
     const account = this;
     await Transaction.deleteMany({ accountId: account._id });
     next();
 });
 
-const Account = mongoose.model('Account', acountSchema);
+const Account = mongoose.model('Account', accountSchema);
+
+
+// /**
+//  *
+//  * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+//  */
+// const cashSchema = new mongoose.Schema({
+//     initialBalance: {
+//         type: Number,
+//         required: true,
+//         default: 0
+//     }
+// },
+//     options
+// );
+//
+// Account.discriminator('cash', cashSchema);
+
+/**
+ * TODO credit card
+ * params initial balace + limit
+ *  check for initial balance < limit
+ */
+
+
 
 module.exports = Account;

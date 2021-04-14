@@ -22,7 +22,7 @@
             </router-link>
 
 
-            <router-link to="blank" >
+            <router-link to="debts" >
                 <md-card md-with-hover>
                     <md-card-header>
                         <div class="md-title">Debts</div>
