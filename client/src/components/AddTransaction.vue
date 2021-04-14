@@ -270,16 +270,7 @@ export default {
         closeDialog(){
             this.$emit('on-closeModal');
         },
-        async getListOfSpecificAccounts(acountType) {
-            const res = await fetch('api/accounts?type=' + acountType , {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
-                }
-            });
-            const respBody = await res.json()
-            return respBody;
-        },
+
     },
     async created() {
 

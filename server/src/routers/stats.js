@@ -7,7 +7,9 @@ const router = new express.Router();
 
 const baseUrl = '/api/stats';
 
-
+/**
+ * API gets total income/expenses in given month/year
+ */
 router.get(baseUrl + '/total/type::type', auth, async (req, res) => {
     let transactionsType = req.params.type.toLowerCase();
     const allowedTypes = ['income', 'expense'];
@@ -110,6 +112,74 @@ router.get(baseUrl + '/type::type', auth, async (req, res) => {
         });
 
         res.send(summedCategories);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
+
+/**
+ * API gets total balance of money on basic/debt accounts
+ */
+router.get(baseUrl + '/balance', auth, async (req, res) => {
+
+    const accountTypeQuery = {};
+    const allowedTypes = ['basic', 'invest', 'debt'];
+
+    let typeInRequest = null;
+
+    if (req.query.type) {
+        typeInRequest = req.query.type.toLowerCase();
+        if (!allowedTypes.includes(typeInRequest)) {
+            return res.status(400).send({ error: 'Invalid params, types can be only ' + allowedTypes.toString() });
+        }
+        accountTypeQuery.type = typeInRequest === 'basic' ? { $in: ['debit','cash', 'credit'] }  : typeInRequest;
+    }
+
+
+    try {
+
+        await req.user.populate({
+            path: 'accounts',
+            match: accountTypeQuery
+        }).execPopulate();
+        const accountIds = req.user.accounts.map(acc => acc._id);
+
+        const transactionsSum = await Transaction.aggregate([
+                { $match: { owner: req.user._id,  accountId: { $in: accountIds } } },
+                {"$group" :
+                        {
+                            _id:1,
+                            balance: { $sum: '$amount' }
+                        }
+                }
+            ],
+            (e) => {
+                if (e) {
+                    throw new Error('error in DB agregation');
+                }
+            }
+        );
+
+        const initialBalanceSum = await Account.aggregate([
+                { $match: { owner: req.user._id,  type: accountTypeQuery.type } },
+                {"$group" :
+                        {
+                            _id:1,
+                            balance: { $sum: '$initialBalance' }
+                        }
+                }
+            ],
+            (e) => {
+                if (e) {
+                    throw new Error('error in DB agregation');
+                }
+            }
+        );
+
+
+        const totalSum = Number(initialBalanceSum[0].balance) + Number(transactionsSum[0].balance);
+
+        res.send({type: typeInRequest, sum: totalSum });
     } catch (e) {
         res.status(500).send(e);
     }
