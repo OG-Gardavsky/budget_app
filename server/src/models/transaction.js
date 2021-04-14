@@ -105,21 +105,28 @@ const transferTransactionSchema = new mongoose.Schema({
     options
 );
 
-// transferTransactionSchema.pre('save', async function(next) {
-//     const transaction = this;
-//
-//     if (transaction.amount < 0 ) {
-//         throw new Error("All incoming data must contain positive 'amount' value");
-//     }
-//
-//     if (transaction.subtype === 'expense') {
-//         transaction.amount = transaction.amount * (-1);
-//     }
-//
-//     next();
-// });
-
 Transaction.discriminator('transfer', transferTransactionSchema);
+
+
+/**
+ *
+ * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+ */
+const debtTransactionSchema = new mongoose.Schema({
+        subtype: {
+            type: String,
+            required: true,
+            enum: ['borrow', 'lend']
+        },
+        sharedId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true
+        }
+    },
+    options
+);
+
+Transaction.discriminator('debt', debtTransactionSchema);
 
 
 module.exports = Transaction;

@@ -6,11 +6,11 @@
 
             <md-tabs md-dynamic-height>
 
-                <md-tab md-label="basic">
+                <md-tab md-label="basic" >
 
                     <md-field>
-                        <label>Transaction Type</label>
-                        <md-select v-model="transcationSubtype" required>
+                        <label>Income/Expense</label>
+                        <md-select v-model="transactionSubtype" required>
                             <md-option value="income">Income</md-option>
                             <md-option value="expense">Expense</md-option>
                         </md-select>
@@ -26,7 +26,7 @@
                     <md-field>
                         <label>Account</label>
                         <md-select v-model="accountId" required >
-                            <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                            <md-option  v-for="account in listOfBasicAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                         </md-select>
                     </md-field>
 
@@ -66,7 +66,7 @@
 
 
 
-                <md-tab md-label="transfer">
+                <md-tab md-label="transfer" >
 
                     <md-field>
                         <label>Enter amount of transaction</label>
@@ -76,14 +76,14 @@
                     <md-field>
                         <label>From Account:</label>
                         <md-select v-model="givingAccountId" required >
-                            <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                            <md-option  v-for="account in listOfBasicAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                         </md-select>
                     </md-field>
 
                     <md-field>
                         <label>To Account:</label>
                         <md-select v-model="receivingAccountId" required >
-                            <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                            <md-option  v-for="account in listOfBasicAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                         </md-select>
                     </md-field>
 
@@ -105,6 +105,59 @@
 
                 </md-tab>
 
+
+                <md-tab md-label="debt">
+
+
+                    <md-field>
+                        <label> Type</label>
+                        <md-select v-model="transactionSubtype" required>
+                            <md-option value="borrow">I borrow</md-option>
+                            <md-option value="lend">I lend</md-option>
+                        </md-select>
+                    </md-field>
+
+                    <md-field required>
+                        <label >Enter amount of transaction</label>
+                        <md-input type="number" v-model="amount" placeholder="Amount" required />
+                    </md-field>
+
+                    <md-field>
+                        <label v-if="transactionSubtype === null ">Basic account</label>
+                        <label v-if="transactionSubtype === 'borrow' " >Geting money to Account: </label>
+                        <label v-if="transactionSubtype === 'lend' " >Lending money from Account: </label>
+                        <md-select v-model="basicAccountId" required >
+                            <md-option  v-for="account in listOfBasicAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                        </md-select>
+                    </md-field>
+
+                    <md-field>
+                        <label v-if="transactionSubtype === null ">Debt account</label>
+                        <label v-if="transactionSubtype === 'borrow' " >I will owe to: </label>
+                        <label v-if="transactionSubtype === 'lend' " >Will owe me: </label>
+                        <md-select v-model="debtAccountId" required >
+                            <md-option  v-for="account in listOfDebtAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                        </md-select>
+                    </md-field>
+
+                    <md-field>
+                        <md-label>Accounting date</md-label>
+                        <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
+                    </md-field>
+
+                    <md-field>
+                        <label>Enter name of transaction (optional)</label>
+                        <md-input type="text" v-model="transactionName" placeholder="Name(optional)" />
+                    </md-field>
+
+
+                    <md-dialog-actions>
+                        <md-button class="md-primary" @click="closeDialog">Close</md-button>
+                        <md-button class="md-primary md-raised" @click="createDebt">Add transaction</md-button>
+                    </md-dialog-actions>
+
+                </md-tab>
+
             </md-tabs>
 
         </md-dialog >
@@ -120,19 +173,43 @@ export default {
     data() {
         return {
             listOfCategories: [],
-            listOfAccounts: [],
-            transcationSubtype: null,
+
+            listOfBasicAccounts: [],
+            listOfDebtAccounts : [],
+            listOfInvestAccounts : [],
+
+            transactionSubtype: null,
             transactionName: null,
             amount: null,
+            accountingDate: null,
+            accountId: null,
+
             currency: null,
             categoryId: null,
-            accountId: null,
+
             givingAccountId: null,
             receivingAccountId: null,
-            accountingDate: null
+
+            basicAccountId: null,
+            debtAccountId:null
         }
     },
     methods: {
+        async createDebt(){
+            const body = {
+                amount: this.amount,
+                subtype: this.transactionSubtype,
+                basicAccountId: this.basicAccountId,
+                debtAccountId: this.debtAccountId,
+                accountingDate: this.accountingDate
+            }
+            if (this.transactionName !== null) {
+                body.name = this.transactionName;
+            }
+
+            await this.createTransaction(body, 'debt');
+        },
+
         async createTransfer(){
             const body = {
                 amount: this.amount,
@@ -146,7 +223,7 @@ export default {
         },
         async createBasicTransaction(){
             const body = {
-                subtype: this.transcationSubtype,
+                subtype: this.transactionSubtype,
                 amount: this.amount,
                 categoryId: this.categoryId,
                 accountId: this.accountId,
@@ -180,7 +257,7 @@ export default {
             }
         },
         clearVariables(){
-            this.transcationSubtype = null;
+            this.transactionSubtype = null;
             this.transactionName = null;
             this.amount = null;
             this.currency = null;
@@ -192,14 +269,20 @@ export default {
         },
         closeDialog(){
             this.$emit('on-closeModal');
-        }
+        },
+
     },
     async created() {
 
         this.accountingDate = new Date();
 
-        await this.getListOfAccounts();
+        this.listOfBasicAccounts = await this.getListOfSpecificAccounts('basic');
         await this.getListOfCategories();
+        this.listOfDebtAccounts = await this.getListOfSpecificAccounts('debt');
+        this.listOfInvestAccounts = await this.getListOfSpecificAccounts('invest');
+
+
+
     }
 }
 </script>

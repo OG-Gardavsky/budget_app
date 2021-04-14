@@ -59,6 +59,16 @@ Vue.mixin({
             });
             this.listOfAccounts = await res.json();
         },
+        async getListOfSpecificAccounts(acountType) {
+            const res = await fetch('api/accounts?type=' + acountType , {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+            const respBody = await res.json()
+            return respBody;
+        },
         async getListOfCategories() {
             const res = await fetch('api/categories', {
                 method: 'GET',
@@ -68,6 +78,31 @@ Vue.mixin({
             });
             this.listOfCategories = await res.json();
         },
+        async showBalanceOfAccounts(type) {
+            const res = await fetch('api/accounts/balance?type=' + type, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+            this.accountsBalance = await res.json();
+        },
+        async getTotalBalanceByAccType(accType) {
+            const res = await fetch('api/stats/balance?type=' + accType, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                },
+            });
+
+            if (res.status !== 200) {
+                return this.displayCustomError('Error during loading statistics');
+            }
+
+            const sumObject = await res.json();
+
+            return sumObject.length === 0 ? 0 : sumObject.sum;
+        }
     },
 })
 

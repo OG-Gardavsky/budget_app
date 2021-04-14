@@ -188,18 +188,10 @@ export default {
         },
         displayFinancialInfo(){
             this.getListOfCategories();
-            this.showBalanceOfAccounts();
+            this.accountsBalance = this.showBalanceOfAccounts('basic');
             this.showTransactionsOfAllAccounts();
         },
-        async showBalanceOfAccounts() {
-            const res = await fetch('api/accounts/balance', {
-                method: 'GET',
-                headers: {
-                  'Authorization': 'Bearer ' + localStorage.getItem('userToken')
-                }
-            });
-            this.accountsBalance = await res.json();
-        },
+
         async showTransactionsOfAllAccounts() {
             const res = await fetch('api/transactions', {
                 method: 'GET',

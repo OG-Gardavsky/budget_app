@@ -3,7 +3,7 @@
 
         <div id="dialogContent">
 
-            <md-dialog-title>Update of transacation</md-dialog-title>
+            <md-dialog-title>Update of transacation: <span v-if="transactionSubtype">{{transactionSubtype}}</span></md-dialog-title>
 
             <div v-if="transactionType === 'basic' ">
 
@@ -90,6 +90,46 @@
 
             </div>
 
+            <div v-if="transactionType === 'debt'">
+
+
+
+                <md-field>
+                    <label>Enter amount of transaction</label>
+                    <md-input type="number" v-model="amount" placeholder="Amount" required />
+                </md-field>
+
+                <md-field>
+                    <label v-if="transactionSubtype === null ">Basic account</label>
+                    <label v-if="transactionSubtype === 'borrow' " >Geting money to Account: </label>
+                    <label v-if="transactionSubtype === 'lend' " >Lending money from Account: </label>
+                    <md-select v-model="basicAccountId" required >
+                        <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                    </md-select>
+                </md-field>
+
+                <md-field>
+                    <label v-if="transactionSubtype === null ">Debt account</label>
+                    <label v-if="transactionSubtype === 'borrow' " >I will owe to: </label>
+                    <label v-if="transactionSubtype === 'lend' " >Will owe me: </label>
+                    <md-select v-model="debtAccountId" required >
+                        <md-option  v-for="account in listOfAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                    </md-select>
+                </md-field>
+
+                <md-field>
+                    <md-label>Accounting date</md-label>
+                    <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
+                </md-field>
+
+                <md-field>
+                    <label>Enter name of transaction (optional)</label>
+                    <md-input type="text" v-model="transactionName" placeholder="Name(optional)" />
+                </md-field>
+
+
+            </div>
+
 
             <md-dialog-actions>
                 <md-button class="md-primary" @click="closeDialog">Close</md-button>
@@ -118,14 +158,20 @@ export default {
             transactionId: null,
             transactionSubtype: null,
             transactionName: null,
-            amount: null,
+            accountingDate: null,
             currency: null,
-            categoryId: null,
+
+            amount: null,
             accountId: null,
+            categoryId: null,
+
             givingAccountId: null,
             receivingAccountId: null,
             transferDetails: null,
-            accountingDate: null
+
+            debtDetails: null,
+            basicAccountId: null,
+            debtAccountId: null
         }
     },
     methods: {
@@ -154,7 +200,23 @@ export default {
                 case 'transfer':
                     await this.updateTransfer(this.transactionType);
                     break
+                case 'debt':
+                    await this.updateDebt(this.transactionType);
+                    break
             }
+        },
+        async updateDebt(){
+            const body = {
+                amount: this.amount,
+                basicAccountId: this.basicAccountId,
+                debtAccountId: this.debtAccountId,
+                accountingDate: this.accountingDate
+            }
+            if (this.transactionName !== null) {
+                body.name = this.transactionName;
+            }
+
+            await this.updateTransaction(body, 'debt', 'sharedId', this.transactionToUpdate.sharedId);
         },
         async updateTransfer(){
             const body = {
@@ -217,11 +279,26 @@ export default {
                 return  this.displayCustomError('Error during retrieving transfer data');
             }
             this.transferDetails = await res.json();
+        },
+        async getDebtInfo(sharedId) {
+            const res = await fetch('api/transactions/debt/sharedId:' + sharedId, {
+                method: 'GET',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                },
+            });
+
+            if (res.status !== 200){
+                return  this.displayCustomError('Error during retrieving transfer data');
+            }
+            this.debtDetails = await res.json();
         }
 
     },
     async created() {
         this.transactionType = this.transactionToUpdate.type;
+
 
         await this.getListOfAccounts();
         await this.getListOfCategories();
@@ -247,15 +324,19 @@ export default {
             this.amount = this.transferDetails.amount
             this.transactionName = this.transferDetails.name;
 
+        } else if (this.transactionType === 'debt') {
+            await this.getDebtInfo(this.transactionToUpdate.sharedId);
+
+            this.transactionSubtype = this.debtDetails.subtype;
+
+            this.basicAccountId = this.debtDetails.basicAccountId;
+            this.debtAccountId = this.debtDetails.debtAccountId;
+
+            this.amount = this.debtDetails.amount
+            this.transactionName = this.debtDetails.name;
         }
 
         this.accountingDate =  new Date(this.transactionToUpdate.accountingDate);
-
-
-
-
-
-
     }
 }
 </script>
