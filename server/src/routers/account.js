@@ -30,11 +30,26 @@ router.post(baseUrl, auth, async (req, res) => {
  * API gets accounts associated with user
  */
 router.get(baseUrl, auth, async (req, res) => {
+
+    const accountTypeQuery = {};
+    const allowedTypes = ['basic', 'invest', 'debt'];
+
+    if (req.query.type) {
+        const typeInRequest = req.query.type.toLowerCase();
+        if (!allowedTypes.includes(typeInRequest)) {
+            return res.status(400).send({ error: 'Invalid params, types can be only ' + allowedTypes.toString() });
+        }
+        accountTypeQuery.type = typeInRequest === 'basic' ? { $in: ['debit','cash', 'credit'] }  : typeInRequest;
+    }
+
+
     try {
 
         await req.user.populate({
-            path: 'accounts'
+            path: 'accounts',
+            match: accountTypeQuery
         }).execPopulate();
+
 
         res.send(req.user.accounts);
 

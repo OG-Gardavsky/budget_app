@@ -192,7 +192,7 @@ export default {
             this.showTransactionsOfAllAccounts();
         },
         async showBalanceOfAccounts() {
-            const res = await fetch('api/accounts/balance', {
+            const res = await fetch('api/accounts/balance?type=basic', {
                 method: 'GET',
                 headers: {
                   'Authorization': 'Bearer ' + localStorage.getItem('userToken')

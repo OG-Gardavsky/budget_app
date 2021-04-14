@@ -119,7 +119,8 @@ router.post(baseUrl + '/transfer', auth, async (req, res) => {
 router.post(baseUrl + '/debt', auth, async (req, res) => {
 
     const receivedBodyKeys = Object.keys(req.body);
-    const requiredBodyKeys = ['subtype', 'basicAccountId', 'debtAccountId', 'amount'];
+    let requiredBodyKeys = ['subtype', 'basicAccountId', 'debtAccountId', 'amount', 'accountingDate'];
+    if (receivedBodyKeys.includes('name')) { requiredBodyKeys.push('name')}
     const isValidOperation = requiredBodyKeys.every(key => receivedBodyKeys.includes(key));
 
     if (!isValidOperation) {
@@ -165,6 +166,10 @@ router.post(baseUrl + '/debt', auth, async (req, res) => {
 
         if (req.body.accountingDate) {
             commonTransactionBody.accountingDate = req.body.accountingDate;
+        }
+
+        if (req.body.name) {
+            commonTransactionBody.name = req.body.name;
         }
 
         const basicAccountTransactionBody = Object.assign({}, commonTransactionBody) ;
