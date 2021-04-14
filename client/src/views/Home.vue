@@ -40,15 +40,20 @@
         <div id="transactions">
             <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions" >
                 <md-card-header>
-                    <div class="md-title">
-                        <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
-                        <span v-if="transaction.type === 'transfer'">{{transaction.type}}</span>
-                        {{transaction.subtype}}
+                    <div class="md-title" style="display: flex; justify-content: space-between">
 
+                        <div>
+                            <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
+                            <span v-if="transaction.type === 'transfer'">{{transaction.type}}</span>
+                            {{transaction.subtype}}
+                        </div>
+
+
+                        <div> <span v-if="transaction.amount > 0">+</span> {{transaction.amount}} {{transaction.currency}}</div>
 
                     </div>
                     <div class="md-subhead" v-if="transaction.name"> {{transaction.name}}</div>
-                    <div class="md-subhead" > {{transaction.amount}} {{transaction.currency}}</div>
+
                 </md-card-header>
                 <md-card-actions>
                     <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
