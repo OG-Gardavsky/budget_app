@@ -38,6 +38,7 @@
 
         <div v-if="selectedAccount !== null" id="accountDetails">
 
+
             <md-card id="accountCard">
                 <md-content >
                     <md-button class="md-icon-button  md-primary"  @click="selectedAccount = null ; selectedAccountTransactions = null" >
@@ -61,21 +62,40 @@
 
 
 
+            <div id="transactions">
+                <md-card :key="transaction._id" v-for="transaction in selectedAccountTransactions" md-with-hover>
 
-            <md-card :key="transaction._id" v-for="transaction in selectedAccountTransactions" md-with-hover>
+                    <md-content class="transactionContent">
 
-                <md-content class="transactionContent">
+                        <div class="baseInfo">
+                            <div class="md-title">{{transaction.subtype}}</div>
+                            <div class="md-title"> <span v-if="transaction.amount > 0">+ </span> {{transaction.amount}} {{transaction.currency}}</div>
+                        </div>
 
-                    <div class="baseInfo">
-                        <div class="md-title">{{transaction.subtype}}</div>
-                        <div class="md-title">{{transaction.amount}} {{transaction.currency}}</div>
-                    </div>
+                        <div class="md-subhead">{{transaction.name}}</div>
 
-                    <div class="md-subhead">neco</div>
+                    </md-content>
 
-                </md-content>
+                    <md-card-actions>
+                        <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
+                        <md-button class="md-raised"
+                                   @click=" showUpdateOfTransactionDialog = true;  currentTransaction = transaction"
+                        >
+                            edit
+                        </md-button>
 
-            </md-card>
+                    </md-card-actions>
+
+                </md-card>
+            </div>
+
+
+            <UpdateOfTransaction v-if="showUpdateOfTransactionDialog === true"
+                                 :show-dialog="showUpdateOfTransactionDialog"
+                                 @on-closeModal="showUpdateOfTransactionDialog = false"
+                                 :transaction-to-update="currentTransaction"
+                                 @on-save="refresh"
+            />
 
 
         </div>
@@ -93,12 +113,14 @@
 import Header from "@/components/Header";
 import CustomMenu from "@/components/CustomMenu";
 import UpdateAccount from "@/components/UpdateAccount";
+import UpdateOfTransaction from "@/components/UpdateOfTransaction";
 export default {
 name: "Debts",
-    components: {UpdateAccount, CustomMenu, Header},
+    components: {UpdateOfTransaction, UpdateAccount, CustomMenu, Header},
     data() {
         return {
-            confirmationDialog: true,
+            showUpdateOfTransactionDialog: false,
+            currentTransaction: null,
 
             showUpdateAccountDialog: false,
 
@@ -114,7 +136,9 @@ name: "Debts",
             this.accountsBalance = this.showBalanceOfAccounts('debt');
             this.totalDebtsSum = await this.getTotalBalanceByAccType('debt');
 
-
+            if (this.selectedAccount !== null) {
+                 await this.showTransactionsOfSpecificAccount(this.selectedAccount);
+            }
         },
         async showTransactionsOfSpecificAccount(account) {
             const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions', {
@@ -144,6 +168,26 @@ name: "Debts",
             }
 
             this.selectedAccount = null;
+            await this.refresh();
+        },
+        async deleteTransaction(transaction){
+            const answer = window.confirm('Are you sure you want to delete transation with name ' + transaction.name);
+
+            if (!answer) {
+                return;
+            }
+
+            const res = await fetch('api/transactions/id:' + transaction._id, {
+                method: 'Delete',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                }
+            });
+
+            if (res.status !== 200){
+                return this.displayCustomError('Error during deleting of ' + transaction.name);
+            }
+
             await this.refresh();
         },
     },
@@ -185,8 +229,10 @@ name: "Debts",
             justify-content: space-between;
         }
     }
+}
 
-
+transactions {
+    padding-bottom: 40px;
 }
 
 #totalBalanceCard {
