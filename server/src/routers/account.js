@@ -180,7 +180,10 @@ router.get(baseUrl + '/id::id/transactions', auth, async (req, res) => {
         }
 
         await account.populate({
-            path: 'transactions'
+            path: 'transactions',
+            options: {
+                limit: parseInt(req.query.limit),
+            }
         }).execPopulate();
 
         res.send(account.transactions);
