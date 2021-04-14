@@ -196,17 +196,42 @@ router.post(baseUrl + '/debt', auth, async (req, res) => {
 
 /**
  * API gets list of transactions associated with user
+ * query parameter - type - 'basic', 'invest', 'debt'
  */
 router.get(baseUrl, auth, async (req, res) => {
+
+    const accountTypeQuery = {};
+    const allowedTypes = ['basic', 'invest', 'debt'];
+
+    if (req.query.type) {
+        const typeInRequest = req.query.type.toLowerCase();
+        if (!allowedTypes.includes(typeInRequest)) {
+            return res.status(400).send({ error: 'Invalid params, types can be only ' + allowedTypes.toString() });
+        }
+        accountTypeQuery.type = typeInRequest === 'basic' ? { $in: ['debit','cash', 'credit'] }  : typeInRequest;
+    }
+
+
     try {
 
         await req.user.populate({
-            path: 'transactions'
+            path: 'accounts',
+            match: accountTypeQuery
+        }).execPopulate();
+        const accountIds = req.user.accounts.map(acc => acc._id);
+
+        await req.user.populate({
+            path: 'transactions',
+            match: { accountId: { $in: accountIds } },
+            options: {
+                limit: parseInt(req.query.limit),
+            }
         }).execPopulate();
 
         res.send(req.user.transactions);
 
     } catch (e) {
+        console.log(e)
         res.status(500).send();
     }
 });

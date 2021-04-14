@@ -4,7 +4,7 @@
 
         <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
-                 @click="showTransactionsOfSpecificAccount(account); currentAccount = account" >
+                 @click=" currentAccount = account ; currentLimitOfTransactions = defaultLimitOfTransactions" >
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
@@ -44,6 +44,8 @@
                         <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
                         <span v-if="transaction.type === 'transfer'">{{transaction.type}}</span>
                         {{transaction.subtype}}
+
+
                     </div>
                     <div class="md-subhead" v-if="transaction.name"> {{transaction.name}}</div>
                     <div class="md-subhead" > {{transaction.amount}} {{transaction.currency}}</div>
@@ -62,6 +64,9 @@
 
 
             </md-card>
+
+            <md-button class="md-raised" @click="currentLimitOfTransactions += defaultLimitOfTransactions">Show 10 more</md-button>
+
         </div>
 
         <UpdateOfTransaction v-if="showUpdateBasicTransactionDialog === true"
@@ -110,6 +115,9 @@ export default {
     },
     data() {
         return {
+            defaultLimitOfTransactions: 10,
+            currentLimitOfTransactions: 5,
+
             accountsBalance: [],
             transactions: [],
             listOfCategories: [],
@@ -122,6 +130,16 @@ export default {
             currentTransaction: {}
         }
     },
+    watch: {
+        currentLimitOfTransactions:  async function () {
+
+            if (this.currentAccount === null){
+                return await this.showTransactionsOfAllAccounts();
+            } else {
+                await this.showTransactionsOfSpecificAccount(this.currentAccount);
+            }
+        }
+    },
     methods: {
         showAddAccount(){
             this.showAddAccountDialog = true;
@@ -130,7 +148,7 @@ export default {
             this.showAddAccountDialog = false;
         },
         async showTransactionsOfSpecificAccount(account) {
-            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions', {
+            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions?limit=' + this.currentLimitOfTransactions, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
@@ -193,7 +211,7 @@ export default {
         },
 
         async showTransactionsOfAllAccounts() {
-            const res = await fetch('api/transactions', {
+            const res = await fetch('api/transactions?type=basic&limit=' + this.currentLimitOfTransactions, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
