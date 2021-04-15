@@ -2,6 +2,15 @@
     <div>
         <Header />
 
+        <md-card id="totalBalanceCard" >
+            <md-content>
+                <md-card-header>
+                    <div class="md-title">Total balance:  <span v-if="totalMoney > 0">+ </span> {{totalMoney}} </div>
+                </md-card-header>
+
+            </md-content>
+        </md-card>
+
         <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
                  @click=" currentAccount = account ; currentLimitOfTransactions = defaultLimitOfTransactions" >
@@ -127,6 +136,8 @@ export default {
             defaultLimitOfTransactions: 5,
             currentLimitOfTransactions: 5,
 
+            totalMoney: null,
+
             accountsBalance: [],
             transactions: [],
             listOfCategories: [],
@@ -210,6 +221,8 @@ export default {
             if (result !== 0){
                 return;
             }
+
+            this.totalMoney = await this.getTotalBalanceByAccType('all');
             await this.displayFinancialInfo();
         },
         displayFinancialInfo(){
@@ -250,7 +263,7 @@ export default {
     },
     async created() {
         await this.checkCredentials();
-        await this.displayFinancialInfo();
+        await this.refresh();
     },
 
 }
@@ -258,12 +271,19 @@ export default {
 
 <style lang="scss">
 
+#totalBalanceCard {
+    max-width: 60%;
+    margin: 20px auto;
 
+    @media screen and (max-width: 560px) {
+        max-width: 90%;
+    }
+}
 
 #accounts {
 
     max-width: 60%;
-    margin: 20px auto;
+    margin: 5px auto;
     overflow: scroll;
     display: flex;
     flex-direction: row;

@@ -6,7 +6,7 @@
         <md-card id="totalBalanceCard" v-if="selectedAccount === null">
             <md-content>
                 <md-card-header>
-                    <div class="md-title">Total debts: <span v-if="totalDebtsSum !== null">{{totalDebtsSum}}</span> </div>
+                    <div class="md-title">Total debts:  <span v-if="totalDebtsSum > 0">+ </span> {{totalDebtsSum}} </div>
                 </md-card-header>
 
             </md-content>

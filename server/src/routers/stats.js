@@ -123,7 +123,7 @@ router.get(baseUrl + '/type::type', auth, async (req, res) => {
 router.get(baseUrl + '/balance', auth, async (req, res) => {
 
     const accountTypeQuery = {};
-    const allowedTypes = ['basic', 'invest', 'debt'];
+    const allowedTypes = ['basic', 'invest', 'debt', 'all'];
 
     let typeInRequest = null;
 
@@ -132,7 +132,14 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
         if (!allowedTypes.includes(typeInRequest)) {
             return res.status(400).send({ error: 'Invalid params, types can be only ' + allowedTypes.toString() });
         }
-        accountTypeQuery.type = typeInRequest === 'basic' ? { $in: ['debit','cash', 'credit'] }  : typeInRequest;
+
+        if (typeInRequest === 'basic') {
+            accountTypeQuery.type = { $in: ['debit','cash', 'credit'] };
+        } else if (typeInRequest === 'all') {
+            accountTypeQuery.type = { $in: ['debit','cash', 'credit', 'debt'] };
+        } else {
+            accountTypeQuery.type = typeInRequest;
+        }
     }
 
 
