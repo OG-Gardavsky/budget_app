@@ -8,8 +8,9 @@
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
-                        <div class="md-title">{{account.name}}</div>
-                        <div class="md-subhead">{{account.balance}} {{account.currency}}</div>
+
+                        <div class="md-title"><span v-if="account.balance > 0">+</span> {{account.balance}} {{account.currency}}</div>
+                        <div class="md-subhead">{{account.name}}</div>
                     </md-card-header>
                 </md-card>
             </div>
@@ -294,7 +295,7 @@ export default {
     max-width: 60%;
     margin: 0px auto;
 
-    padding-bottom: 50px;
+    padding-bottom: 60px;
 
     @media screen and (max-width: 560px) {
         max-width: 90%;
