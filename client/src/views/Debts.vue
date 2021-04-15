@@ -54,7 +54,8 @@
 
             <md-card id="accountCard">
                 <md-content >
-                    <md-button class="md-icon-button  md-primary"  @click="selectedAccount = null ; selectedAccountTransactions = null" >
+                    <md-button class="md-icon-button  md-primary"
+                               @click="selectedAccount = null ; selectedAccountTransactions = null ; currentLimitOfTransactions = defaultLimitOfTransactions" >
                         <md-icon>arrow_back_ios</md-icon>
                     </md-button>
                     <div class="md-title">{{selectedAccount.name}}</div>
@@ -99,6 +100,13 @@
                     </md-card-actions>
 
                 </md-card>
+
+                <md-button v-if="selectedAccountTransactions.length % defaultLimitOfTransactions === 0 && selectedAccountTransactions.length === currentLimitOfTransactions"
+                           class="md-raised"
+                           @click="currentLimitOfTransactions += defaultLimitOfTransactions"
+
+                >Show {{defaultLimitOfTransactions}} more</md-button>
+
             </div>
 
 
@@ -132,6 +140,9 @@ name: "Debts",
     components: {AddAccount, UpdateOfTransaction, UpdateAccount, CustomMenu, Header},
     data() {
         return {
+            defaultLimitOfTransactions: 5,
+            currentLimitOfTransactions: 5,
+
             showAddAccountDialog: false,
 
             showUpdateOfTransactionDialog: false,
@@ -146,6 +157,11 @@ name: "Debts",
             selectedAccountTransactions: null
         }
     },
+    watch: {
+        currentLimitOfTransactions:  async function () {
+            await this.showTransactionsOfSpecificAccount(this.selectedAccount);
+        }
+    },
     methods: {
         async refresh() {
             this.accountsBalance = this.showBalanceOfAccounts('debt');
@@ -157,7 +173,7 @@ name: "Debts",
             }
         },
         async showTransactionsOfSpecificAccount(account) {
-            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions', {
+            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions?limit=' + this.currentLimitOfTransactions, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')

@@ -71,7 +71,7 @@
 
             </md-card>
 
-            <md-button v-if="transactions.length % defaultLimitOfTransactions === 0" class="md-raised"
+            <md-button v-if="transactions.length % defaultLimitOfTransactions === 0 && transactions.length === currentLimitOfTransactions" class="md-raised"
                        @click="currentLimitOfTransactions += defaultLimitOfTransactions"
 
                 >Show {{defaultLimitOfTransactions}} more</md-button>
