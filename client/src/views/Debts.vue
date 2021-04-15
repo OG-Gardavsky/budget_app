@@ -16,8 +16,7 @@
 
         <div :key="account.accountId" v-for="account in accountsBalance"
              v-if="selectedAccount === null"
-             @click="selectedAccount = account ; selectedAccount.balance = account.balance; showTransactionsOfSpecificAccount(account) "
-        >
+             @click="selectedAccount = account ; selectedAccount.balance = account.balance; showTransactionsOfSpecificAccount(account)">
             <md-card
                 class="debtAccount" md-with-hover
             >
@@ -33,6 +32,20 @@
             </md-card>
         </div>
 
+        <md-card class="debtAccount" v-if="selectedAccount === null">
+            <md-content>
+                <md-card-header>
+                    <md-button class="md-button md-raised md-primary" @click="showAddAccountDialog = true">Add new  account</md-button>
+                </md-card-header>
+            </md-content>
+        </md-card>
+
+        <add-account
+            :show-add-account-dialog="showAddAccountDialog"
+            @on-closeModal="showAddAccountDialog = false"
+            @on-save="refresh"
+            :account-type="'debt'"
+        />
 
 
 
@@ -58,7 +71,6 @@
                            :account-to-update="selectedAccount"
                            @on-save="refresh" @on-closeModal="showUpdateAccountDialog = false"
             />
-
 
 
 
@@ -114,11 +126,14 @@ import Header from "@/components/Header";
 import CustomMenu from "@/components/CustomMenu";
 import UpdateAccount from "@/components/UpdateAccount";
 import UpdateOfTransaction from "@/components/UpdateOfTransaction";
+import AddAccount from "@/components/AddAccount";
 export default {
 name: "Debts",
-    components: {UpdateOfTransaction, UpdateAccount, CustomMenu, Header},
+    components: {AddAccount, UpdateOfTransaction, UpdateAccount, CustomMenu, Header},
     data() {
         return {
+            showAddAccountDialog: false,
+
             showUpdateOfTransactionDialog: false,
             currentTransaction: null,
 
@@ -138,6 +153,7 @@ name: "Debts",
 
             if (this.selectedAccount !== null) {
                  await this.showTransactionsOfSpecificAccount(this.selectedAccount);
+                 this.selectedAccount = await this.getBalanceForAccount(this.selectedAccount._id);
             }
         },
         async showTransactionsOfSpecificAccount(account) {

@@ -4,7 +4,7 @@
 
         <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
-                 @click=" currentAccount = account ; showTransactionsOfSpecificAccount(account); currentLimitOfTransactions = defaultLimitOfTransactions" >
+                 @click=" currentAccount = account ; currentLimitOfTransactions = defaultLimitOfTransactions" >
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
@@ -20,7 +20,7 @@
                     <md-button class="md-button md-primary" @click="showAddAccount">add <br/> account</md-button>
                 </md-card-content>
             </md-card>
-            <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
+            <add-account :account-type="'basic'" :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
         </md-content>
 
         <div v-if="currentAccount !== null">
@@ -71,7 +71,10 @@
 
             </md-card>
 
-            <md-button class="md-raised" @click="currentLimitOfTransactions += defaultLimitOfTransactions">Show 10 more</md-button>
+            <md-button v-if="transactions.length % defaultLimitOfTransactions === 0" class="md-raised"
+                       @click="currentLimitOfTransactions += defaultLimitOfTransactions"
+
+                >Show {{defaultLimitOfTransactions}} more</md-button>
 
         </div>
 
@@ -121,7 +124,7 @@ export default {
     },
     data() {
         return {
-            defaultLimitOfTransactions: 10,
+            defaultLimitOfTransactions: 5,
             currentLimitOfTransactions: 5,
 
             accountsBalance: [],
@@ -140,7 +143,7 @@ export default {
         currentLimitOfTransactions:  async function () {
 
             if (this.currentAccount === null){
-                return await this.showTransactionsOfAllAccounts();
+                await this.showTransactionsOfAllAccounts();
             } else {
                 await this.showTransactionsOfSpecificAccount(this.currentAccount);
             }
@@ -160,7 +163,6 @@ export default {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
                 }
             });
-            this.transactions = [];
             this.transactions = await res.json();
         },
         async deleteTransaction(transaction){

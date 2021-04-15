@@ -5,7 +5,8 @@
 
             <md-dialog-title>Add Account</md-dialog-title>
 
-            <md-field>
+
+            <md-field v-if="accountType === 'basic'">
                 <label>choose Account type</label>
                 <md-select v-model="type" required>
                     <md-option value="debit">debit</md-option>
@@ -41,8 +42,6 @@
         </md-dialog-content>
 
 
-
-
     </md-dialog >
 </template>
 
@@ -58,7 +57,8 @@ export default {
         }
     },
     props: {
-        showAddAccountDialog: Boolean
+        showAddAccountDialog: Boolean,
+        accountType: String,
     },
     methods: {
         closeDialog(){
@@ -71,6 +71,10 @@ export default {
             this.initialBalance = null;
         },
         async addAccount(){
+
+            if (this.accountType !== 'basic') {
+                this.type = this.accountType;
+            }
 
             if (this.type === null || this.name === null || this.currency === null) {
                 return this.displayCustomError('Please fill all fields');
