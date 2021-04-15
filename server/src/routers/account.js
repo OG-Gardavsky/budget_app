@@ -166,6 +166,43 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
     }
 });
 
+router.get(baseUrl + '/id::id/balance', auth, async (req, res) => {
+    const accountId = req.params.id;
+
+    try {
+        const account = await Account.findOne({_id: accountId, owner: req.user._id});
+
+        if (!account) {
+            return res.status(404).send();
+        }
+
+        const transactionSum = await Transaction.aggregate([
+                { $match: { owner: req.user._id, accountId: account._id } },
+                {"$group" :
+                        {
+                            _id: 1,
+                            sum: { $sum: '$amount' }
+                        }
+                }
+            ],
+            (e) => {
+                if (e) {
+                    throw new Error('error in DB agregation');
+                }
+            }
+        );
+
+
+        const accountBalance = Number(transactionSum[0].sum) + Number(account.initialBalance);
+
+        res.send({ _id: account._id, name: account.name, balance: accountBalance, currency: account.currency, initialBalance: account.initialBalance })
+
+    } catch (e) {
+        res.status(500).send();
+    }
+});
+
+
 /**
  * API gets details of one given transaction
  */
