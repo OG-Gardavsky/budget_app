@@ -85,7 +85,12 @@
                             <div class="md-title"> <span v-if="transaction.amount > 0">+ </span> {{transaction.amount}} {{transaction.currency}}</div>
                         </div>
 
-                        <div class="md-subhead">{{transaction.name}}</div>
+
+                        <div style="display: flex; justify-content: space-between">
+                            <div class="md-subhead" > {{transaction.name}}</div>
+                            <div class="md-subhead"> {{  parseDate(transaction.accountingDate) }}    </div>
+                        </div>
+
 
                     </md-content>
 
@@ -140,6 +145,8 @@ name: "Debts",
     components: {AddAccount, UpdateOfTransaction, UpdateAccount, CustomMenu, Header},
     data() {
         return {
+            sortTransactionsBy: 'desc',
+
             defaultLimitOfTransactions: 5,
             currentLimitOfTransactions: 5,
 
@@ -173,7 +180,7 @@ name: "Debts",
             }
         },
         async showTransactionsOfSpecificAccount(account) {
-            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions?limit=' + this.currentLimitOfTransactions, {
+            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions?limit=' + this.currentLimitOfTransactions + '&sort=' + this.sortTransactionsBy, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')

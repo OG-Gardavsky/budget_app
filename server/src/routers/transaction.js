@@ -201,6 +201,7 @@ router.post(baseUrl + '/debt', auth, async (req, res) => {
 router.get(baseUrl, auth, async (req, res) => {
 
     const accountTypeQuery = {};
+    const sort = {};
     const allowedTypes = ['basic', 'invest', 'debt'];
 
     if (req.query.type) {
@@ -209,6 +210,10 @@ router.get(baseUrl, auth, async (req, res) => {
             return res.status(400).send({ error: 'Invalid params, types can be only ' + allowedTypes.toString() });
         }
         accountTypeQuery.type = typeInRequest === 'basic' ? { $in: ['debit','cash', 'credit'] }  : typeInRequest;
+    }
+
+    if (req.query.sort) {
+        sort.accountingDate = req.query.sort;
     }
 
 
@@ -225,6 +230,7 @@ router.get(baseUrl, auth, async (req, res) => {
             match: { accountId: { $in: accountIds } },
             options: {
                 limit: parseInt(req.query.limit),
+                sort
             }
         }).execPopulate();
 
