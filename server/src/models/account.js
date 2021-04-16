@@ -54,21 +54,20 @@ accountSchema.pre('remove', async function (next) {
 const Account = mongoose.model('Account', accountSchema);
 
 
-// /**
-//  *
-//  * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
-//  */
-// const cashSchema = new mongoose.Schema({
-//     initialBalance: {
-//         type: Number,
-//         required: true,
-//         default: 0
-//     }
-// },
-//     options
-// );
-//
-// Account.discriminator('cash', cashSchema);
+/**
+ *
+ * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+ */
+const creditSchema = new mongoose.Schema({
+    limit: {
+        type: Number,
+        required: true
+    }
+},
+    options
+);
+
+Account.discriminator('credit', creditSchema);
 
 /**
  * TODO credit card

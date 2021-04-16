@@ -32,13 +32,15 @@
             </md-card>
         </div>
 
-        <md-card class="debtAccount" v-if="selectedAccount === null">
-            <md-content>
-                <md-card-header>
-                    <md-button class="md-button md-raised md-primary" @click="showAddAccountDialog = true">Add new  account</md-button>
-                </md-card-header>
-            </md-content>
-        </md-card>
+        <div style="padding-bottom: 60px">
+            <md-card class="debtAccount" v-if="selectedAccount === null" >
+                <md-content>
+                    <md-card-header>
+                        <md-button class="md-button md-raised md-primary" @click="showAddAccountDialog = true">Add new  account</md-button>
+                    </md-card-header>
+                </md-content>
+            </md-card>
+        </div>
 
         <add-account
             :show-add-account-dialog="showAddAccountDialog"

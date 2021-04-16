@@ -2,7 +2,7 @@
     <div>
         <Header />
 
-        <div id="menuItems">
+        <div id="menuItems" style="padding-bottom: 50px">
 
             <router-link to="categories">
                 <md-card md-with-hover>

@@ -19,6 +19,7 @@
                     <md-card-header>
 
                         <div class="md-title"><span v-if="account.balance > 0">+</span> {{account.balance}} {{account.currency}}</div>
+                        <div v-if="account.limit">limit: {{account.limit}} {{account.currency}}</div>
                         <div class="md-subhead">{{account.name}}</div>
                     </md-card-header>
                 </md-card>
