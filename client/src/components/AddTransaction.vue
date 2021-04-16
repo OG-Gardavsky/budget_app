@@ -1,6 +1,6 @@
 <template>
     <div>
-        <md-dialog :md-active.sync="showAddTransactionDialog">
+        <md-dialog :md-active.sync="showAddTransactionDialog"  class="md-scrollbar" style="padding-bottom: 50px" >
 
             <md-dialog-title>Add transaction</md-dialog-title>
 
@@ -274,7 +274,9 @@ export default {
     },
     async created() {
 
-        this.accountingDate = new Date();
+        this.accountingDate = new Date().toLocaleString();
+
+
 
         this.listOfBasicAccounts = await this.getListOfSpecificAccounts('basic');
         await this.getListOfCategories();

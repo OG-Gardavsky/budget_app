@@ -1,5 +1,5 @@
 <template>
-    <md-dialog :md-active.sync="showAddAccountDialog">
+    <md-dialog :md-active.sync="showAddAccountDialog" class="md-scrollbar" style="padding-bottom: 50px">
 
         <md-dialog-content>
 
@@ -23,6 +23,11 @@
             <md-field>
                 <label>Enter initial balance of Account</label>
                 <md-input type="number" v-model="initialBalance" placeholder="Initial Balance" required />
+            </md-field>
+
+            <md-field v-if="type === 'credit'">
+                <label>Enter limit of your credit account</label>
+                <md-input type="number" v-model="creditLimit" placeholder="Credit limit" required />
             </md-field>
 
             <md-field>
@@ -53,7 +58,8 @@ export default {
             type: null,
             name: null,
             currency: null,
-            initialBalance: null
+            initialBalance: null,
+            creditLimit: null,
         }
     },
     props: {
@@ -80,11 +86,28 @@ export default {
                 return this.displayCustomError('Please fill all fields');
             }
 
+            if (this.type === 'credit' && this.creditLimit === null) {
+                return this.displayCustomError('Please fill credit limit ');
+            }
+
+            if (this.type === 'credit' && this.creditLimit < 0) {
+                return this.displayCustomError('credit limit nedds to be more than 0.');
+            }
+
+            if (this.type === 'credit' && this.initialBalance > 0) {
+                return this.displayCustomError('initialBalance nedds to be less than 0.');
+            }
+
+
             const body = {
                 type: this.type,
                 name: this.name,
                 currency: this.currency,
                 initialBalance: this.initialBalance
+            }
+
+            if (this.type === 'credit') {
+                body.limit = this.creditLimit;
             }
 
             const res = await fetch('api/accounts', {

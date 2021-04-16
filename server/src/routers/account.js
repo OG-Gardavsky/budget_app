@@ -86,7 +86,7 @@ router.put(baseUrl + '/id::id' , auth, async (req, res) => {
     const accountId = req.params.id;
 
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['name', 'type', 'initialBalance', 'currency'];
+    const allowedUpdates = ['name', 'type', 'initialBalance', 'currency', 'limit'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
     if (!isValidOperation) {
@@ -157,12 +157,15 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
             const match = accountsBalance.find(obj => obj._id.toString() === account._id.toString());
             let balance = !match ? Number(0) : Number(match.balance);
             balance = balance + Number(account.initialBalance);
-            accountsToSend.push( { _id: account._id, name: account.name, balance: balance,  currency: account.currency, initialBalance: account.initialBalance} );
+            const accountBody = { _id: account._id, name: account.name, balance: balance,  currency: account.currency, initialBalance: account.initialBalance, type: account.type};
+            if (account.type === 'credit') {  accountBody.limit = account.limit + balance   }
+            accountsToSend.push(accountBody);
         });
 
         res.send(accountsToSend);
     } catch (e) {
         res.status(500).send(e);
+        console.log(e)
     }
 });
 
@@ -221,16 +224,20 @@ router.get(baseUrl + '/id::id/transactions', auth, async (req, res) => {
             return res.status(404).send();
         }
 
-        await account.populate({
+        console.log({account})
+
+        await req.user.populate({
             path: 'transactions',
+            match: { accountId: account._id },
             options: {
                 limit: parseInt(req.query.limit),
                 sort
             }
         }).execPopulate();
 
-        res.send(account.transactions);
+        res.send(req.user.transactions);
     } catch (e) {
+        console.log(e)
         res.status(500).send();
     }
 });
