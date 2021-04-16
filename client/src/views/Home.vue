@@ -13,7 +13,7 @@
 
         <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
-                 @click=" currentAccount = account ; currentLimitOfTransactions = defaultLimitOfTransactions" >
+                 @click=" currentAccount = account ;  currentLimitOfTransactions = defaultLimitOfTransactions" >
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
@@ -62,7 +62,12 @@
                         <div> <span v-if="transaction.amount > 0">+</span> {{transaction.amount}} {{transaction.currency}}</div>
 
                     </div>
-                    <div class="md-subhead" v-if="transaction.name"> {{transaction.name}}</div>
+
+                    <div style="display: flex; justify-content: space-between">
+                        <div class="md-subhead" > {{transaction.name}}</div>
+                        <div class="md-subhead"> {{  parseDate(transaction.accountingDate) }}    </div>
+                    </div>
+
 
                 </md-card-header>
                 <md-card-actions>
@@ -133,6 +138,8 @@ export default {
     },
     data() {
         return {
+            sortTransactionsBy: 'desc',
+
             defaultLimitOfTransactions: 5,
             currentLimitOfTransactions: 5,
 
@@ -158,6 +165,9 @@ export default {
             } else {
                 await this.showTransactionsOfSpecificAccount(this.currentAccount);
             }
+        },
+        currentAccount: function() {
+            this.showTransactionsOfSpecificAccount(this.currentAccount);
         }
     },
     methods: {
@@ -168,7 +178,7 @@ export default {
             this.showAddAccountDialog = false;
         },
         async showTransactionsOfSpecificAccount(account) {
-            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions?limit=' + this.currentLimitOfTransactions, {
+            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions?limit=' + this.currentLimitOfTransactions + '&sort=' + this.sortTransactionsBy, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
@@ -232,7 +242,7 @@ export default {
         },
 
         async showTransactionsOfAllAccounts() {
-            const res = await fetch('api/transactions?type=basic&limit=' + this.currentLimitOfTransactions, {
+            const res = await fetch('api/transactions?type=basic&limit=' + this.currentLimitOfTransactions + '&sort=' + this.sortTransactionsBy, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')

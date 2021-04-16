@@ -209,6 +209,11 @@ router.get(baseUrl + '/id::id/balance', auth, async (req, res) => {
 router.get(baseUrl + '/id::id/transactions', auth, async (req, res) => {
     const accountId = req.params.id;
 
+    const sort = {};
+    if (req.query.sort) {
+        sort.accountingDate = req.query.sort;
+    }
+
     try {
         const account = await Account.findOne({_id: accountId, owner: req.user._id});
 
@@ -220,6 +225,7 @@ router.get(baseUrl + '/id::id/transactions', auth, async (req, res) => {
             path: 'transactions',
             options: {
                 limit: parseInt(req.query.limit),
+                sort
             }
         }).execPopulate();
 

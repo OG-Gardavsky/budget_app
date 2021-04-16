@@ -18,6 +18,10 @@ Vue.mixin({
         }
     },
     methods: {
+        parseDate (dateToParse) {
+            let date = new Date(dateToParse);
+            return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
+        },
         displayCustomError(errorMesage) {
             alert(errorMesage);
         },
