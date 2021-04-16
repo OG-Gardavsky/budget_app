@@ -40,9 +40,9 @@
             </md-card-content>
         </md-card>
 
-        <div id="chartCard">
-            <md-card v-if="doughnutChartData.labels !== null" >
-                <mdb-doughnut-chart id="chart" v-if="doughnutChartData.labels !== null"
+        <div id="chartCard" v-if="doughnutChartData.labels !== null" >
+            <md-card >
+                <mdb-doughnut-chart id="chart"
                                     :data="doughnutChartData"
                                     :options="doughnutChartOptions"
                 ></mdb-doughnut-chart>
@@ -152,11 +152,21 @@ export default {
                 return this.displayCustomError('Error during loading statistics');
             }
 
-            const data = await res.json();
-            this.statDataByCategory = data;
 
-            this.doughnutChartData.labels = data.map(category => category.categoryName);
-            this.doughnutChartData.datasets[0].data = data.map(category => category.sum);
+
+            if (res.status !== 200) {
+                return this.displayCustomError('Error during loading statistics');
+            }
+
+            const data = await res.json();
+
+            if (data.length > 0) {
+                this.doughnutChartData.labels = data.map(category => category.categoryName);
+                this.doughnutChartData.datasets[0].data = data.map(category => category.sum);
+            }
+
+
+
         },
         async getTotalSum() {
             const res = await fetch('api/stats/total/type:' + this.transactionType + '?month=' + this.currentMonth + '&year=' + this.currentYear, {
