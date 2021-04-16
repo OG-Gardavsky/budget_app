@@ -2,14 +2,24 @@
     <div>
         <Header />
 
+        <md-card id="totalBalanceCard" >
+            <md-content>
+                <md-card-header>
+                    <div class="md-title">Total balance:  <span v-if="totalMoney > 0">+ </span> {{totalMoney}} </div>
+                </md-card-header>
+
+            </md-content>
+        </md-card>
+
         <md-content class="md-scrollbar" id="accounts">
             <div :key="account.accountId" v-for="account in accountsBalance"
-                 @click="showTransactionsOfSpecificAccount(account); currentAccount = account" >
+                 @click=" currentAccount = account ;  currentLimitOfTransactions = defaultLimitOfTransactions" >
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
-                        <div class="md-title">{{account.name}}</div>
-                        <div class="md-subhead">{{account.balance}} {{account.currency}}</div>
+
+                        <div class="md-title"><span v-if="account.balance > 0">+</span> {{account.balance}} {{account.currency}}</div>
+                        <div class="md-subhead">{{account.name}}</div>
                     </md-card-header>
                 </md-card>
             </div>
@@ -19,7 +29,7 @@
                     <md-button class="md-button md-primary" @click="showAddAccount">add <br/> account</md-button>
                 </md-card-content>
             </md-card>
-            <add-account :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
+            <add-account :account-type="'basic'" :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
         </md-content>
 
         <div v-if="currentAccount !== null">
@@ -40,13 +50,25 @@
         <div id="transactions">
             <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions" >
                 <md-card-header>
-                    <div class="md-title">
-                        <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
-                        <span v-if="transaction.type === 'transfer'">{{transaction.type}}</span>
-                        {{transaction.subtype}}
+                    <div class="md-title" style="display: flex; justify-content: space-between">
+
+                        <div>
+                            <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
+                            <span v-if="transaction.type === 'transfer'">{{transaction.type}}</span>
+                            {{transaction.subtype}}
+                        </div>
+
+
+                        <div> <span v-if="transaction.amount > 0">+</span> {{transaction.amount}} {{transaction.currency}}</div>
+
                     </div>
-                    <div class="md-subhead" v-if="transaction.name"> {{transaction.name}}</div>
-                    <div class="md-subhead" > {{transaction.amount}} {{transaction.currency}}</div>
+
+                    <div style="display: flex; justify-content: space-between">
+                        <div class="md-subhead" > {{transaction.name}}</div>
+                        <div class="md-subhead"> {{  parseDate(transaction.accountingDate) }}    </div>
+                    </div>
+
+
                 </md-card-header>
                 <md-card-actions>
                     <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
@@ -62,6 +84,12 @@
 
 
             </md-card>
+
+            <md-button v-if="transactions.length % defaultLimitOfTransactions === 0 && transactions.length === currentLimitOfTransactions" class="md-raised"
+                       @click="currentLimitOfTransactions += defaultLimitOfTransactions"
+
+                >Show {{defaultLimitOfTransactions}} more</md-button>
+
         </div>
 
         <UpdateOfTransaction v-if="showUpdateBasicTransactionDialog === true"
@@ -110,6 +138,13 @@ export default {
     },
     data() {
         return {
+            sortTransactionsBy: 'desc',
+
+            defaultLimitOfTransactions: 5,
+            currentLimitOfTransactions: 5,
+
+            totalMoney: null,
+
             accountsBalance: [],
             transactions: [],
             listOfCategories: [],
@@ -122,6 +157,19 @@ export default {
             currentTransaction: {}
         }
     },
+    watch: {
+        currentLimitOfTransactions:  async function () {
+
+            if (this.currentAccount === null){
+                await this.showTransactionsOfAllAccounts();
+            } else {
+                await this.showTransactionsOfSpecificAccount(this.currentAccount);
+            }
+        },
+        currentAccount: function() {
+            this.showTransactionsOfSpecificAccount(this.currentAccount);
+        }
+    },
     methods: {
         showAddAccount(){
             this.showAddAccountDialog = true;
@@ -130,13 +178,12 @@ export default {
             this.showAddAccountDialog = false;
         },
         async showTransactionsOfSpecificAccount(account) {
-            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions', {
+            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions?limit=' + this.currentLimitOfTransactions + '&sort=' + this.sortTransactionsBy, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
                 }
             });
-            this.transactions = [];
             this.transactions = await res.json();
         },
         async deleteTransaction(transaction){
@@ -184,6 +231,8 @@ export default {
             if (result !== 0){
                 return;
             }
+
+            this.totalMoney = await this.getTotalBalanceByAccType('all');
             await this.displayFinancialInfo();
         },
         displayFinancialInfo(){
@@ -193,7 +242,7 @@ export default {
         },
 
         async showTransactionsOfAllAccounts() {
-            const res = await fetch('api/transactions', {
+            const res = await fetch('api/transactions?type=basic&limit=' + this.currentLimitOfTransactions + '&sort=' + this.sortTransactionsBy, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
@@ -224,7 +273,7 @@ export default {
     },
     async created() {
         await this.checkCredentials();
-        await this.displayFinancialInfo();
+        await this.refresh();
     },
 
 }
@@ -232,12 +281,19 @@ export default {
 
 <style lang="scss">
 
+#totalBalanceCard {
+    max-width: 60%;
+    margin: 20px auto;
 
+    @media screen and (max-width: 560px) {
+        max-width: 90%;
+    }
+}
 
 #accounts {
 
     max-width: 60%;
-    margin: 20px auto;
+    margin: 5px auto;
     overflow: scroll;
     display: flex;
     flex-direction: row;
@@ -271,7 +327,7 @@ export default {
     max-width: 60%;
     margin: 0px auto;
 
-    padding-bottom: 50px;
+    padding-bottom: 60px;
 
     @media screen and (max-width: 560px) {
         max-width: 90%;

@@ -18,6 +18,10 @@ Vue.mixin({
         }
     },
     methods: {
+        parseDate (dateToParse) {
+            let date = new Date(dateToParse);
+            return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
+        },
         displayCustomError(errorMesage) {
             alert(errorMesage);
         },
@@ -102,6 +106,22 @@ Vue.mixin({
             const sumObject = await res.json();
 
             return sumObject.length === 0 ? 0 : sumObject.sum;
+        },
+        async getBalanceForAccount(accountId) {
+            const res = await fetch('api/accounts/id:' + accountId + '/balance', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                },
+            });
+
+            if (res.status !== 200) {
+                return this.displayCustomError('Error during loading account balance');
+            }
+
+            const sumObject = await res.json();
+
+            return sumObject;
         }
     },
 })

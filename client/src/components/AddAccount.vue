@@ -1,46 +1,47 @@
 <template>
     <md-dialog :md-active.sync="showAddAccountDialog">
 
-        <md-dialog-title>Add Account</md-dialog-title>
+        <md-dialog-content>
 
-        <md-tabs md-dynamic-height>
+            <md-dialog-title>Add Account</md-dialog-title>
 
-            <md-tab md-label="basic">
-                <md-field>
-                    <label>choose Account type</label>
-                    <md-select v-model="type" required>
-                        <md-option value="debit">debit</md-option>
-                        <md-option value="credit">credit</md-option>
-                        <md-option value="cash">cash</md-option>
-                    </md-select>
-                </md-field>
 
-                <md-field>
-                    <label>Enter Name for Account</label>
-                    <md-input type="text" v-model="name" placeholder="Name" required />
-                </md-field>
+            <md-field v-if="accountType === 'basic'">
+                <label>choose Account type</label>
+                <md-select v-model="type" required>
+                    <md-option value="debit">debit</md-option>
+                    <md-option value="credit">credit</md-option>
+                    <md-option value="cash">cash</md-option>
+                </md-select>
+            </md-field>
 
-                <md-field>
-                    <label>Enter initial balance of Account</label>
-                    <md-input type="number" v-model="initialBalance" placeholder="Initial Balance" required />
-                </md-field>
+            <md-field>
+                <label>Enter Name for Account</label>
+                <md-input type="text" v-model="name" placeholder="Name" required />
+            </md-field>
 
-                <md-field>
-                    <label>Currency </label>
-                    <md-select v-model="currency" required>
-                        <md-option value="CZK">CZK</md-option>
-                        <md-option value="USD">USD</md-option>
-                        <md-option value="EUR">EUR</md-option>
-                    </md-select>
-                </md-field>
+            <md-field>
+                <label>Enter initial balance of Account</label>
+                <md-input type="number" v-model="initialBalance" placeholder="Initial Balance" required />
+            </md-field>
 
-                <md-dialog-actions>
-                    <md-button class="md-primary" @click="closeDialog">Close</md-button>
-                    <md-button class="md-primary" @click="addAccount">add account</md-button>
-                </md-dialog-actions>
-            </md-tab>
+            <md-field>
+                <label>Currency </label>
+                <md-select v-model="currency" required>
+                    <md-option value="CZK">CZK</md-option>
+                    <md-option value="USD">USD</md-option>
+                    <md-option value="EUR">EUR</md-option>
+                </md-select>
+            </md-field>
 
-        </md-tabs>
+            <md-dialog-actions>
+                <md-button class="md-primary" @click="closeDialog">Close</md-button>
+                <md-button class="md-primary" @click="addAccount">add account</md-button>
+            </md-dialog-actions>
+
+        </md-dialog-content>
+
+
     </md-dialog >
 </template>
 
@@ -56,7 +57,8 @@ export default {
         }
     },
     props: {
-        showAddAccountDialog: Boolean
+        showAddAccountDialog: Boolean,
+        accountType: String,
     },
     methods: {
         closeDialog(){
@@ -69,6 +71,10 @@ export default {
             this.initialBalance = null;
         },
         async addAccount(){
+
+            if (this.accountType !== 'basic') {
+                this.type = this.accountType;
+            }
 
             if (this.type === null || this.name === null || this.currency === null) {
                 return this.displayCustomError('Please fill all fields');

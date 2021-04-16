@@ -6,7 +6,7 @@
         <md-card id="totalBalanceCard" v-if="selectedAccount === null">
             <md-content>
                 <md-card-header>
-                    <div class="md-title">Total debts: <span v-if="totalDebtsSum !== null">{{totalDebtsSum}}</span> </div>
+                    <div class="md-title">Total debts:  <span v-if="totalDebtsSum > 0">+ </span> {{totalDebtsSum}} </div>
                 </md-card-header>
 
             </md-content>
@@ -16,8 +16,7 @@
 
         <div :key="account.accountId" v-for="account in accountsBalance"
              v-if="selectedAccount === null"
-             @click="selectedAccount = account ; selectedAccount.balance = account.balance; showTransactionsOfSpecificAccount(account) "
-        >
+             @click="selectedAccount = account ; selectedAccount.balance = account.balance; showTransactionsOfSpecificAccount(account)">
             <md-card
                 class="debtAccount" md-with-hover
             >
@@ -33,6 +32,20 @@
             </md-card>
         </div>
 
+        <md-card class="debtAccount" v-if="selectedAccount === null">
+            <md-content>
+                <md-card-header>
+                    <md-button class="md-button md-raised md-primary" @click="showAddAccountDialog = true">Add new  account</md-button>
+                </md-card-header>
+            </md-content>
+        </md-card>
+
+        <add-account
+            :show-add-account-dialog="showAddAccountDialog"
+            @on-closeModal="showAddAccountDialog = false"
+            @on-save="refresh"
+            :account-type="'debt'"
+        />
 
 
 
@@ -41,7 +54,8 @@
 
             <md-card id="accountCard">
                 <md-content >
-                    <md-button class="md-icon-button  md-primary"  @click="selectedAccount = null ; selectedAccountTransactions = null" >
+                    <md-button class="md-icon-button  md-primary"
+                               @click="selectedAccount = null ; selectedAccountTransactions = null ; currentLimitOfTransactions = defaultLimitOfTransactions" >
                         <md-icon>arrow_back_ios</md-icon>
                     </md-button>
                     <div class="md-title">{{selectedAccount.name}}</div>
@@ -61,7 +75,6 @@
 
 
 
-
             <div id="transactions">
                 <md-card :key="transaction._id" v-for="transaction in selectedAccountTransactions" md-with-hover>
 
@@ -72,7 +85,12 @@
                             <div class="md-title"> <span v-if="transaction.amount > 0">+ </span> {{transaction.amount}} {{transaction.currency}}</div>
                         </div>
 
-                        <div class="md-subhead">{{transaction.name}}</div>
+
+                        <div style="display: flex; justify-content: space-between">
+                            <div class="md-subhead" > {{transaction.name}}</div>
+                            <div class="md-subhead"> {{  parseDate(transaction.accountingDate) }}    </div>
+                        </div>
+
 
                     </md-content>
 
@@ -87,6 +105,13 @@
                     </md-card-actions>
 
                 </md-card>
+
+                <md-button v-if="selectedAccountTransactions.length % defaultLimitOfTransactions === 0 && selectedAccountTransactions.length === currentLimitOfTransactions"
+                           class="md-raised"
+                           @click="currentLimitOfTransactions += defaultLimitOfTransactions"
+
+                >Show {{defaultLimitOfTransactions}} more</md-button>
+
             </div>
 
 
@@ -114,11 +139,19 @@ import Header from "@/components/Header";
 import CustomMenu from "@/components/CustomMenu";
 import UpdateAccount from "@/components/UpdateAccount";
 import UpdateOfTransaction from "@/components/UpdateOfTransaction";
+import AddAccount from "@/components/AddAccount";
 export default {
 name: "Debts",
-    components: {UpdateOfTransaction, UpdateAccount, CustomMenu, Header},
+    components: {AddAccount, UpdateOfTransaction, UpdateAccount, CustomMenu, Header},
     data() {
         return {
+            sortTransactionsBy: 'desc',
+
+            defaultLimitOfTransactions: 5,
+            currentLimitOfTransactions: 5,
+
+            showAddAccountDialog: false,
+
             showUpdateOfTransactionDialog: false,
             currentTransaction: null,
 
@@ -131,6 +164,11 @@ name: "Debts",
             selectedAccountTransactions: null
         }
     },
+    watch: {
+        currentLimitOfTransactions:  async function () {
+            await this.showTransactionsOfSpecificAccount(this.selectedAccount);
+        }
+    },
     methods: {
         async refresh() {
             this.accountsBalance = this.showBalanceOfAccounts('debt');
@@ -138,10 +176,11 @@ name: "Debts",
 
             if (this.selectedAccount !== null) {
                  await this.showTransactionsOfSpecificAccount(this.selectedAccount);
+                 this.selectedAccount = await this.getBalanceForAccount(this.selectedAccount._id);
             }
         },
         async showTransactionsOfSpecificAccount(account) {
-            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions', {
+            const res = await fetch('api/accounts/id:' + account._id.toString() + '/transactions?limit=' + this.currentLimitOfTransactions + '&sort=' + this.sortTransactionsBy, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
