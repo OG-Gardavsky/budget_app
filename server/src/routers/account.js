@@ -106,7 +106,6 @@ router.put(baseUrl + '/id::id' , auth, async (req, res) => {
 
     } catch (e) {
         res.status(500).send(e);
-        console.log(e)
     }
 });
 
@@ -159,13 +158,13 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
             balance = balance + Number(account.initialBalance);
             const accountBody = { _id: account._id, name: account.name, balance: balance,  currency: account.currency, initialBalance: account.initialBalance, type: account.type};
             if (account.type === 'credit') {  accountBody.limit = account.limit + balance   }
+            if (account.type === 'invest') {  accountBody.moneyType = account.moneyType  }
             accountsToSend.push(accountBody);
         });
 
         res.send(accountsToSend);
     } catch (e) {
         res.status(500).send(e);
-        console.log(e)
     }
 });
 
@@ -224,8 +223,6 @@ router.get(baseUrl + '/id::id/transactions', auth, async (req, res) => {
             return res.status(404).send();
         }
 
-        console.log({account})
-
         await req.user.populate({
             path: 'transactions',
             match: { accountId: account._id },
@@ -237,7 +234,6 @@ router.get(baseUrl + '/id::id/transactions', auth, async (req, res) => {
 
         res.send(req.user.transactions);
     } catch (e) {
-        console.log(e)
         res.status(500).send();
     }
 });
