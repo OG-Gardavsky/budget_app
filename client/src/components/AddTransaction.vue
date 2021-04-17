@@ -353,7 +353,7 @@ export default {
     },
     async created() {
 
-        this.accountingDate = new Date().toLocaleString();
+        this.accountingDate = new Date(Date.now());
 
 
         this.listOfBasicAccounts = await this.getListOfSpecificAccounts('basic');
