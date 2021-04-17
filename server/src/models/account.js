@@ -18,7 +18,7 @@ const accountSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        enum: ['CZK', 'USD', 'EUR']
+        enum: ['CZK', 'USD', 'EUR', 'BTC']
     },
     initialBalance: {
         type: Number,
@@ -40,7 +40,7 @@ accountSchema.virtual('transactions', {
     foreignField: 'accountId'
 });
 
-//pre-save - at je to jmenove unikatni per user
+
 
 /**
  * removing transactions with account
@@ -69,11 +69,26 @@ const creditSchema = new mongoose.Schema({
 
 Account.discriminator('credit', creditSchema);
 
+
 /**
- * TODO credit card
- * params initial balace + limit
- *  check for initial balance < limit
+ *
+ * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
  */
+const longTermSchema = new mongoose.Schema({
+        moneyType: {
+            type: String,
+            required: true,
+            enum: ['fiat', 'crypto']
+        }
+    },
+    options
+);
+
+Account.discriminator('invest', longTermSchema);
+
+
+
+
 
 
 

@@ -13,7 +13,7 @@
             </router-link>
 
 
-            <router-link to="blank" >
+            <router-link to="invests" >
                 <md-card md-with-hover>
                         <md-card-header>
                             <div class="md-title">Investments</div>
@@ -53,5 +53,19 @@ export default {
 <style lang="scss" scoped>
     router-link {
         margin: 5px;
+    }
+
+    .md-card {
+        max-width: 60%;
+        margin: 20px auto;
+
+        @media screen and (max-width: 560px) {
+            max-width: 90%;
+        }
+
+        .md-card {
+            padding: 10px;
+            margin: 10px 0;
+        }
     }
 </style>

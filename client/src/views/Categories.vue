@@ -99,21 +99,19 @@ export default {
 </script>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 #categories {
-    align-items: center;
-    max-width: 60%;
-    margin: 0px auto;
-
     padding-bottom: 60px;
+}
+
+
+.md-card {
+    max-width: 60%;
+    margin: 10px auto;
 
     @media screen and (max-width: 560px) {
         max-width: 90%;
-    }
-
-    #categoryCard{
-        display: flex;
     }
 }
 
