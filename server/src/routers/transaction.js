@@ -195,6 +195,88 @@ router.post(baseUrl + '/debt', auth, async (req, res) => {
 });
 
 /**
+ * API takes care of invest
+ */
+router.post(baseUrl + '/invests', auth, async (req, res) => {
+
+    const receivedBodyKeys = Object.keys(req.body);
+    let requiredBodyKeys = ['subtype', 'basicAccountId', 'investAccountId', 'amount', 'accountingDate'];
+    if (receivedBodyKeys.includes('name')) { requiredBodyKeys.push('name')}
+    const isValidOperation = requiredBodyKeys.every(key => receivedBodyKeys.includes(key));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request need to be theese fields ' + requiredBodyKeys.toString()});
+    }
+
+    if (req.body.amount < 0) {
+        return res.status(400).send({ error: 'Amount has to be > 0' } );
+    }
+
+    if ( !['deposit', 'withdrawal'].includes(req.body.subtype) ) {
+        return res.status(400).send({ error: "invalid subtype, should be just 'lend' or 'borrow'"});
+    }
+
+    try {
+        await req.user.populate({
+            path: 'accounts',
+            match: {
+                _id: { $in: [req.body.basicAccountId, req.body.investAccountId] }
+            }
+        }).execPopulate();
+
+
+        if (req.user.accounts.length !== 2) {
+            return res.status(400).send({ error: 'invalid account IDs entered'});
+        }
+
+        const basicAccount = req.user.accounts.find(acc => acc._id.toString() === req.body.basicAccountId.toString())
+        const investAccount = req.user.accounts.find(acc => acc._id.toString() === req.body.investAccountId.toString())
+
+        if (!['credit', 'debit', 'cash'].includes(basicAccount.type) ) {
+            return res.status(400).send({ error: 'basicAccountId should correspond to ID of account type: debit, credit cash'});
+        }  else if (investAccount.type !== 'invest') {
+            return res.status(400).send({ error: 'investAccountId should correspond to ID of account type: invest'});
+        }
+
+        const sharedId = ObjectID();
+        const commonTransactionBody = {
+            type: 'invests',
+            subtype: req.body.subtype,
+            sharedId,
+            owner: req.user._id
+        }
+
+        if (req.body.accountingDate) {
+            commonTransactionBody.accountingDate = req.body.accountingDate;
+        }
+
+        if (req.body.name) {
+            commonTransactionBody.name = req.body.name;
+        }
+
+        const basicAccountTransactionBody = Object.assign({}, commonTransactionBody) ;
+        basicAccountTransactionBody.amount = req.body.subtype === 'deposit' ? req.body.amount * (-1) : req.body.amount;
+        basicAccountTransactionBody.accountId = basicAccount._id;
+
+        const investAccountTransactionBody = Object.assign({}, commonTransactionBody);
+        investAccountTransactionBody.amount = req.body.subtype === 'withdrawal' ? req.body.amount * (-1) : req.body.amount;
+        investAccountTransactionBody.accountId = investAccount._id;
+
+
+        const basicTransaction = new Transaction(basicAccountTransactionBody);
+        const debtTransaction = new Transaction(investAccountTransactionBody);
+
+        await basicTransaction.save();
+        await debtTransaction.save();
+
+        res.status(201).send({message: 'investment was successfully created.', basicTransaction, debtTransaction});
+
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+/**
  * API gets list of transactions associated with user
  * query parameter - type - 'basic', 'invest', 'debt'
  */
@@ -313,6 +395,50 @@ router.get(baseUrl + '/debt/sharedId::id', auth, async (req, res) => {
         res.status(500).send();
     }
 });
+
+
+/**
+ *
+ */
+router.get(baseUrl + '/invests/sharedId::id', auth, async (req, res) => {
+    const sharedId = req.params.id;
+
+    try {
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'invests'});
+
+
+        if (transactions.length !== 2){
+            return res.status(400).send({ error: 'Entered transaction does not exist.'});
+        }
+
+        const bodyToSend = {};
+
+        await req.user.populate({
+            path: 'accounts'
+        }).execPopulate();
+
+        const basicAccountsIds = req.user.accounts.filter(acc => ['credit', 'debit', 'cash'].includes(acc.type)).map(acc => acc._id.toString());
+        const investAccountsIds = req.user.accounts.filter(acc => acc.type === 'invest' ).map(acc => acc._id.toString());
+
+        const basicAccountTransaction = transactions.find(transaction => basicAccountsIds.includes(transaction.accountId.toString()) );
+        const debtAccountTransaction = transactions.find(transaction => investAccountsIds.includes(transaction.accountId.toString()) );
+
+
+        bodyToSend.subtype = basicAccountTransaction.subtype;
+        bodyToSend.basicAccountId = basicAccountTransaction.accountId;
+        bodyToSend.investAccountId = debtAccountTransaction.accountId;
+        bodyToSend.amount = Math.abs(basicAccountTransaction.amount);
+        bodyToSend.name = basicAccountTransaction.name;
+
+
+        res.send(bodyToSend);
+
+    } catch (e) {
+        res.status(500).send();
+    }
+});
+
+
 
 /**
  * API updates basic transaction
@@ -478,6 +604,99 @@ router.put(baseUrl + '/debt/sharedId::id' , auth, async (req, res) => {
         await debtAccountTransaction.save();
 
         res.send({message: 'udpate was succesfull', basicAccountTransaction, debtAccountTransaction } );
+
+    } catch (e) {
+        res.status(500).send(e);
+        console.log(e);
+    }
+});
+
+
+/**
+ *  API updates invest records
+ */
+router.put(baseUrl + '/invests/sharedId::id' , auth, async (req, res) => {
+
+    const sharedId = req.params.id;
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['subtype', 'basicAccountId', 'investAccountId', 'amount', 'accountingDate', 'name'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields ' + allowedUpdates.toString()});
+    }
+
+    try {
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'debt'});
+
+        if (![1,2].includes(transactions.length)) {
+            return res.status(400).send({ error: 'Entered accounts either does not work or does not belong to user'});
+        }
+
+        await req.user.populate({
+            path: 'accounts'
+        }).execPopulate();
+
+        const allUsersAccountsId = req.user.accounts.map(acc => acc._id.toString())
+        const areValidAccounts = [req.body.basicAccountId, req.body.debtAccountId].every(account => allUsersAccountsId.includes(account));
+        if (!areValidAccounts) {
+            return res.status(400).send({ error: 'entered accounts does not belong to user'});
+        }
+
+        const basicAccount = req.user.accounts.find(account => account._id.toString() === req.body.basicAccountId && ['credit', 'debit', 'cash'].includes(account.type));
+        const investAccount = req.user.accounts.find(account => account._id.toString() === req.body.debtAccountId &&  account.type === 'invest');
+
+        if (!basicAccount || !investAccount) {
+            return res.status(400).send({ error: 'entered accounts are not of correct type'});
+        }
+
+        const basicAccountsIds = req.user.accounts.filter(acc => ['credit', 'debit', 'cash'].includes(acc.type)).map(acc => acc._id.toString());
+        const investAccountIds = req.user.accounts.filter(acc => acc.type === 'invest' ).map(acc => acc._id.toString());
+
+        const basicAccountTransaction = transactions.find(transaction => basicAccountsIds.includes(transaction.accountId.toString()) );
+        const investAccountTransaction = transactions.find(transaction => investAccountIds.includes(transaction.accountId.toString()) );
+
+        updates.forEach((update) => {
+            if (update === 'subtype') {
+
+                if (req.body.subtype !== basicAccountTransaction.subtype) {
+                    basicAccountTransaction.amount *= (-1);
+                    investAccountTransaction.amount *= (-1);
+
+                    basicAccountTransaction.subtype = req.body.subtype;
+                    investAccountTransaction.subtype = req.body.subtype;
+
+                    return;
+                }
+                return;
+
+            } else if (update === 'amount') {
+
+                if (basicAccountTransaction.subtype === 'deposit') {
+                    basicAccountTransaction.amount = req.body.amount * (-1);
+                    investAccountTransaction.amount = req.body.amount;
+                } else if (basicAccountTransaction.subtype === 'withdrawal') {
+                    basicAccountTransaction.amount = req.body.amount;
+                    investAccountTransaction.amount = req.body.amount * (-1);
+                }
+
+                return;
+            } else if (update === 'basicAccountId') {
+                basicAccountTransaction.accountId = req.body[update];
+                return;
+            } else if (update === 'investAccountId') {
+                investAccountTransaction.accountId = req.body[update];
+                return;
+            }
+            basicAccountTransaction[update] = req.body[update];
+            investAccountTransaction[update] = req.body[update];
+        });
+
+        await basicAccountTransaction.save();
+        await investAccountTransaction.save();
+
+        res.send({message: 'udpate was succesfull', basicAccountTransaction, investAccountTransaction: investAccountTransaction } );
 
     } catch (e) {
         res.status(500).send(e);
