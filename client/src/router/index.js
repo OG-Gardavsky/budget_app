@@ -9,6 +9,7 @@ import BlankPage from "@/views/BlankPage";
 import Profile from "@/views/Profile";
 import Stats from "@/views/Stats";
 import Debts from "@/views/Debts";
+import Invests from "@/views/Invests";
 
 Vue.use(VueRouter)
 
@@ -47,6 +48,11 @@ const routes = [
         path: '/debts',
         name: 'debts',
         component: Debts
+    },
+    {
+        path: '/invests',
+        name: 'invests',
+        component: Invests
     },
     {
         path: '/more',

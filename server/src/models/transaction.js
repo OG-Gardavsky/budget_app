@@ -6,15 +6,7 @@ const transactionSchema = new mongoose.Schema({
     amount: {
         type: Number,
         required: true,
-        trim: true,
-        validate(value) {
-            //check for max 2 decimals
-            const reg = new RegExp('^-?\\d*.\\d{0,2}$');
-
-            if (!reg.test(value)) {
-                throw new Error('number must contain max 2 decimals')
-            }
-        }
+        trim: true
     },
     currency: {
         type: String,
@@ -29,7 +21,6 @@ const transactionSchema = new mongoose.Schema({
     },
     accountingDate: {
         type: Date,
-        // timezone:
         required: true,
         default: Date.now
     },
@@ -127,6 +118,28 @@ const debtTransactionSchema = new mongoose.Schema({
 );
 
 Transaction.discriminator('debt', debtTransactionSchema);
+
+
+/**
+ *
+ * @type {module:mongoose.Schema<Document, Model<any, any>, undefined>}
+ */
+const investTransactionSchema = new mongoose.Schema({
+        subtype: {
+            type: String,
+            required: true,
+            enum: ['deposit', 'withdrawal']
+        },
+        sharedId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true
+        }
+    },
+    options
+);
+
+Transaction.discriminator('invests', investTransactionSchema);
+
 
 
 module.exports = Transaction;
