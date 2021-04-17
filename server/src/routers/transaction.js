@@ -628,7 +628,9 @@ router.put(baseUrl + '/invests/sharedId::id' , auth, async (req, res) => {
     }
 
     try {
-        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'debt'});
+        const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'invests'});
+
+        console.log(transactions)
 
         if (![1,2].includes(transactions.length)) {
             return res.status(400).send({ error: 'Entered accounts either does not work or does not belong to user'});
@@ -639,13 +641,13 @@ router.put(baseUrl + '/invests/sharedId::id' , auth, async (req, res) => {
         }).execPopulate();
 
         const allUsersAccountsId = req.user.accounts.map(acc => acc._id.toString())
-        const areValidAccounts = [req.body.basicAccountId, req.body.debtAccountId].every(account => allUsersAccountsId.includes(account));
+        const areValidAccounts = [req.body.basicAccountId, req.body.investAccountId].every(account => allUsersAccountsId.includes(account));
         if (!areValidAccounts) {
             return res.status(400).send({ error: 'entered accounts does not belong to user'});
         }
 
         const basicAccount = req.user.accounts.find(account => account._id.toString() === req.body.basicAccountId && ['credit', 'debit', 'cash'].includes(account.type));
-        const investAccount = req.user.accounts.find(account => account._id.toString() === req.body.debtAccountId &&  account.type === 'invest');
+        const investAccount = req.user.accounts.find(account => account._id.toString() === req.body.investAccountId &&  account.type === 'invest');
 
         if (!basicAccount || !investAccount) {
             return res.status(400).send({ error: 'entered accounts are not of correct type'});
