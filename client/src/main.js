@@ -18,6 +18,9 @@ Vue.mixin({
         }
     },
     methods: {
+        async gotoPage(name) {
+            await router.push(name);
+        },
         parseDate (dateToParse) {
             let date = new Date(dateToParse);
             return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
@@ -122,6 +125,23 @@ Vue.mixin({
             const sumObject = await res.json();
 
             return sumObject;
+        },
+        async getListOfCurrencies() {
+
+            const res = await fetch('api/currency/list', {
+                method: 'GET',
+                headers: {
+                    'Content-type': 'application/json',
+                }
+            });
+
+            if (res.status === 200) {
+                return await res.json();
+
+            } else {
+                this.displayCustomError('unable to connect to list of currency');
+            }
+
         }
     },
 })

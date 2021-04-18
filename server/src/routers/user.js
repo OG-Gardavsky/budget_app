@@ -82,6 +82,27 @@ router.post(baseUrl + '/logoutAll', auth, async (req, res) => {
     }
 });
 
+router.put(baseUrl + '/currency', auth, async (req, res) => {
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['primarCurrency'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid body of request, in request should be only fields ' + allowedUpdates.toString() });
+    }
+
+    try {
+
+        req.user.primarCurrency = req.body.primarCurrency;
+        req.user.save();
+
+        res.send({message: 'currency changed succesfully'});
+    } catch (e) {
+        res.status(500).send();
+    }
+});
+
 
 /**
  * API changes user password
@@ -90,13 +111,13 @@ router.put(baseUrl + '/password', auth, async (req, res) => {
 
     const updates = Object.keys(req.body);
     const allowedUpdates = ['oldPassword', 'newPassword'];
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+    const isValidOperation = allowedUpdates.every(update => updates.includes(update));
 
     if (!isValidOperation) {
         return res.status(400).send({ error: 'Invalid body of request, in request should be only fields \'oldPassword\' and \'newPassword\' ' });
     }
 
-    if (req.body.newPassword.length < 10) {
+    if (req.body.newPassword === null || req.body.newPassword.length < 10) {
         return res.status(400).send({ error: 'New password is too short' });
     }
 

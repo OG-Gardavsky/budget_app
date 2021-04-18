@@ -22,14 +22,14 @@
                     <md-input type="number" v-model="creditLimit" placeholder="Credit limit" required />
                 </md-field>
 
-                <md-field>
-                    <label>Currency </label>
-                    <md-select v-model="currency" required>
-                        <md-option value="CZK">CZK</md-option>
-                        <md-option value="USD">USD</md-option>
-                        <md-option value="EUR">EUR</md-option>
-                    </md-select>
-                </md-field>
+<!--                <md-field>-->
+<!--                    <label>Currency </label>-->
+<!--                    <md-select v-model="currency" required>-->
+<!--                        <md-option value="CZK">CZK</md-option>-->
+<!--                        <md-option value="USD">USD</md-option>-->
+<!--                        <md-option value="EUR">EUR</md-option>-->
+<!--                    </md-select>-->
+<!--                </md-field>-->
 
                 <md-dialog-actions>
                     <md-button class="md-primary" @click="closeDialog">Close</md-button>
@@ -65,14 +65,14 @@ export default {
         },
         clearVariables(){
             this.name = null;
-            this.currency = null;
+            // this.currency = null;
             this.creditLimit = null;
             this.initialBalance = null;
             this.accountId = null;
         },
         async updateAccount(){
 
-            if (this.name === null || this.currency === null || this.initialBalance === null || this.accountId === null) {
+            if (this.name === null || this.initialBalance === null || this.accountId === null) {
                 return this.displayCustomError('Please fill all fields');
             }
 
@@ -90,7 +90,7 @@ export default {
 
             const body = {
                 name: this.name,
-                currency: this.currency,
+                // currency: this.currency,
                 initialBalance: this.initialBalance
             }
 
@@ -121,7 +121,7 @@ export default {
 
         this.accountId = this.accountToUpdate._id;
         this.name = this.accountToUpdate.name;
-        this.currency = this.accountToUpdate.currency;
+        // this.currency = this.accountToUpdate.currency;
         this.initialBalance = this.accountToUpdate.initialBalance;
         this.type = this.accountToUpdate.type;
 
