@@ -39,15 +39,15 @@
                 <md-input type="number" v-model="creditLimit" placeholder="Credit limit" required />
             </md-field>
 
-            <md-field>
-                <label>Currency </label>
-                <md-select v-model="currency" required>
-                    <md-option value="CZK">CZK</md-option>
-                    <md-option value="USD">USD</md-option>
-                    <md-option value="EUR">EUR</md-option>
-                    <md-option value="BTC">BTC</md-option>
-                </md-select>
-            </md-field>
+<!--            <md-field>-->
+<!--                <label>Currency </label>-->
+<!--                <md-select v-model="currency" required>-->
+<!--                    <md-option value="CZK">CZK</md-option>-->
+<!--                    <md-option value="USD">USD</md-option>-->
+<!--                    <md-option value="EUR">EUR</md-option>-->
+<!--                    <md-option value="BTC">BTC</md-option>-->
+<!--                </md-select>-->
+<!--            </md-field>-->
 
             <md-dialog-actions>
                 <md-button class="md-primary" @click="closeDialog">Close</md-button>
@@ -93,7 +93,7 @@ export default {
                 this.type = this.accountType;
             }
 
-            if (this.type === null || this.name === null || this.currency === null) {
+            if (this.type === null || this.name === null ) {
                 return this.displayCustomError('Please fill all fields');
             }
 
@@ -117,7 +117,7 @@ export default {
             const body = {
                 type: this.type,
                 name: this.name,
-                currency: this.currency,
+                // currency: this.currency,
                 initialBalance: this.initialBalance
             }
 

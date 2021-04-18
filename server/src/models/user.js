@@ -38,8 +38,7 @@ const userSchema = new mongoose.Schema({
     primarCurrency: {
         type: String,
         required: true,
-        trim: true,
-        enum: ['CZK', 'USD', 'EUR']
+        trim: true
     },
     tokens: [{
         token: {

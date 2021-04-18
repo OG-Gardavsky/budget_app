@@ -183,8 +183,20 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
             }
         );
 
+        if (initialBalanceSum.length === 0 && transactionsSum.length === 0 ) {
+            return  res.send([])
+        }
 
-        const totalSum = Number(initialBalanceSum[0].balance) + Number(transactionsSum[0].balance);
+        let totalSum;
+
+        if (initialBalanceSum.length === 0) {
+            totalSum = Number(transactionsSum[0].balance);
+        } else if (transactionsSum.length === 0) {
+
+            totalSum = Number(initialBalanceSum[0].balance);
+        } else {
+            totalSum = Number(initialBalanceSum[0].balance) + Number(transactionsSum[0].balance);
+        }
 
         res.send({type: typeInRequest, sum: totalSum });
     } catch (e) {

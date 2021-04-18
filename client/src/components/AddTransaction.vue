@@ -23,13 +23,20 @@
                             <md-select v-model="categoryId" required >
                                 <md-option  v-for="category in listOfCategories"  :value="category._id.toString()">{{ category.name }}</md-option>
                             </md-select>
+
+                            <md-button v-if="listOfCategories.length < 1" @click="gotoPage('/categories'); showAddTransactionDialog = false">Add new</md-button>
                         </md-field>
+
+
+
 
                         <md-field>
                             <label>Account</label>
                             <md-select v-model="accountId" required >
                                 <md-option  v-for="account in listOfBasicAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                             </md-select>
+
+                            <md-button v-if="listOfBasicAccounts.length < 1"  @click="gotoPage('/home'); showAddTransactionDialog = false">Add new</md-button>
                         </md-field>
 
 
@@ -39,14 +46,14 @@
                             <md-input type="number" v-model="amount" placeholder="Amount" required />
                         </md-field>
 
-                        <md-field>
-                            <label>Currency (optional)</label>
-                            <md-select v-model="currency">
-                                <md-option value="CZK">CZK</md-option>
-                                <md-option value="USD">USD</md-option>
-                                <md-option value="EUR">EUR</md-option>
-                            </md-select>
-                        </md-field>
+<!--                        <md-field>-->
+<!--                            <label>Currency (optional)</label>-->
+<!--                            <md-select v-model="currency">-->
+<!--                                <md-option value="CZK">CZK</md-option>-->
+<!--                                <md-option value="USD">USD</md-option>-->
+<!--                                <md-option value="EUR">EUR</md-option>-->
+<!--                            </md-select>-->
+<!--                        </md-field>-->
 
                         <md-field>
                             <md-label>Accounting date</md-label>
@@ -224,13 +231,19 @@
 </template>
 
 <script>
+import router from "@/router";
+import AddAccount from "@/components/AddAccount";
+
 export default {
     name: "AddTransaction",
+    components: {AddAccount},
     props: {
         showAddTransactionDialog: Boolean
     },
     data() {
         return {
+            showAddAccount: false,
+
             listOfCategories: [],
 
             listOfBasicAccounts: [],
@@ -256,6 +269,7 @@ export default {
         }
     },
     methods: {
+
         async createDebt(){
             const body = {
                 amount: this.amount,

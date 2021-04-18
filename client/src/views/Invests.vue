@@ -6,7 +6,7 @@
         <md-card id="totalBalanceCard" v-if="selectedAccount === null">
             <md-content>
                 <md-card-header>
-                    <div class="md-title">Totally invested:  <span v-if="totalDebtsSum > 0">+ </span> {{totalDebtsSum}} </div>
+                    <div class="md-title">Totally invested:  <span v-if="totalDebtsSum > 0">+ </span> {{totalDebtsSum}} {{userInfo.primarCurrency}}</div>
                 </md-card-header>
 
             </md-content>
@@ -25,7 +25,8 @@
                     <md-card-header>
                         <div class="md-title">
                             <span>{{account.name}}</span>
-                            <span> <span v-if="account.balance > 0">+ </span> {{account.balance}} {{account.currency}}</span>
+<!--                            <span> <span v-if="account.balance > 0">+ </span> {{account.balance}} {{account.currency}}</span>-->
+                            <span> <span v-if="account.balance > 0">+ </span> {{account.balance}} {{userInfo.primarCurrency}}</span>
                         </div>
                         <div class="md-subhead">{{account.moneyType}} currency</div>
                     </md-card-header>
@@ -62,7 +63,9 @@
                         <md-icon>arrow_back_ios</md-icon>
                     </md-button>
                     <div class="md-title">{{selectedAccount.name}}</div>
-                    <div class="md-title">{{selectedAccount.balance}} {{selectedAccount.currency}}</div>
+<!--                    <div class="md-title">{{selectedAccount.balance}} {{selectedAccount.currency}}</div>-->
+                    <div class="md-title">{{selectedAccount.balance}} {{userInfo.primarCurrency}}</div>
+
                 </md-content>
             </md-card>
 
@@ -174,6 +177,7 @@ export default {
     },
     methods: {
         async refresh() {
+            this.checkCredentials();
             this.accountsBalance = this.showBalanceOfAccounts('invest');
             this.totalDebtsSum = await this.getTotalBalanceByAccType('invest');
 
