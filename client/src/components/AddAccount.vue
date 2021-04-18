@@ -93,7 +93,7 @@ export default {
                 this.type = this.accountType;
             }
 
-            if (this.type === null || this.name === null || this.currency === null) {
+            if (this.type === null || this.name === null ) {
                 return this.displayCustomError('Please fill all fields');
             }
 

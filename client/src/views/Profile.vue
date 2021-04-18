@@ -14,6 +14,21 @@
 
             <md-card>
                 <md-card-header>
+                    <div class="md-headline">Default currency</div>
+                    <div class="md-subhead">Change will not calculate to new currency, just changes label</div>
+                    <md-autocomplete v-model="currencyName" :md-options="listOfCurrencyNames">
+                        <label>Default currency</label>
+                    </md-autocomplete>
+
+                </md-card-header>
+                <md-card-actions>
+                    <md-button class="md-primary" @click="changePrimarCurrency">Change</md-button>
+                </md-card-actions>
+            </md-card>
+
+
+            <md-card>
+                <md-card-header>
                     <div class="md-title">Change password</div>
                     <div class="md-subhead">After changing password you are logged out from all devices.</div>
 
@@ -34,24 +49,8 @@
                 </md-card-actions>
             </md-card>
 
-
-            <md-card>
-                <md-card-header>
-                    <div class="md-title">Primar currency</div>
-                    <md-field>
-                        <label>Currency</label>
-                        <md-select v-model="primarCurrency">
-                            <md-option value="CZK">CZK</md-option>
-                            <md-option value="USD">USD</md-option>
-                            <md-option value="EUR">EUR</md-option>
-                        </md-select>
-                    </md-field>
-                </md-card-header>
-                <md-card-actions>
-                    <md-button class="md-primary" @click="changePrimarCurrency">Change</md-button>
-                </md-card-actions>
-            </md-card>
         </div>
+
 
 
 
@@ -70,7 +69,10 @@ export default {
         return {
             oldPassword: null,
             newPassword: null,
-            primarCurrency: null
+
+            listOfCurrencies: null,
+            listOfCurrencyNames: null,
+            currencyName: null,
         }
     },
     methods: {
@@ -103,13 +105,17 @@ export default {
             }
         },
         async changePrimarCurrency(){
+
+            const primarCurrency = this.listOfCurrencies.find(currency => currency.currencyName === this.currencyName).id;
+
+
             const res = await fetch('api/users/currency', {
                 method: 'PUT',
                 headers: {
                     'Content-type': 'application/json',
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
                 },
-                body: JSON.stringify({ primarCurrency: this.primarCurrency })
+                body: JSON.stringify({ primarCurrency })
             });
 
             const resBody = await res.json();
@@ -125,7 +131,10 @@ export default {
     },
     async created() {
         await this.checkCredentials();
-        this.primarCurrency = this.userInfo.primarCurrency;
+
+        this.listOfCurrencies = await this.getListOfCurrencies();
+        this.listOfCurrencyNames = this.listOfCurrencies.map(currencyObject => currencyObject.currencyName);
+        this.currencyName = this.listOfCurrencies.find(currency => currency.id === this.userInfo.primarCurrency).currencyName;
     }
 }
 </script>

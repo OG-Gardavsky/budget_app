@@ -88,23 +88,6 @@ export default {
             const re = /\S+@\S+\.\S+/;
             return re.test(email);
         },
-        async getListOfCurrencies() {
-
-            const res = await fetch('api/currency/list', {
-                method: 'GET',
-                headers: {
-                    'Content-type': 'application/json',
-                }
-            });
-
-            if (res.status === 200) {
-                return await res.json();
-
-            } else {
-                this.displayCustomError('unable to connect to list of currency');
-            }
-
-        }
     },
     async created() {
         this.listOfCurrencies = await this.getListOfCurrencies();

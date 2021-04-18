@@ -21,7 +21,7 @@
 <!--                        <div v-if="account.limit">limit: {{account.limit}} {{account.currency}}</div>-->
 
                         <div class="md-title"><span v-if="account.balance > 0">+</span> {{account.balance}} {{userInfo.primarCurrency}}</div>
-                        <div v-if="account.limit">limit: {{account.limit}} {{userInfo.primarCurrency}}</div>
+                        <div v-if="account.limit">available: {{account.availableLimit}} {{userInfo.primarCurrency}}</div>
                         <div class="md-subhead">{{account.name}}</div>
                     </md-card-header>
                 </md-card>

@@ -6,7 +6,7 @@
         <md-card id="totalBalanceCard" v-if="selectedAccount === null">
             <md-content>
                 <md-card-header>
-                    <div class="md-title">Total debts:  <span v-if="totalDebtsSum > 0">+ </span> {{totalDebtsSum}} </div>
+                    <div class="md-title">Total debts:  <span v-if="totalDebtsSum > 0">+ </span> {{totalDebtsSum}} {{userInfo.primarCurrency}}</div>
                 </md-card-header>
 
             </md-content>
@@ -62,7 +62,9 @@
                         <md-icon>arrow_back_ios</md-icon>
                     </md-button>
                     <div class="md-title">{{selectedAccount.name}}</div>
-                    <div class="md-title">{{selectedAccount.balance}} {{selectedAccount.currency}}</div>
+<!--                    <div class="md-title">{{selectedAccount.balance}} {{selectedAccount.currency}}</div>-->
+                    <div class="md-title">{{selectedAccount.balance}} {{userInfo.primarCurrency}}</div>
+
                 </md-content>
             </md-card>
 
@@ -85,7 +87,9 @@
 
                         <div class="baseInfo">
                             <div class="md-title">{{transaction.subtype}}</div>
-                            <div class="md-title"> <span v-if="transaction.amount > 0">+ </span> {{transaction.amount}} {{transaction.currency}}</div>
+<!--                            <div class="md-title"> <span v-if="transaction.amount > 0">+ </span> {{transaction.amount}} {{transaction.currency}}</div>-->
+                            <div class="md-title"> <span v-if="transaction.amount > 0">+ </span> {{transaction.amount}} </div>
+
                         </div>
 
 
@@ -174,6 +178,7 @@ name: "Debts",
     },
     methods: {
         async refresh() {
+            await this.checkCredentials();
             this.accountsBalance = this.showBalanceOfAccounts('debt');
             this.totalDebtsSum = await this.getTotalBalanceByAccType('debt');
 

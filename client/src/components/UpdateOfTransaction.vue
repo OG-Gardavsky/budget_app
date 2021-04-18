@@ -34,14 +34,14 @@
                     <md-input type="number" v-model="amount" placeholder="Amount" required />
                 </md-field>
 
-                <md-field>
-                    <label>Currency (optional)</label>
-                    <md-select v-model="currency">
-                        <md-option value="CZK">CZK</md-option>
-                        <md-option value="USD">USD</md-option>
-                        <md-option value="EUR">EUR</md-option>
-                    </md-select>
-                </md-field>
+<!--                <md-field>-->
+<!--                    <label>Currency (optional)</label>-->
+<!--                    <md-select v-model="currency">-->
+<!--                        <md-option value="CZK">CZK</md-option>-->
+<!--                        <md-option value="USD">USD</md-option>-->
+<!--                        <md-option value="EUR">EUR</md-option>-->
+<!--                    </md-select>-->
+<!--                </md-field>-->
 
                 <md-field>
                     <md-label>Accounting date</md-label>
@@ -210,7 +210,7 @@ export default {
             transactionSubtype: null,
             transactionName: null,
             accountingDate: null,
-            currency: null,
+            // currency: null,
 
             amount: null,
             accountId: null,
@@ -237,7 +237,7 @@ export default {
             this.transactionSubtype = null;
             this.transactionName = null;
             this.amount = null;
-            this.currency = null;
+            // this.currency = null;
             this.categoryId = null;
             this.accountId = null;
 
@@ -312,9 +312,9 @@ export default {
             if (this.transactionName !== null) {
                 body.name = this.transactionName;
             }
-            if (this.currency !== null) {
-                body.currency = this.currency;
-            }
+            // if (this.currency !== null) {
+            //     body.currency = this.currency;
+            // }
 
             await this.updateTransaction(body, 'basic', 'id', this.transactionId);
         },
@@ -390,7 +390,7 @@ export default {
 
             this.transactionId = this.transactionToUpdate._id;
             this.transactionSubtype = this.transactionToUpdate.subtype;
-            this.currency = this.transactionToUpdate.currency;
+            // this.currency = this.transactionToUpdate.currency;
             this.transactionSubtype = this.transactionToUpdate.subtype;
             this.categoryId = this.transactionToUpdate.categoryId;
             this.accountId = this.transactionToUpdate.accountId;

@@ -154,10 +154,16 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
         const accountsToSend = [];
         req.user.accounts.forEach((account) => {
             const match = accountsBalance.find(obj => obj._id.toString() === account._id.toString());
+
             let balance = !match ? Number(0) : Number(match.balance);
             balance = balance + Number(account.initialBalance);
             const accountBody = { _id: account._id, name: account.name, balance: balance,  currency: account.currency, initialBalance: account.initialBalance, type: account.type};
-            if (account.type === 'credit') {  accountBody.limit = account.limit + balance   }
+
+            if (account.type === 'credit') {
+                accountBody.limit = account.limit;
+                accountBody.availableLimit = account.limit + balance;
+            }
+
             if (account.type === 'invest') {  accountBody.moneyType = account.moneyType  }
             accountsToSend.push(accountBody);
         });
