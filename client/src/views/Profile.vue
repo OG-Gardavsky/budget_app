@@ -7,6 +7,7 @@
             <md-card>
                 <md-card-header>
                     <div class="md-title">name: {{userInfo.name}} </div>
+                    <div class="md-title">email: {{userInfo.email}} </div>
                 </md-card-header>
             </md-card>
 
@@ -39,7 +40,7 @@
                     <div class="md-title">Primar currency</div>
                     <md-field>
                         <label>Currency</label>
-                        <md-select v-model="necoNevalidniho">
+                        <md-select v-model="primarCurrency">
                             <md-option value="CZK">CZK</md-option>
                             <md-option value="USD">USD</md-option>
                             <md-option value="EUR">EUR</md-option>
@@ -47,7 +48,7 @@
                     </md-field>
                 </md-card-header>
                 <md-card-actions>
-                    <md-button class="md-primary" @click="displayCustomError('this does nothing so far')">Change</md-button>
+                    <md-button class="md-primary" @click="changePrimarCurrency">Change</md-button>
                 </md-card-actions>
             </md-card>
         </div>
@@ -67,12 +68,15 @@ export default {
         components: {CustomMenu, Header},
     data() {
         return {
-            oldPassword: '',
-            newPassword: ''
+            oldPassword: null,
+            newPassword: null,
+            primarCurrency: null
         }
     },
     methods: {
         async changePassword(){
+
+
             const res = await fetch('api/users/password', {
                 method: 'PUT',
                 headers: {
@@ -94,11 +98,34 @@ export default {
                 await router.push('/');
             } else if (resBody.error) {
                 this.displayCustomError(resBody.error);
+            } else {
+                this.displayCustomError('Error during changing password');
+            }
+        },
+        async changePrimarCurrency(){
+            const res = await fetch('api/users/currency', {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                },
+                body: JSON.stringify({ primarCurrency: this.primarCurrency })
+            });
+
+            const resBody = await res.json();
+
+            if (res.status === 200){
+                this.displayCustomError('currency changed succesfully')
+            } else if (resBody.error) {
+                this.displayCustomError(resBody.error);
+            } else {
+                this.displayCustomError('Error during changing password');
             }
         }
     },
-    created() {
-        this.checkCredentials()
+    async created() {
+        await this.checkCredentials();
+        this.primarCurrency = this.userInfo.primarCurrency;
     }
 }
 </script>

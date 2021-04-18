@@ -5,7 +5,7 @@
         <md-card id="totalBalanceCard" >
             <md-content>
                 <md-card-header>
-                    <div class="md-title">Total balance:  <span v-if="totalMoney > 0">+ </span> {{totalMoney}} </div>
+                    <div class="md-title">Total balance:  <span v-if="totalMoney > 0">+ </span> {{totalMoney}} {{userInfo.primarCurrency}}</div>
                 </md-card-header>
 
             </md-content>
@@ -17,9 +17,11 @@
 
                 <md-card md-with-hover class="accountCard">
                     <md-card-header>
+<!--                        <div class="md-title"><span v-if="account.balance > 0">+</span> {{account.balance}} {{account.currency}}</div>-->
+<!--                        <div v-if="account.limit">limit: {{account.limit}} {{account.currency}}</div>-->
 
-                        <div class="md-title"><span v-if="account.balance > 0">+</span> {{account.balance}} {{account.currency}}</div>
-                        <div v-if="account.limit">limit: {{account.limit}} {{account.currency}}</div>
+                        <div class="md-title"><span v-if="account.balance > 0">+</span> {{account.balance}} {{userInfo.primarCurrency}}</div>
+                        <div v-if="account.limit">limit: {{account.limit}} {{userInfo.primarCurrency}}</div>
                         <div class="md-subhead">{{account.name}}</div>
                     </md-card-header>
                 </md-card>

@@ -39,14 +39,14 @@
                             <md-input type="number" v-model="amount" placeholder="Amount" required />
                         </md-field>
 
-                        <md-field>
-                            <label>Currency (optional)</label>
-                            <md-select v-model="currency">
-                                <md-option value="CZK">CZK</md-option>
-                                <md-option value="USD">USD</md-option>
-                                <md-option value="EUR">EUR</md-option>
-                            </md-select>
-                        </md-field>
+<!--                        <md-field>-->
+<!--                            <label>Currency (optional)</label>-->
+<!--                            <md-select v-model="currency">-->
+<!--                                <md-option value="CZK">CZK</md-option>-->
+<!--                                <md-option value="USD">USD</md-option>-->
+<!--                                <md-option value="EUR">EUR</md-option>-->
+<!--                            </md-select>-->
+<!--                        </md-field>-->
 
                         <md-field>
                             <md-label>Accounting date</md-label>

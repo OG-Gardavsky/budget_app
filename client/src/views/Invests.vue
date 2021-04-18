@@ -25,7 +25,8 @@
                     <md-card-header>
                         <div class="md-title">
                             <span>{{account.name}}</span>
-                            <span> <span v-if="account.balance > 0">+ </span> {{account.balance}} {{account.currency}}</span>
+<!--                            <span> <span v-if="account.balance > 0">+ </span> {{account.balance}} {{account.currency}}</span>-->
+                            <span> <span v-if="account.balance > 0">+ </span> {{account.balance}} {{userInfo.primarCurrency}}</span>
                         </div>
                         <div class="md-subhead">{{account.moneyType}} currency</div>
                     </md-card-header>
