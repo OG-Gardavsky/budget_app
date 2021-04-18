@@ -183,6 +183,9 @@ router.get(baseUrl + '/balance', auth, async (req, res) => {
             }
         );
 
+        if (initialBalanceSum.length === 0 || transactionsSum.length === 0 ) {
+            return  res.send([])
+        }
 
         const totalSum = Number(initialBalanceSum[0].balance) + Number(transactionsSum[0].balance);
 

@@ -12,14 +12,11 @@
         </md-field>
 
 
-        <md-field>
-            <label>Choose default currency for your account</label>
-            <md-select v-model="currency">
-                <md-option value="CZK">CZK</md-option>
-                <md-option value="USD">USD</md-option>
-                <md-option value="EUR">EUR</md-option>
-            </md-select>
-        </md-field>
+        <md-autocomplete v-model="currencyName" :md-options="listOfCurrencyNames">
+            <label>Default currency</label>
+        </md-autocomplete>
+
+
 
 
         <md-field>
@@ -38,6 +35,8 @@
 </template>
 
 <script>
+import router from "@/router";
+
 export default {
     name: "SignUpPage",
     data() {
@@ -47,15 +46,17 @@ export default {
             name: '',
             password: '',
             passwordCheck: '',
-            currency: null
+            currencyName: null,
+            listOfCurrencies: null,
+            listOfCurrencyNames: null
         }
     },
     methods: {
         onSignUp(e) {
             e.preventDefault();
 
-            if (this.email === '' || this.password === '' || this.name === '' || this.passwordCheck === ''){
-                return this.displayCustomError('Fill email, name, password and reenter password.');
+            if (this.email === '' || this.password === '' || this.name === '' || this.passwordCheck === '' || this.primarCurrency === null){
+                return this.displayCustomError('Fill email, name, password, default currency and reenter password.');
             }
 
             if (!this.validateEmail(this.email)) {
@@ -70,11 +71,14 @@ export default {
                 return this.displayCustomError('Passwords do not match.');
             }
 
+            const primarCurrency = this.listOfCurrencies.find(currency => currency.currencyName === this.currencyName).id;
+
+
             const credentials = {
                 email: this.email,
                 name: this.name,
                 password: this.password,
-                primarCurrency: this.currency
+                primarCurrency
             }
 
             this.$emit('on-signup', credentials);
@@ -83,7 +87,28 @@ export default {
         {
             const re = /\S+@\S+\.\S+/;
             return re.test(email);
+        },
+        async getListOfCurrencies() {
+
+            const res = await fetch('api/currency/list', {
+                method: 'GET',
+                headers: {
+                    'Content-type': 'application/json',
+                }
+            });
+
+            if (res.status === 200) {
+                return await res.json();
+
+            } else {
+                this.displayCustomError('unable to connect to list of currency');
+            }
+
         }
+    },
+    async created() {
+        this.listOfCurrencies = await this.getListOfCurrencies();
+        this.listOfCurrencyNames = this.listOfCurrencies.map(currencyObject => currencyObject.currencyName);
     }
 }
 </script>
