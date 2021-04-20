@@ -1,6 +1,11 @@
 <template>
     <md-dialog :md-active.sync="showDialog">
 
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <div id="dialogContent">
 
             <md-dialog-title>Update of transacation: <span v-if="transactionSubtype">{{transactionSubtype}}</span></md-dialog-title>
@@ -273,6 +278,8 @@ export default {
                 body.name = this.transactionName;
             }
 
+            body.accountingDate = this.parseDateBeforeSave(body.accountingDate);
+
             await this.updateTransaction(body, 'invests', 'sharedId', this.transactionToUpdate.sharedId);
         },
         async updateDebt(){
@@ -286,6 +293,8 @@ export default {
                 body.name = this.transactionName;
             }
 
+            body.accountingDate = this.parseDateBeforeSave(body.accountingDate);
+
             await this.updateTransaction(body, 'debt', 'sharedId', this.transactionToUpdate.sharedId);
         },
         async updateTransfer(){
@@ -298,6 +307,8 @@ export default {
             if (this.transactionName !== null) {
                 body.name = this.transactionName;
             }
+
+            body.accountingDate = this.parseDateBeforeSave(body.accountingDate);
 
             await this.updateTransaction(body, 'transfer', 'sharedId', this.transactionToUpdate.sharedId);
         },
@@ -315,6 +326,8 @@ export default {
             // if (this.currency !== null) {
             //     body.currency = this.currency;
             // }
+
+            body.accountingDate = this.parseDateBeforeSave(body.accountingDate);
 
             await this.updateTransaction(body, 'basic', 'id', this.transactionId);
         },

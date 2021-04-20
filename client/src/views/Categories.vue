@@ -1,6 +1,11 @@
 <template>
     <div>
 
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <Header />
         <md-button class="md-primary md-raised" @click="displayDialog">add category</md-button>
         <add-category  :show-dialog="showAddDialog" @on-closeModal="hideDialog" @on-save="getListOfCategories"/>

@@ -1,5 +1,10 @@
 <template>
   <div id="mainContent">
+      <md-dialog-alert
+          :md-active.sync="displayError"
+          :md-content="errorMessage"
+          md-confirm-text="ok" />
+
       <h1>Log in, please.</h1>
       <LoginPage @on-login="onLogin"/>
 

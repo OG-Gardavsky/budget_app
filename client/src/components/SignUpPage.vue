@@ -1,6 +1,11 @@
 <template>
     <section>
 
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <md-field>
             <label>Enter your email - serves as login</label>
             <md-input type="email" v-model="email" placeholder="Email" />
