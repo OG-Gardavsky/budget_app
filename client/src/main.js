@@ -35,8 +35,9 @@ Vue.mixin({
             return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
         },
         displayCustomError(errorMesage) {
-            this.errorMessage = errorMesage;
-            this.displayError = true;
+            alert(errorMesage)
+            // this.errorMessage = errorMesage;
+            // this.displayError = true;
         },
         showSpinner() {
             this.spinnerDisplayed = true;

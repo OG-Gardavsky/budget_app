@@ -36,28 +36,30 @@
                 </md-card-actions>
             </md-card>
 
+            <div style="padding-bottom: 60px">
 
-            <md-card>
-                <md-card-header>
-                    <div class="md-title">Change password</div>
-                    <div class="md-subhead">After changing password you are logged out from all devices.</div>
+                <md-card >
+                    <md-card-header>
+                        <div class="md-title">Change password</div>
+                        <div class="md-subhead">After changing password you are logged out from all devices.</div>
 
-                    <md-field>
-                        <label>Enter current password</label>
-                        <md-input type="password" v-model="oldPassword" placeholder="Current password" />
-                    </md-field>
+                        <md-field>
+                            <label>Enter current password</label>
+                            <md-input type="password" v-model="oldPassword" placeholder="Current password" />
+                        </md-field>
 
-                    <md-field>
-                        <label>Enter new password - min. 10 characters</label>
-                        <md-input type="password" v-model="newPassword" placeholder="New password" />
-                    </md-field>
+                        <md-field>
+                            <label>Enter new password - min. 10 characters</label>
+                            <md-input type="password" v-model="newPassword" placeholder="New password" />
+                        </md-field>
 
-                </md-card-header>
+                    </md-card-header>
 
-                <md-card-actions>
-                    <md-button class="md-primary" @click="changePassword">change password</md-button>
-                </md-card-actions>
-            </md-card>
+                    <md-card-actions>
+                        <md-button class="md-primary" @click="changePassword">change password</md-button>
+                    </md-card-actions>
+                </md-card>
+            </div>
 
         </div>
 
