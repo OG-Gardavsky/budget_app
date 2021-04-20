@@ -1,6 +1,11 @@
 <template>
     <md-dialog :md-active.sync="showUpdateAccountDialog">
 
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <md-dialog-title>Update Account</md-dialog-title>
 
         <md-tabs md-dynamic-height>

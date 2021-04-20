@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const constants = require('../config/constants');
 const Account = require('./account');
 const Transaction = require('./transaction');
+const Category = require('./category');
 
 
 const userSchema = new mongoose.Schema({
@@ -159,6 +160,7 @@ userSchema.pre('remove', async function (next) {
     const user = this;
     await Transaction.deleteMany({ owner: user._id });
     await Account.deleteMany({ owner: user._id });
+    await Category.deleteMany({ owner: user._id });
     next();
 });
 

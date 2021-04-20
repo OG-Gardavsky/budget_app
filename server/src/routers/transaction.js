@@ -213,7 +213,7 @@ router.post(baseUrl + '/invests', auth, async (req, res) => {
     }
 
     if ( !['deposit', 'withdrawal'].includes(req.body.subtype) ) {
-        return res.status(400).send({ error: "invalid subtype, should be just 'lend' or 'borrow'"});
+        return res.status(400).send({ error: "invalid subtype, should be just 'deposit' or 'withdrawal'"});
     }
 
     try {

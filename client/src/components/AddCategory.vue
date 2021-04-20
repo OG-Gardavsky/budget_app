@@ -1,6 +1,11 @@
 <template>
     <md-dialog :md-active.sync="showDialog">
 
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <div id="dialogContent">
 
             <md-dialog-title>Add category</md-dialog-title>

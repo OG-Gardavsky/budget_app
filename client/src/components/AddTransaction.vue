@@ -1,5 +1,10 @@
 <template>
     <div>
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <md-dialog :md-active.sync="showAddTransactionDialog"  class="md-scrollbar" style="padding-bottom: 50px" >
 
             <md-dialog-title>Add transaction</md-dialog-title>
@@ -327,6 +332,9 @@ export default {
             await this.createTransaction(body, 'basic');
         },
         async createTransaction(body, type){
+
+            body.accountingDate = this.parseDateBeforeSave(body.accountingDate);
+
             const res = await fetch('api/transactions/' + type, {
                 method: 'POST',
                 headers: {
@@ -343,9 +351,11 @@ export default {
                 this.$emit('on-closeModal');
                 this.clearVariables();
             } else if (responseBody.error) {
-                this.displayCustomError(responseBody.error);
+                // this.displayCustomError(responseBody.error);
+                alert(responseBody.error);
             }else {
-                this.displayCustomError('Error during saving');
+                // this.displayCustomError('Error during saving');
+                alert('Error during saving');
             }
         },
         clearVariables(){

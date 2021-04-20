@@ -1,5 +1,15 @@
 <template>
     <div >
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <Header />
 
         <div>
