@@ -12,7 +12,6 @@ router.get(`${baseUrl}/list`, async (req, res) => {
         res.send(body)
 
     } catch (e) {
-        console.log(e)
         res.status(400).send(e);
     }
 });
