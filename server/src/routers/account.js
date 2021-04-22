@@ -11,6 +11,15 @@ const baseUrl = '/api/accounts';
  * API creates new account
  */
 router.post(baseUrl, auth, async (req, res) => {
+
+    if (req.body.name){
+        const accountWithsameName = await Account.find({owner: req.user._id, name: req.body.name });
+        console.log(accountWithsameName)
+        if (accountWithsameName.length > 0) {
+            return  res.status(400).send({error: 'account with same name already exists'})
+        }
+    }
+
     const account = new Account({
         //... copies content of req.body
         ...req.body,
