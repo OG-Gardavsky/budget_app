@@ -118,7 +118,7 @@
                     <label v-if="transactionSubtype === 'borrow' " >I will owe to: </label>
                     <label v-if="transactionSubtype === 'lend' " >Will owe me: </label>
                     <md-select v-model="debtAccountId" required >
-                        <md-option  v-for="account in listOfBasicAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                        <md-option  v-for="account in listOfDebtAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                     </md-select>
                 </md-field>
 
