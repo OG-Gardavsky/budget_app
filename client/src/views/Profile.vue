@@ -118,6 +118,10 @@ export default {
         },
         async changePrimarCurrency(){
 
+            if (this.currencyName === '') {
+                return this.displayCustomError('please fill your Default Currency')
+            }
+
             const primarCurrency = this.listOfCurrencies.find(currency => currency.currencyName === this.currencyName).id;
 
 
@@ -132,13 +136,13 @@ export default {
 
             const resBody = await res.json();
 
-            if (res.status === 200){
-                this.displayCustomError('currency changed succesfully')
-            } else if (resBody.error) {
-                this.displayCustomError(resBody.error);
-            } else {
-                this.displayCustomError('Error during changing password');
+            if (resBody.error) {
+                return  this.displayCustomError(resBody.error);
             }
+            if (res.status !== 200){
+                return  this.displayCustomError('Error during changing primar Currency');
+            }
+
         }
     },
     async created() {
