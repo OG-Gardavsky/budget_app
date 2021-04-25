@@ -13,6 +13,10 @@ const baseUrl = '/api/transactions';
  */
 router.post(baseUrl + '/basic', auth, async (req, res) => {
 
+    if (req.body.amount < 0) {
+        return res.status(400).send({ error: 'Amount has to be > 0' } );
+    }
+
     // chcecks if acccountId belongs to user
     await req.user.populate({
         path: 'accounts'
@@ -49,6 +53,10 @@ router.post(baseUrl + '/basic', auth, async (req, res) => {
  * API creates transfer between 2 accounts
  */
 router.post(baseUrl + '/transfer', auth, async (req, res) => {
+
+    if (req.body.amount < 0) {
+        return res.status(400).send({ error: 'Amount has to be > 0' } );
+    }
 
     // chcecks if acccountId belongs to user
     await req.user.populate({
