@@ -36,6 +36,7 @@
 
                 <md-field>
                     <label>Enter amount of transaction</label>
+                    <span v-if="transactionSubtype === 'expense'">_  </span>
                     <md-input type="number" v-model="amount" placeholder="Amount" required />
                 </md-field>
 
