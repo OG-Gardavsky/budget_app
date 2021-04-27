@@ -53,6 +53,11 @@
                             <md-input type="password" v-model="newPassword" placeholder="New password" />
                         </md-field>
 
+                        <md-field>
+                            <label>Re-Enter new password for check</label>
+                            <md-input type="password" v-model="newPasswordCheck" placeholder="Re-Enter New password" />
+                        </md-field>
+
                     </md-card-header>
 
                     <md-card-actions>
@@ -81,6 +86,7 @@ export default {
         return {
             oldPassword: null,
             newPassword: null,
+            newPasswordCheck: null,
 
             listOfCurrencies: null,
             listOfCurrencyNames: null,
@@ -89,6 +95,10 @@ export default {
     },
     methods: {
         async changePassword(){
+
+            if (this.newPassword !== this.newPasswordCheck) {
+                return this.displayCustomError('New password do not match')
+            }
 
 
             const res = await fetch('api/users/password', {
