@@ -11,22 +11,22 @@ const baseUrl = '/api/accounts';
  * API creates new account
  */
 router.post(baseUrl, auth, async (req, res) => {
-
-    if (req.body.name){
-        const accountWithsameName = await Account.find({owner: req.user._id, name: req.body.name });
-        console.log(accountWithsameName)
-        if (accountWithsameName.length > 0) {
-            return  res.status(400).send({error: 'account with same name already exists'})
-        }
-    }
-
-    const account = new Account({
-        //... copies content of req.body
-        ...req.body,
-        owner: req.user._id
-    });
-
     try {
+
+        if (req.body.name && req.body.type){
+            const accountWithsameName = await Account.find({owner: req.user._id, name: req.body.name, type:req.body.type });
+            if (accountWithsameName.length > 0) {
+                return  res.status(400).send({error: 'account with same name already exists'})
+            }
+        }
+
+        const account = new Account({
+            //... copies content of req.body
+            ...req.body,
+            owner: req.user._id
+        });
+
+
         await account.save();
         res.status(201).send(account);
     } catch (e) {
@@ -109,11 +109,20 @@ router.put(baseUrl + '/id::id' , auth, async (req, res) => {
             return res.status(400).send({ error: 'No account found'});
         }
 
+        const accountWithsameName =  await Account.find({owner: req.user._id, name: req.body.name, type: account.type });
+
+        if (accountWithsameName.length > 0) {
+            if (accountWithsameName[0]._id !== account._id) {
+                return  res.status(400).send({error: 'account with same name already exists'});
+            }
+        }
+
         updates.forEach((update) => account[update] = req.body[update]);
         await account.save();
         res.send(account);
 
     } catch (e) {
+        console.log(e)
         res.status(500).send(e);
     }
 });
