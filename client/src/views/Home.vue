@@ -200,7 +200,7 @@ export default {
             this.transactions = await res.json();
         },
         async deleteTransaction(transaction){
-            const answer = window.confirm('Are you sure you want to delete transation with name ' + transaction.name);
+            const answer = window.confirm('Are you sure you want to delete transation');
 
             if (!answer) {
                 return;
@@ -214,7 +214,7 @@ export default {
             });
 
             if (res.status !== 200){
-                return this.displayCustomError('Error during deleting of ' + transaction.name);
+                return this.displayCustomError('Error during deleting of transaction?');
             }
 
             await this.refresh();
