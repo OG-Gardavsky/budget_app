@@ -39,9 +39,9 @@ export default {
             const respBody = await res.json();
 
             if (res.status === 201) {
-                const data = await res.json();
+                // const data = await res.json();
 
-                localStorage.setItem('userToken', data.token);
+                localStorage.setItem('userToken', respBody.token);
 
                 await router.push('home');
             }
