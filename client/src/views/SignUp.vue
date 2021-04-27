@@ -36,14 +36,19 @@ export default {
                 body: JSON.stringify(credentials),
             });
 
+            const respBody = await res.json();
+
             if (res.status === 201) {
                 const data = await res.json();
 
                 localStorage.setItem('userToken', data.token);
 
                 await router.push('home');
-
-            } else {
+            }
+            else if (respBody.error){
+                this.displayCustomError(respBody.error)
+            }
+            else {
                 this.displayCustomError('unable to register');
             }
 

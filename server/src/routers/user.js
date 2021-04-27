@@ -11,9 +11,15 @@ const baseUrl = '/api/users';
  * API creates new user
  */
 router.post(baseUrl, async (req, res) => {
-    const user = new User(req.body);
 
-    try{
+    try {
+        const isSameEmail = req.body.email ? await User.find({ email: req.body.email.toLowerCase() }) : [];
+
+        if (isSameEmail.length > 0) {
+            return res.send({error: 'Email adrres is already taken'});
+        }
+
+        const user = new User(req.body);
         await user.save();
         const token = await user.generateAuthToken();
         res.status(201).send({user, token});
@@ -28,7 +34,7 @@ router.post(baseUrl, async (req, res) => {
  */
 router.post(baseUrl + '/login', async(req, res) => {
     try {
-        const user = await User.findByCredentials(req.body.email, req.body.password);
+        const user = await User.findByCredentials(req.body.email.toLowerCase(), req.body.password);
         const token = await user.generateAuthToken();
         res.send({user, token});
     } catch (e) {
