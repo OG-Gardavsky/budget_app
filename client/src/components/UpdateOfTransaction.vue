@@ -36,6 +36,7 @@
 
                 <md-field>
                     <label>Enter amount of transaction</label>
+                    <span v-if="transactionSubtype === 'expense'">_  </span>
                     <md-input type="number" v-model="amount" placeholder="Amount" required />
                 </md-field>
 
@@ -118,7 +119,7 @@
                     <label v-if="transactionSubtype === 'borrow' " >I will owe to: </label>
                     <label v-if="transactionSubtype === 'lend' " >Will owe me: </label>
                     <md-select v-model="debtAccountId" required >
-                        <md-option  v-for="account in listOfBasicAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                        <md-option  v-for="account in listOfDebtAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                     </md-select>
                 </md-field>
 

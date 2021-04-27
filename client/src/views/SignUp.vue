@@ -44,7 +44,7 @@ export default {
                 await router.push('home');
 
             } else {
-                this.displayCustomError('unable to login');
+                this.displayCustomError('unable to register');
             }
 
         }

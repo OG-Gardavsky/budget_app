@@ -20,14 +20,14 @@
                 </md-select>
             </md-field>
 
-            <md-field v-if="accountType === 'invest'">
-                <label>choose Account type</label>
-                <md-select v-model="investMoneyType" required>
-                    <md-option value="fiat">fiat money</md-option>
-                    <md-option value="crypto">crypto money
-                    </md-option>
-                </md-select>
-            </md-field>
+<!--            <md-field v-if="accountType === 'invest'">-->
+<!--                <label>choose Account type</label>-->
+<!--                <md-select v-model="investMoneyType" required>-->
+<!--                    <md-option value="fiat">fiat money</md-option>-->
+<!--                    <md-option value="crypto">crypto money-->
+<!--                    </md-option>-->
+<!--                </md-select>-->
+<!--            </md-field>-->
 
             <md-field>
                 <label>Enter Name for Account</label>
@@ -114,9 +114,9 @@ export default {
                 return this.displayCustomError('initialBalance nedds to be less than 0.');
             }
 
-            if (this.type === 'invest' && this.investMoneyType === null) {
-                return this.displayCustomError('fill field ');
-            }
+            // if (this.type === 'invest' && this.investMoneyType === null) {
+            //     return this.displayCustomError('fill field ');
+            // }
 
 
             const body = {
@@ -130,9 +130,9 @@ export default {
                 body.limit = this.creditLimit;
             }
 
-            if (this.type === 'invest') {
-                body.moneyType = this.investMoneyType;
-            }
+            // if (this.type === 'invest') {
+            //     body.moneyType = this.investMoneyType;
+            // }
 
             const res = await fetch('api/accounts', {
                 method: 'POST',
@@ -143,11 +143,15 @@ export default {
                 body: JSON.stringify(body)
             });
 
+            const responseBody = await res.json();
+
             if (res.status === 201){
                 this.$emit('on-save');
                 this.$emit('on-closeModal');
                 this.clearVariables();
-            } else {
+            } else if (responseBody.error) {
+                this.displayCustomError(responseBody.error);
+            }else {
                 this.displayCustomError('Error during saving');
             }
         },

@@ -1,40 +1,43 @@
 <template>
     <section>
 
-        <md-dialog-alert
-            :md-active.sync="displayError"
-            :md-content="errorMessage"
-            md-confirm-text="ok" />
+        <form>
 
-        <md-field>
-            <label>Enter your email - serves as login</label>
-            <md-input type="email" v-model="email" placeholder="Email" />
-        </md-field>
+            <md-dialog-alert
+                :md-active.sync="displayError"
+                :md-content="errorMessage"
+                md-confirm-text="ok" />
 
-        <md-field>
-            <label>Enter your(how you want to be called)</label>
-            <md-input type="email" v-model="name" placeholder="Name" />
-        </md-field>
+            <md-field>
+                <label>Enter your email - serves as login</label>
+                <md-input type="email" v-model="email" placeholder="Email" />
+            </md-field>
 
-
-        <md-autocomplete v-model="currencyName" :md-options="listOfCurrencyNames">
-            <label>Default currency</label>
-        </md-autocomplete>
+            <md-field>
+                <label>Enter your(how you want to be called)</label>
+                <md-input type="email" v-model="name" placeholder="Name" />
+            </md-field>
 
 
+            <md-autocomplete v-model="currencyName" :md-options="listOfCurrencyNames">
+                <label>Default currency</label>
+            </md-autocomplete>
 
 
-        <md-field>
-            <label>Enter your password - minimal 10 characters</label>
-            <md-input type="password" v-model="password" placeholder="Password" />
-        </md-field>
 
-        <md-field>
-            <label>Reenter you password</label>
-            <md-input type="password" v-model="passwordCheck" placeholder="Password" />
-        </md-field>
 
-        <md-button class="md-raised md-primary" @click="onSignUp">Sign up</md-button>
+            <md-field>
+                <label>Enter your password - minimal 10 characters</label>
+                <md-input type="password" v-model="password" placeholder="Password" />
+            </md-field>
+
+            <md-field>
+                <label>Reenter you password</label>
+                <md-input type="password" v-model="passwordCheck" placeholder="Password" />
+            </md-field>
+
+            <md-button type="submit" class="md-raised md-primary" @click="onSignUp">Sign up</md-button>
+        </form>
 
     </section>
 </template>

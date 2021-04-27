@@ -48,6 +48,7 @@
 
                         <md-field>
                             <label>Enter amount of transaction</label>
+                            <span v-if="transactionSubtype === 'expense'">_  </span>
                             <md-input type="number" v-model="amount" placeholder="Amount" required />
                         </md-field>
 
@@ -351,11 +352,11 @@ export default {
                 this.$emit('on-closeModal');
                 this.clearVariables();
             } else if (responseBody.error) {
-                // this.displayCustomError(responseBody.error);
-                alert(responseBody.error);
+                this.displayCustomError(responseBody.error);
+                // alert(responseBody.error);
             }else {
-                // this.displayCustomError('Error during saving');
-                alert('Error during saving');
+                this.displayCustomError('Error during saving');
+                // alert('Error during saving');
             }
         },
         clearVariables(){

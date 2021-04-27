@@ -13,6 +13,10 @@ const baseUrl = '/api/transactions';
  */
 router.post(baseUrl + '/basic', auth, async (req, res) => {
 
+    if (req.body.amount < 0) {
+        return res.status(400).send({ error: 'Amount has to be > 0' } );
+    }
+
     // chcecks if acccountId belongs to user
     await req.user.populate({
         path: 'accounts'
@@ -49,6 +53,10 @@ router.post(baseUrl + '/basic', auth, async (req, res) => {
  * API creates transfer between 2 accounts
  */
 router.post(baseUrl + '/transfer', auth, async (req, res) => {
+
+    if (req.body.amount < 0) {
+        return res.status(400).send({ error: 'Amount has to be > 0' } );
+    }
 
     // chcecks if acccountId belongs to user
     await req.user.populate({
@@ -333,7 +341,7 @@ router.get(baseUrl + '/transfer/sharedId::id', auth, async (req, res) => {
     try {
         const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'transfer'});
 
-        if (transactions.length !== 2){
+        if (![1,2].includes(transactions.length)){
             return res.status(400).send({ error: 'Entered transaction does not exist.'});
         }
 
@@ -346,6 +354,8 @@ router.get(baseUrl + '/transfer/sharedId::id', auth, async (req, res) => {
                 bodyToSend.name = transaction.name;
             } else if (transaction.subtype === 'out') {
                 bodyToSend.givingAccountId = transaction.accountId;
+                bodyToSend.amount = Math.abs(transaction.amount);
+                bodyToSend.name = transaction.name;
             }
         });
 
@@ -365,7 +375,7 @@ router.get(baseUrl + '/debt/sharedId::id', auth, async (req, res) => {
     try {
         const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'debt'});
 
-        if (transactions.length !== 2){
+        if (![1,2].includes(transactions.length)){
             return res.status(400).send({ error: 'Entered transaction does not exist.'});
         }
 
@@ -382,16 +392,18 @@ router.get(baseUrl + '/debt/sharedId::id', auth, async (req, res) => {
         const debtAccountTransaction = transactions.find(transaction => debtAccountsIds.includes(transaction.accountId.toString()) );
 
 
-        bodyToSend.subtype = basicAccountTransaction.subtype;
-        bodyToSend.basicAccountId = basicAccountTransaction.accountId;
-        bodyToSend.debtAccountId = debtAccountTransaction.accountId;
-        bodyToSend.amount = Math.abs(basicAccountTransaction.amount);
-        bodyToSend.name = basicAccountTransaction.name;
+        bodyToSend.subtype = basicAccountTransaction ? basicAccountTransaction.subtype : debtAccountTransaction.subtype;
+        bodyToSend.basicAccountId = basicAccountTransaction ? basicAccountTransaction.accountId : undefined;
+        bodyToSend.debtAccountId = debtAccountTransaction ? debtAccountTransaction.accountId : undefined;
+        bodyToSend.amount = basicAccountTransaction ? basicAccountTransaction.amount : Math.abs(debtAccountTransaction.amount);
+        bodyToSend.name = basicAccountTransaction ? basicAccountTransaction.subtype : debtAccountTransaction.name;
+
 
 
         res.send(bodyToSend);
 
     } catch (e) {
+        console.log(e)
         res.status(500).send();
     }
 });
@@ -407,7 +419,7 @@ router.get(baseUrl + '/invests/sharedId::id', auth, async (req, res) => {
         const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'invests'});
 
 
-        if (transactions.length !== 2){
+        if (![1,2].includes(transactions.length)){
             return res.status(400).send({ error: 'Entered transaction does not exist.'});
         }
 
@@ -421,14 +433,14 @@ router.get(baseUrl + '/invests/sharedId::id', auth, async (req, res) => {
         const investAccountsIds = req.user.accounts.filter(acc => acc.type === 'invest' ).map(acc => acc._id.toString());
 
         const basicAccountTransaction = transactions.find(transaction => basicAccountsIds.includes(transaction.accountId.toString()) );
-        const debtAccountTransaction = transactions.find(transaction => investAccountsIds.includes(transaction.accountId.toString()) );
+        const investAccountTransaction = transactions.find(transaction => investAccountsIds.includes(transaction.accountId.toString()) );
 
 
-        bodyToSend.subtype = basicAccountTransaction.subtype;
-        bodyToSend.basicAccountId = basicAccountTransaction.accountId;
-        bodyToSend.investAccountId = debtAccountTransaction.accountId;
-        bodyToSend.amount = Math.abs(basicAccountTransaction.amount);
-        bodyToSend.name = basicAccountTransaction.name;
+        bodyToSend.subtype = basicAccountTransaction ? basicAccountTransaction.subtype : investAccountTransaction.subtype;
+        bodyToSend.basicAccountId = basicAccountTransaction ? basicAccountTransaction.accountId : undefined;
+        bodyToSend.investAccountId = investAccountTransaction ? investAccountTransaction.accountId : undefined;
+        bodyToSend.amount = basicAccountTransaction ? Math.abs(basicAccountTransaction.amount) : Math.abs(investAccountTransaction.amount);
+        bodyToSend.name = basicAccountTransaction ? basicAccountTransaction.subtype : investAccountTransaction.name;
 
 
         res.send(bodyToSend);
