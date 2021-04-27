@@ -55,15 +55,22 @@ export default {
                 body: JSON.stringify(body)
             });
 
+            const responseBody = await res.json();
+
             if (res.status === 201){
                 this.$emit('on-save');
                 this.$emit('on-closeModal');
                 this.clearVariables();
-            } else {
+            }
+            else if (responseBody.error) {
+                this.displayCustomError(responseBody.error);
+            }
+            else {
                 this.displayCustomError('Error during saving');
             }
         },
         closeDialog(){
+            this.clearVariables();
             this.$emit('on-closeModal');
         },
         clearVariables(){

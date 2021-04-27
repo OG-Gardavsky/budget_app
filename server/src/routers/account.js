@@ -112,7 +112,7 @@ router.put(baseUrl + '/id::id' , auth, async (req, res) => {
         const accountWithsameName =  await Account.find({owner: req.user._id, name: req.body.name, type: account.type });
 
         if (accountWithsameName.length > 0) {
-            if (accountWithsameName[0]._id !== account._id) {
+            if (accountWithsameName[0]._id.toString() !== account._id.toString()) {
                 return  res.status(400).send({error: 'account with same name already exists'});
             }
         }
