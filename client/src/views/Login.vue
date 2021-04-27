@@ -5,11 +5,15 @@
           :md-content="errorMessage"
           md-confirm-text="ok" />
 
-      <h1>Log in, please.</h1>
+
+      <h1 style="margin-top: 30%">Log in, please.</h1>
       <LoginPage @on-login="onLogin"/>
 
-      <p>Do not have an account?</p>
 
+      <md-button style="margin-top: 10px">Forgot password?</md-button>
+
+
+      <p>Do not have an account?</p>
       <router-link :to="'signUp'">
           <md-button class="md-raised">Sign up</md-button>
       </router-link>

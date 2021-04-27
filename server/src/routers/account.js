@@ -122,7 +122,6 @@ router.put(baseUrl + '/id::id' , auth, async (req, res) => {
         res.send(account);
 
     } catch (e) {
-        console.log(e)
         res.status(500).send(e);
     }
 });
