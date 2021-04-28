@@ -1,5 +1,10 @@
 <template>
     <div id="mainContent">
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <h1>Please register.</h1>
         <sign-up-page @on-signup="onSignUp" />
 
@@ -31,15 +36,20 @@ export default {
                 body: JSON.stringify(credentials),
             });
 
-            if (res.status === 201) {
-                const data = await res.json();
+            const respBody = await res.json();
 
-                localStorage.setItem('userToken', data.token);
+            if (res.status === 201) {
+                // const data = await res.json();
+
+                localStorage.setItem('userToken', respBody.token);
 
                 await router.push('home');
-
-            } else {
-                this.displayCustomError('unable to login');
+            }
+            else if (respBody.error){
+                this.displayCustomError(respBody.error)
+            }
+            else {
+                this.displayCustomError('unable to register');
             }
 
         }

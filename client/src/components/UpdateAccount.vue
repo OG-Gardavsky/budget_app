@@ -1,6 +1,11 @@
 <template>
     <md-dialog :md-active.sync="showUpdateAccountDialog">
 
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <md-dialog-title>Update Account</md-dialog-title>
 
         <md-tabs md-dynamic-height>
@@ -108,11 +113,17 @@ export default {
                 body: JSON.stringify(body)
             });
 
+            const respBody = await res.json();
+
             if (res.status === 200){
                 this.$emit('on-save');
                 this.$emit('on-closeModal');
                 this.clearVariables();
-            } else {
+            }
+            else if (respBody.error){
+                this.displayCustomError(respBody.error)
+            }
+            else {
                 this.displayCustomError('Error during update');
             }
         }

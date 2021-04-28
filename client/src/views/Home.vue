@@ -1,5 +1,11 @@
 <template>
     <div>
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
+
         <Header />
 
         <md-card id="totalBalanceCard" >
@@ -27,11 +33,15 @@
                 </md-card>
             </div>
 
-            <md-card md-with-hover style="max-height: 100px">
-                <md-card-content>
-                    <md-button class="md-button md-primary" @click="showAddAccount">add <br/> account</md-button>
-                </md-card-content>
-            </md-card>
+
+            <div @click="showAddAccount">
+                <md-card md-with-hover style="height: 140px; margin-right: 5px">
+                    <md-card-content>
+                        <md-button class="md-button md-primary">add <br/> account</md-button>
+                    </md-card-content>
+                </md-card>
+            </div>
+
             <add-account :account-type="'basic'" :show-add-account-dialog="showAddAccountDialog" @on-closeModal="closeAddAccount" @on-save="refresh" />
         </md-content>
 
@@ -190,7 +200,7 @@ export default {
             this.transactions = await res.json();
         },
         async deleteTransaction(transaction){
-            const answer = window.confirm('Are you sure you want to delete transation with name ' + transaction.name);
+            const answer = window.confirm('Are you sure you want to delete transation');
 
             if (!answer) {
                 return;
@@ -204,7 +214,7 @@ export default {
             });
 
             if (res.status !== 200){
-                return this.displayCustomError('Error during deleting of ' + transaction.name);
+                return this.displayCustomError('Error during deleting of transaction?');
             }
 
             await this.refresh();
@@ -297,10 +307,12 @@ export default {
 
     max-width: 60%;
     margin: 5px auto;
-    overflow: scroll;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    //white-space: nowrap;
 
     @media screen and (max-width: 560px) {
         max-width: 100%;
@@ -311,14 +323,12 @@ export default {
     }
 
     .accountCard {
-        min-height: 100px;
-        min-width: 120px;
+        height: 140px;
+        width: 140px;
         overflow:hidden;
     }
 
     >div{
-        width: 140px;
-        height: 130px;
         margin: 5px;
         flex-direction: column;
     }

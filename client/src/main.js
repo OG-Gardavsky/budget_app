@@ -14,10 +14,19 @@ Vue.mixin({
     data() {
         return {
             spinnerDisplayed: true,
-            userInfo: {}
+            userInfo: {},
+            displayError: false,
+            errorMessage: null,
         }
     },
     methods: {
+        parseDateBeforeSave(date){
+            const now = new Date();
+            if (date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate()) {
+                return now;
+            }
+            return date;
+        },
         async gotoPage(name) {
             await router.push(name);
         },
@@ -26,7 +35,9 @@ Vue.mixin({
             return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
         },
         displayCustomError(errorMesage) {
-            alert(errorMesage);
+            alert(errorMesage)
+            // this.errorMessage = errorMesage;
+            // this.displayError = true;
         },
         showSpinner() {
             this.spinnerDisplayed = true;

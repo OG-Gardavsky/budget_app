@@ -8,12 +8,12 @@ const transactionSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    currency: {
-        type: String,
-        required: false,
-        trim: true,
-        enum: ['CZK', 'USD', 'EUR']
-    },
+    // currency: {
+    //     type: String,
+    //     required: false,
+    //     trim: true,
+    //     enum: ['CZK', 'USD', 'EUR']
+    // },
     name: {
         type: String,
         required: false,

@@ -1,10 +1,20 @@
 <template>
   <div id="mainContent">
-      <h1>Log in, please.</h1>
+      <md-dialog-alert
+          :md-active.sync="displayError"
+          :md-content="errorMessage"
+          md-confirm-text="ok" />
+
+
+      <h1 >Log in, please.</h1>
       <LoginPage @on-login="onLogin"/>
 
-      <p>Do not have an account?</p>
+      <router-link to="passwordResetRequest">
+          <md-button style="margin-top: 10px">Forgot password?</md-button>
+      </router-link>
 
+
+      <p>Do not have an account?</p>
       <router-link :to="'signUp'">
           <md-button class="md-raised">Sign up</md-button>
       </router-link>

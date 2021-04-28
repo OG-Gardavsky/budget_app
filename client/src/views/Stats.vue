@@ -1,5 +1,11 @@
 <template>
     <div>
+
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <Header />
 
         <h1>Stats</h1>
@@ -36,7 +42,7 @@
 
         <md-card id="totalSum">
             <md-card-content>
-                <div class="md-title" v-if="totalSum !== null">Total {{transactionType}}: {{totalSum}}</div>
+                <div class="md-title" v-if="totalSum !== null">Total {{transactionType}}: {{totalSum}} {{userInfo.primarCurrency4}}</div>
             </md-card-content>
         </md-card>
 

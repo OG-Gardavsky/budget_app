@@ -1,6 +1,11 @@
 <template>
     <md-dialog :md-active.sync="showDialog">
 
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
+
         <div id="dialogContent">
 
             <md-dialog-title>Update of transacation: <span v-if="transactionSubtype">{{transactionSubtype}}</span></md-dialog-title>
@@ -31,6 +36,7 @@
 
                 <md-field>
                     <label>Enter amount of transaction</label>
+                    <span v-if="transactionSubtype === 'expense'">_  </span>
                     <md-input type="number" v-model="amount" placeholder="Amount" required />
                 </md-field>
 
@@ -113,7 +119,7 @@
                     <label v-if="transactionSubtype === 'borrow' " >I will owe to: </label>
                     <label v-if="transactionSubtype === 'lend' " >Will owe me: </label>
                     <md-select v-model="debtAccountId" required >
-                        <md-option  v-for="account in listOfBasicAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
+                        <md-option  v-for="account in listOfDebtAccounts"  :value="account._id.toString()">{{ account.name }}</md-option>
                     </md-select>
                 </md-field>
 
@@ -273,6 +279,8 @@ export default {
                 body.name = this.transactionName;
             }
 
+            body.accountingDate = this.parseDateBeforeSave(body.accountingDate);
+
             await this.updateTransaction(body, 'invests', 'sharedId', this.transactionToUpdate.sharedId);
         },
         async updateDebt(){
@@ -286,6 +294,8 @@ export default {
                 body.name = this.transactionName;
             }
 
+            body.accountingDate = this.parseDateBeforeSave(body.accountingDate);
+
             await this.updateTransaction(body, 'debt', 'sharedId', this.transactionToUpdate.sharedId);
         },
         async updateTransfer(){
@@ -298,6 +308,8 @@ export default {
             if (this.transactionName !== null) {
                 body.name = this.transactionName;
             }
+
+            body.accountingDate = this.parseDateBeforeSave(body.accountingDate);
 
             await this.updateTransaction(body, 'transfer', 'sharedId', this.transactionToUpdate.sharedId);
         },
@@ -315,6 +327,8 @@ export default {
             // if (this.currency !== null) {
             //     body.currency = this.currency;
             // }
+
+            body.accountingDate = this.parseDateBeforeSave(body.accountingDate);
 
             await this.updateTransaction(body, 'basic', 'id', this.transactionId);
         },

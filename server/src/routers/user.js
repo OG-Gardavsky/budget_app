@@ -3,6 +3,11 @@ const User = require('../models/user');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
 
+const jwt = require('jsonwebtoken');
+const { jwtKey } = require("../config/constants");
+const { forgottenPasswordSend } = require('../utils/emailSending')
+
+
 const router = new express.Router();
 
 const baseUrl = '/api/users';
@@ -11,9 +16,15 @@ const baseUrl = '/api/users';
  * API creates new user
  */
 router.post(baseUrl, async (req, res) => {
-    const user = new User(req.body);
 
-    try{
+    try {
+        const isSameEmail = req.body.email ? await User.find({ email: req.body.email.toLowerCase() }) : [];
+
+        if (isSameEmail.length > 0) {
+            return res.send({error: 'Email adrres is already taken'});
+        }
+
+        const user = new User(req.body);
         await user.save();
         const token = await user.generateAuthToken();
         res.status(201).send({user, token});
@@ -28,7 +39,7 @@ router.post(baseUrl, async (req, res) => {
  */
 router.post(baseUrl + '/login', async(req, res) => {
     try {
-        const user = await User.findByCredentials(req.body.email, req.body.password);
+        const user = await User.findByCredentials(req.body.email.toLowerCase(), req.body.password);
         const token = await user.generateAuthToken();
         res.send({user, token});
     } catch (e) {
@@ -138,13 +149,106 @@ router.put(baseUrl + '/password', auth, async (req, res) => {
 });
 
 /**
+ * endpoint serves for requesting password reset
+ */
+router.post(baseUrl + '/passwordResetRequest', async(req, res) => {
+    try {
+
+        const user = await User.findOne({ email: req.body.email.toLowerCase() } );
+
+        if (!user) {
+            return res.status(400).send({error: 'User not found'});
+        }
+
+        const resetToken = await user.generateResetToken();
+
+
+        const resetLink = `${req.protocol}://${req.get('host')}/#/passwordReset?token=${resetToken}`;
+
+        await forgottenPasswordSend(user.email, resetLink)
+
+        res.send();
+    } catch (e) {
+        res.status(400).send();
+    }
+});
+
+/**
+ * endpoint chcecks if new token is valid
+ */
+router.get(baseUrl + '/isResetTokenValid/token::token', async(req, res) => {
+
+    const token = req.params.token;
+
+    try {
+        const decodedToken = jwt.verify(token, jwtKey);
+
+        const user = await User.findOne({ _id: decodedToken._id, resetToken: token});
+
+        if (!user) {
+            return  res.status(400).send({error: 'Invalid reset link, request new reset one.'});
+        }
+
+        res.send();
+
+    } catch (e) {
+        res.status(400).send({error: 'Invalid reset link, request new reset one.'});
+    }
+});
+
+
+router.post(baseUrl + '/passwordReset', async(req, res) => {
+
+    const requiredFields = ['token', 'newPassword']
+    const bodyKeys = Object.keys(req.body);
+
+    const containRequiredFields = requiredFields.every(field => bodyKeys.includes(field));
+
+    if (!containRequiredFields) {
+        return res.status(400).send({error: 'Mising one of required properties' + requiredFields.toString() } );
+    }
+
+    try {
+
+        const decodedToken = jwt.verify(req.body.token, jwtKey);
+        const user = await User.findOne({ _id: decodedToken._id, resetToken: req.body.token});
+
+        if (!user) {
+            return res.send({error: 'Error during password reset, request new reset link'})
+        }
+
+        user.password = req.body.newPassword;
+        const token = await user.generateAuthToken();
+        user.resetToken = undefined;
+        await user.save();
+
+        res.send({user, token});
+
+    } catch (e) {
+        res.status(400).send();
+    }
+});
+
+
+/**
  * API deletes current user account
  */
 router.delete(baseUrl + '/me', auth, async (req, res) => {
+
+    if (!req.body.password) {
+        return res.send({error: 'Missing password for confirmation'})
+    }
+
     try {
+        const isOldPasswValid = await bcrypt.compare(req.body.password, req.user.password);
+        if (!isOldPasswValid){
+            return res.status(400).send({error: 'Entered password is incorrect'});
+        }
+
         await req.user.remove();
         res.send(req.user);
     } catch (e) {
+        console.log(e)
         res.status(500).send();
     }
 })

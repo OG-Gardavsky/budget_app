@@ -6,9 +6,9 @@
             :md-content="errorMessage"
             md-confirm-text="ok" />
 
-        <md-dialog-content>
+        <div id="dialogContent">
 
-            <md-dialog-title>Update of category</md-dialog-title>
+            <md-dialog-title>Delete all data</md-dialog-title>
 
             <md-field>
                 <label>Enter Name for Account</label>
@@ -17,47 +17,47 @@
 
             <md-dialog-actions>
                 <md-button class="md-primary" @click="closeDialog">Close</md-button>
-                <md-button class="md-primary" @click="updateCategory">update category</md-button>
+                <md-button class="md-primary" @click="addCategory">add category</md-button>
             </md-dialog-actions>
 
-        </md-dialog-content>
+        </div>
 
     </md-dialog >
 </template>
 
 <script>
 export default {
-    name: "UpdateCategory",
-    props: {
-        showDialog: Boolean,
-        categoryToUpdate: Object
-    },
+    name: "DeleteUserAccount",
     data() {
         return {
-            name: null,
-            categoryId: null
+            name: null
         }
     },
+    props: {
+        showDialog: Boolean,
+    },
     methods: {
-        closeDialog() {
-            this.$emit('on-closeModal');
-        },
-        clearVariables() {
-            this.name = null;
-        },
-        async updateCategory(){
-            const res = await fetch('api/categories/id:' + this.categoryId, {
-                method: 'PUT',
+        async addCategory() {
+            if (this.name === null) {
+                return this.displayCustomError('Please fill name');
+            }
+
+            const body = {
+                name: this.name
+            }
+
+            const res = await fetch('api/categories', {
+                method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
                     'Authorization': 'Bearer ' + localStorage.getItem('userToken')
                 },
-                body: JSON.stringify({name: this.name})
+                body: JSON.stringify(body)
             });
 
             const responseBody = await res.json();
 
-            if (res.status === 200){
+            if (res.status === 201){
                 this.$emit('on-save');
                 this.$emit('on-closeModal');
                 this.clearVariables();
@@ -69,14 +69,21 @@ export default {
                 this.displayCustomError('Error during saving');
             }
         },
-    },
-    created() {
-        this.name = this.categoryToUpdate.name;
-        this.categoryId = this.categoryToUpdate._id;
+        closeDialog(){
+            this.clearVariables();
+            this.$emit('on-closeModal');
+        },
+        clearVariables(){
+            this.name = null;
+        },
     }
 }
 </script>
 
-<style scoped>
+<style lang="scss">
+
+#dialogContent{
+    margin: 10px;
+}
 
 </style>

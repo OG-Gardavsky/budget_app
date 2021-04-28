@@ -1,12 +1,13 @@
 const fetch = require('node-fetch');
 const constants = require('../config/constants');
+const currencyList = require('../config/currencyList');
 
 const getListOfCurrencies = async () => {
 
     const res = await fetch('https://free.currconv.com/api/v7/currencies?apiKey=' + constants.currencyApiKey)
 
     if (res.status !== 200) {
-        throw new Error('unable to connect to currency service.');
+        return currencyList;
     }
 
     const body = await res.json();

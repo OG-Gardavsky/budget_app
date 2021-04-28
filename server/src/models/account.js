@@ -78,7 +78,8 @@ const longTermSchema = new mongoose.Schema({
         moneyType: {
             type: String,
             required: true,
-            enum: ['fiat', 'crypto']
+            enum: ['fiat', 'crypto'],
+            default: 'fiat'
         }
     },
     options

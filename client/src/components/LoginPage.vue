@@ -1,18 +1,24 @@
 <template>
     <section>
 
-        <md-field>
-            <label>Enter your email</label>
-            <md-input type="email" v-model="email" placeholder="Email" />
-        </md-field>
+        <md-dialog-alert
+            :md-active.sync="displayError"
+            :md-content="errorMessage"
+            md-confirm-text="ok" />
 
-        <md-field>
-            <label>Enter your password</label>
-            <md-input type="password" v-model="password" placeholder="Password" />
-        </md-field>
+        <form>
+            <md-field>
+                <label>Enter your email</label>
+                <md-input type="email" v-model="email" placeholder="Email" />
+            </md-field>
 
+            <md-field>
+                <label>Enter your password</label>
+                <md-input type="password" v-model="password" placeholder="Password" />
+            </md-field>
+            <md-button type="submit" class="md-raised md-primary" @click="onLogin">Log in</md-button>
+        </form>
 
-        <md-button class="md-raised md-primary" @click="onLogin">Log in</md-button>
 
     </section>
 </template>
@@ -52,11 +58,11 @@ export default {
 
 <style scoped>
 
-html, body{
-    width:100%;
-    height:100%;
-    margin:0px;
-}
+/*html, body{*/
+/*    width:100%;*/
+/*    height:100%;*/
+/*    margin:0px;*/
+/*}*/
 
 body{
     background-size: cover;

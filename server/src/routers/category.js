@@ -11,13 +11,21 @@ const baseUrl = '/api/categories';
  * API creates new category
  */
 router.post(baseUrl, auth, async (req, res) => {
-    const category = new Category({
-        //... copies content of req.body
-        ...req.body,
-        owner: req.user._id
-    });
 
     try {
+        if (req.body.name){
+            const categoryWithSameName = await Category.find({owner: req.user._id, name: req.body.name });
+            if (categoryWithSameName.length > 0) {
+                return  res.status(400).send({error: 'category with same name already exists'})
+            }
+        }
+
+        const category = new Category({
+            //... copies content of req.body
+            ...req.body,
+            owner: req.user._id
+        });
+
         await category.save();
         res.status(201).send(category);
     } catch (e) {
@@ -57,6 +65,14 @@ router.put(baseUrl + '/id::id' , auth, async (req, res) => {
 
     try {
         const category = await Category.findOne({_id: categoryId, owner: req.user._id});
+
+        //duplicity chceck
+        const categoryWithsameName =  await Category.find({owner: req.user._id, name: req.body.name });
+        if (categoryWithsameName.length > 0) {
+            if (categoryWithsameName[0]._id.toString() !== category._id.toString()) {
+                return  res.status(400).send({error: 'category with same name already exists'});
+            }
+        }
 
         updates.forEach((update) => category[update] = req.body[update]);
         await category.save();
