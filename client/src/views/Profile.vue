@@ -12,7 +12,7 @@
 
         <Header />
 
-        <div>
+        <div v-if="deleteAccountMode === false">
 
             <md-card>
                 <md-card-header>
@@ -36,36 +36,69 @@
                 </md-card-actions>
             </md-card>
 
-            <div style="padding-bottom: 60px">
 
-                <md-card >
-                    <md-card-header>
-                        <div class="md-title">Change password</div>
-                        <div class="md-subhead">After changing password you are logged out from all devices.</div>
+            <md-card >
+                <md-card-header>
+                    <div class="md-title">Change password</div>
+                    <div class="md-subhead">After changing password you are logged out from all devices.</div>
 
-                        <md-field>
-                            <label>Enter current password</label>
-                            <md-input type="password" v-model="oldPassword" placeholder="Current password" />
-                        </md-field>
+                    <md-field>
+                        <label>Enter current password</label>
+                        <md-input type="password" v-model="oldPassword" placeholder="Current password" />
+                    </md-field>
 
-                        <md-field>
-                            <label>Enter new password - min. 10 characters</label>
-                            <md-input type="password" v-model="newPassword" placeholder="New password" />
-                        </md-field>
+                    <md-field>
+                        <label>Enter new password - min. 10 characters</label>
+                        <md-input type="password" v-model="newPassword" placeholder="New password" />
+                    </md-field>
 
-                        <md-field>
-                            <label>Re-Enter new password for check</label>
-                            <md-input type="password" v-model="newPasswordCheck" placeholder="Re-Enter New password" />
-                        </md-field>
+                    <md-field>
+                        <label>Re-Enter new password for check</label>
+                        <md-input type="password" v-model="newPasswordCheck" placeholder="Re-Enter New password" />
+                    </md-field>
 
-                    </md-card-header>
+                </md-card-header>
 
-                    <md-card-actions>
-                        <md-button class="md-primary" @click="changePassword">change password</md-button>
-                    </md-card-actions>
-                </md-card>
-            </div>
+                <md-card-actions>
+                    <md-button class="md-primary" @click="changePassword">change password</md-button>
+                </md-card-actions>
+            </md-card>
 
+        </div>
+
+
+        <div style="padding-bottom: 60px">
+            <md-card>
+
+                <md-card-content>
+
+                    <div class="md-headline">Delete my data</div>
+                    <div class="md-subhead">
+                        This action will delete all your data
+                        <span v-if="deleteAccountMode === true">, and you cannot restore them after this.</span>
+                        <span v-if="deleteAccountMode === true">confirm your choice by entering your password</span>
+
+                    </div>
+
+                    <md-field v-if="deleteAccountMode === true" >
+                        <label>Enter current password</label>
+                        <md-input type="password" v-model="passwordConfirmDelete" placeholder="Password confirm" />
+                    </md-field>
+
+                </md-card-content>
+
+                <md-card-actions style="display: flex; justify-content: space-between ">
+
+                    <md-button class="md-primary" @click="deleteAccountMode = !deleteAccountMode">
+                        <span v-if="deleteAccountMode === false">go to delete</span>
+                        <span v-if="deleteAccountMode === true">back to profile</span>
+                    </md-button>
+                    <md-button v-if="deleteAccountMode === true" class="md-raised md-accent" @click="deleteUser">Delete</md-button>
+
+                </md-card-actions>
+
+
+            </md-card>
         </div>
 
 
@@ -91,6 +124,10 @@ export default {
             listOfCurrencies: null,
             listOfCurrencyNames: null,
             currencyName: null,
+
+            deleteAccountMode: false,
+
+            passwordConfirmDelete: null,
         }
     },
     methods: {
@@ -153,7 +190,40 @@ export default {
                 return  this.displayCustomError('Error during changing primar Currency');
             }
 
-        }
+        },
+        async deleteUser() {
+
+            if ([null, ''].includes(this.passwordConfirmDelete)){
+                return this.displayCustomError('fill password to finish deleting.');
+            }
+
+            const res = await fetch('api/users/me', {
+                method: 'DELETE',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                },
+                body: JSON.stringify({ password: this.passwordConfirmDelete }),
+            });
+
+            console.log(res)
+            console.log(res.status)
+
+            if (res.status === 200){
+                this.displayCustomError('Your account was deleted, goodbye')
+                return await router.push('/');
+            }
+
+            try {
+                const responseBody = await res.json();
+                if (responseBody.error) {
+                    this.displayCustomError(responseBody.error);
+                }
+            } catch (e) {
+                this.displayCustomError('Error during deleting account');
+            }
+
+        },
     },
     async created() {
         await this.checkCredentials();

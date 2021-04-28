@@ -234,10 +234,21 @@ router.post(baseUrl + '/passwordReset', async(req, res) => {
  * API deletes current user account
  */
 router.delete(baseUrl + '/me', auth, async (req, res) => {
+
+    if (!req.body.password) {
+        return res.send({error: 'Missing password for confirmation'})
+    }
+
     try {
+        const isOldPasswValid = await bcrypt.compare(req.body.password, req.user.password);
+        if (!isOldPasswValid){
+            return res.status(400).send({error: 'Entered password is incorrect'});
+        }
+
         await req.user.remove();
         res.send(req.user);
     } catch (e) {
+        console.log(e)
         res.status(500).send();
     }
 })
