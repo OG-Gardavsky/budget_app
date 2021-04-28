@@ -183,8 +183,6 @@ router.get(baseUrl + '/isResetTokenValid/token::token', async(req, res) => {
     try {
         const decodedToken = jwt.verify(token, jwtKey);
 
-        console.log(decodedToken)
-
         const user = await User.findOne({ _id: decodedToken._id, resetToken: token});
 
         if (!user) {
