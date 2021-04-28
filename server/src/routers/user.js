@@ -163,13 +163,12 @@ router.post(baseUrl + '/passwordResetRequest', async(req, res) => {
         const resetToken = await user.generateResetToken();
 
 
-        const resetLink = `${req.protocol}://${req.get('host')}/passwordReset?token=${resetToken}`;
+        const resetLink = `${req.protocol}://${req.get('host')}/#/passwordReset?token=${resetToken}`;
 
         await forgottenPasswordSend(user.email, resetLink)
 
         res.send();
     } catch (e) {
-        console.log(e)
         res.status(400).send();
     }
 });
@@ -228,7 +227,6 @@ router.post(baseUrl + '/passwordReset', async(req, res) => {
         res.send({user, token});
 
     } catch (e) {
-        console.log(e)
         res.status(400).send();
     }
 });

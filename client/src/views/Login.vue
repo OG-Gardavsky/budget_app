@@ -6,11 +6,12 @@
           md-confirm-text="ok" />
 
 
-      <h1 style="margin-top: 30%">Log in, please.</h1>
+      <h1 >Log in, please.</h1>
       <LoginPage @on-login="onLogin"/>
 
-
-      <md-button style="margin-top: 10px">Forgot password?</md-button>
+      <router-link to="passwordResetRequest">
+          <md-button style="margin-top: 10px">Forgot password?</md-button>
+      </router-link>
 
 
       <p>Do not have an account?</p>
