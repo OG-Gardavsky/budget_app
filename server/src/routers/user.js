@@ -3,6 +3,11 @@ const User = require('../models/user');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
 
+const jwt = require('jsonwebtoken');
+const { jwtKey } = require("../config/constants");
+const { forgottenPasswordSend } = require('../utils/emailSending')
+
+
 const router = new express.Router();
 
 const baseUrl = '/api/users';
@@ -142,6 +147,90 @@ router.put(baseUrl + '/password', auth, async (req, res) => {
         res.status(500).send();
     }
 });
+
+/**
+ * endpoint serves for requesting password reset
+ */
+router.post(baseUrl + '/passwordResetRequest', async(req, res) => {
+    try {
+
+        const user = await User.findOne({ email: req.body.email.toLowerCase() } );
+
+        if (!user) {
+            return res.status(400).send({error: 'User not found'});
+        }
+
+        const resetToken = await user.generateResetToken();
+
+
+        const resetLink = `${req.protocol}://${req.get('host')}/#/passwordReset?token=${resetToken}`;
+
+        await forgottenPasswordSend(user.email, resetLink)
+
+        res.send();
+    } catch (e) {
+        res.status(400).send();
+    }
+});
+
+/**
+ * endpoint chcecks if new token is valid
+ */
+router.get(baseUrl + '/isResetTokenValid/token::token', async(req, res) => {
+
+    const token = req.params.token;
+
+    try {
+        const decodedToken = jwt.verify(token, jwtKey);
+
+        console.log(decodedToken)
+
+        const user = await User.findOne({ _id: decodedToken._id, resetToken: token});
+
+        if (!user) {
+            return  res.status(400).send({error: 'Invalid reset link, request new reset one.'});
+        }
+
+        res.send();
+
+    } catch (e) {
+        res.status(400).send({error: 'Invalid reset link, request new reset one.'});
+    }
+});
+
+
+router.post(baseUrl + '/passwordReset', async(req, res) => {
+
+    const requiredFields = ['token', 'newPassword']
+    const bodyKeys = Object.keys(req.body);
+
+    const containRequiredFields = requiredFields.every(field => bodyKeys.includes(field));
+
+    if (!containRequiredFields) {
+        return res.status(400).send({error: 'Mising one of required properties' + requiredFields.toString() } );
+    }
+
+    try {
+
+        const decodedToken = jwt.verify(req.body.token, jwtKey);
+        const user = await User.findOne({ _id: decodedToken._id, resetToken: req.body.token});
+
+        if (!user) {
+            return res.send({error: 'Error during password reset, request new reset link'})
+        }
+
+        user.password = req.body.newPassword;
+        const token = await user.generateAuthToken();
+        user.resetToken = undefined;
+        await user.save();
+
+        res.send({user, token});
+
+    } catch (e) {
+        res.status(400).send();
+    }
+});
+
 
 /**
  * API deletes current user account

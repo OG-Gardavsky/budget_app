@@ -10,6 +10,8 @@ import Profile from "@/views/Profile";
 import Stats from "@/views/Stats";
 import Debts from "@/views/Debts";
 import Invests from "@/views/Invests";
+import ResetPasswordRequest from "@/views/ResetPasswordRequest";
+import ResetPassword from "@/views/ResetPassword";
 
 Vue.use(VueRouter)
 
@@ -23,6 +25,16 @@ const routes = [
         path: '/signup',
         name: 'signUp',
         component: SignUp
+    },
+    {
+        path: '/passwordResetRequest',
+        name: 'passwordResetRequest',
+        component: ResetPasswordRequest
+    },
+    {
+        path: '/passwordReset',
+        name: 'passwordReset',
+        component: ResetPassword
     },
     {
         path: '/home',

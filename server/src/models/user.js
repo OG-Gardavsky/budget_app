@@ -46,7 +46,11 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    resetToken : {
+        type: String,
+        required: false
+    }
 
 },
     { timestamp: true }
@@ -100,6 +104,22 @@ userSchema.methods.generateAuthToken = async function() {
 }
 
 
+userSchema.methods.generateResetToken = async function() {
+    const user = this;
+
+    const jwtKey = constants.jwtKey;
+
+    const token = jwt.sign({ _id: user._id.toString() }, jwtKey, {expiresIn: 18000 });
+
+    user.resetToken = token
+
+    await user.save();
+
+
+    return token;
+}
+
+
 /**
  * method removes password and tokens from response
  * @returns userObject without confidential data
@@ -110,6 +130,7 @@ userSchema.methods.toJSON = function() {
 
     delete userObject.password;
     delete userObject.tokens;
+    delete  userObject.resetToken;
 
     return userObject;
 }
