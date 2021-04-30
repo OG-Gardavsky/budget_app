@@ -167,7 +167,7 @@ userSchema.pre('save', async function(next) {
     user.email = user.email.toLowerCase();
 
     if (user.isModified('password')) {
-        user.password = await bcrypt.hash(user.password, 8);
+        user.password = await bcrypt.hash(user.password, constants.bcryptSaltRounds);
     }
 
     next();
