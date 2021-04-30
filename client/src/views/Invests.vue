@@ -33,7 +33,7 @@
 <!--                            <span> <span v-if="account.balance > 0">+ </span> {{account.balance}} {{account.currency}}</span>-->
                             <span> <span v-if="account.balance > 0">+ </span> {{account.balance}} {{userInfo.primarCurrency}}</span>
                         </div>
-                        <div class="md-subhead">{{account.moneyType}} currency</div>
+<!--                        <div class="md-subhead">{{account.moneyType}} currency</div>-->
                     </md-card-header>
                 </md-content>
             </md-card>
@@ -86,40 +86,47 @@
 
 
 
-            <div id="transactions">
-                <md-card :key="transaction._id" v-for="transaction in selectedAccountTransactions" md-with-hover>
+            <div style="padding-bottom: 60px">
+                <div
+                    :key="transaction._id" v-for="transaction in selectedAccountTransactions"
+                    @click="currentTransaction = transaction"
+                >
 
-                    <md-content class="transactionContent">
+                    <md-card  md-with-hover>
 
-                        <div class="baseInfo">
-                            <div class="md-title">{{transaction.subtype}}</div>
-                            <div class="md-title"> <span v-if="transaction.amount > 0">+ </span> {{transaction.amount}} {{transaction.currency}}</div>
-                        </div>
+                        <md-content class="transactionContent">
 
+                            <div class="baseInfo">
+                                <div class="md-title">{{transaction.subtype}}</div>
+                                <div class="md-title"> <span v-if="transaction.amount > 0">+ </span> {{transaction.amount}} </div>
 
-                        <div style="display: flex; justify-content: space-between">
-                            <div class="md-subhead" > {{transaction.name}}</div>
-                            <div class="md-subhead"> {{  parseDate(transaction.accountingDate) }}    </div>
-                        </div>
+                            </div>
 
 
-                    </md-content>
+                            <div style="display: flex; justify-content: space-between">
+                                <div class="md-subhead" > {{transaction.name}}</div>
+                                <div class="md-subhead"> {{  parseDate(transaction.accountingDate) }}    </div>
+                            </div>
 
-                    <md-card-actions>
-                        <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
-                        <md-button class="md-raised"
-                                   @click=" showUpdateOfTransactionDialog = true;  currentTransaction = transaction"
-                        >
-                            edit
-                        </md-button>
 
-                    </md-card-actions>
+                        </md-content>
 
-                </md-card>
+                        <md-card-actions v-if="currentTransaction === transaction">
+                            <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
+                            <md-button class="md-raised md-primary" @click=" showUpdateOfTransactionDialog = true">edit</md-button>
 
-                <md-button v-if="selectedAccountTransactions.length % defaultLimitOfTransactions === 0 && selectedAccountTransactions.length === currentLimitOfTransactions"
-                           class="md-raised"
-                           @click="currentLimitOfTransactions += defaultLimitOfTransactions"
+                        </md-card-actions>
+
+                    </md-card>
+                </div>
+
+                <md-button
+                    v-if="selectedAccountTransactions !== null
+                        && selectedAccountTransactions.length % defaultLimitOfTransactions === 0
+                        && selectedAccountTransactions.length === currentLimitOfTransactions"
+
+                    class="md-raised"
+                    @click="currentLimitOfTransactions += defaultLimitOfTransactions"
 
                 >Show {{defaultLimitOfTransactions}} more</md-button>
 
@@ -158,8 +165,8 @@ export default {
         return {
             sortTransactionsBy: 'desc',
 
-            defaultLimitOfTransactions: 5,
-            currentLimitOfTransactions: 5,
+            defaultLimitOfTransactions: 10,
+            currentLimitOfTransactions: 10,
 
             showAddAccountDialog: false,
 
@@ -222,7 +229,7 @@ export default {
             await this.refresh();
         },
         async deleteTransaction(transaction){
-            const answer = window.confirm('Are you sure you want to delete transation with name ' + transaction.name);
+            const answer = window.confirm('Are you sure you want to delete transation?');
 
             if (!answer) {
                 return;

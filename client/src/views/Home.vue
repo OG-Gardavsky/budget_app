@@ -46,6 +46,10 @@
         </md-content>
 
         <div v-if="currentAccount !== null">
+            <md-button class="md-icon-button  md-primary" @click="refresh">
+                <md-icon>arrow_back_ios</md-icon>
+            </md-button>
+
             <md-button class="md-button md-primary md-raised" @click="deleteAccount">delete account</md-button>
             <md-button class="md-button md-primary md-raised" @click="showUpdateAccountDialog = true">edit account</md-button>
 
@@ -89,15 +93,15 @@
 
                     </md-card-header>
 
-                            <md-card-actions v-if="currentTransaction === transaction">
-                                <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
-                                <md-button class="md-raised md-primary"
-                                       @click="showUpdateBasicTransactionDialog = true;"
-                                >
-                                    edit
-                                </md-button>
+                    <md-card-actions v-if="currentTransaction === transaction">
+                        <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
+                        <md-button class="md-raised md-primary"
+                               @click="showUpdateBasicTransactionDialog = true;"
+                        >
+                            edit
+                        </md-button>
 
-                            </md-card-actions>
+                    </md-card-actions>
 
                 </md-card>
 
@@ -185,7 +189,9 @@ export default {
             }
         },
         currentAccount: function() {
-            this.showTransactionsOfSpecificAccount(this.currentAccount);
+            if (this.currentAccount !== null) {
+                this.showTransactionsOfSpecificAccount(this.currentAccount);
+            }
         }
     },
     methods: {
@@ -205,7 +211,7 @@ export default {
             this.transactions = await res.json();
         },
         async deleteTransaction(transaction){
-            const answer = window.confirm('Are you sure you want to delete transation');
+            const answer = window.confirm('Are you sure you want to delete transation?');
 
             if (!answer) {
                 return;
@@ -245,20 +251,24 @@ export default {
             await this.refresh();
         },
         async refresh (){
+            this.currentAccount = null;
             const result = await this.checkCredentials();
             if (result !== 0){
                 return;
             }
 
-            this.totalMoney = await this.getTotalBalanceByAccType('all');
-            await this.displayFinancialInfo();
+
+            this.displayFinancialInfo();
         },
         displayFinancialInfo(){
+            this.getTotalBalance();
             this.getListOfCategories();
             this.accountsBalance = this.showBalanceOfAccounts('basic');
             this.showTransactionsOfAllAccounts();
         },
-
+        async getTotalBalance() {
+            this.totalMoney = await this.getTotalBalanceByAccType('all');
+        },
         async showTransactionsOfAllAccounts() {
             const res = await fetch('api/transactions?type=basic&limit=' + this.currentLimitOfTransactions + '&sort=' + this.sortTransactionsBy, {
                 method: 'GET',

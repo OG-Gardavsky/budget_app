@@ -8,7 +8,7 @@
 
         <div id="dialogContent">
 
-            <md-dialog-title>Update of transacation: <span v-if="transactionSubtype">{{transactionSubtype}}</span></md-dialog-title>
+            <md-dialog-title>Update of transaction: <span v-if="transactionSubtype">{{transactionSubtype}}</span></md-dialog-title>
 
             <div v-if="transactionType === 'basic' ">
 
@@ -50,7 +50,7 @@
 <!--                </md-field>-->
 
                 <md-field>
-                    <md-label>Accounting date</md-label>
+                    <label>Accounting date</label>
                     <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
                 </md-field>
 
@@ -84,7 +84,7 @@
                 </md-field>
 
                 <md-field>
-                    <md-label>Accounting date</md-label>
+                    <label>Accounting date</label>
                     <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
                 </md-field>
 
@@ -124,7 +124,7 @@
                 </md-field>
 
                 <md-field>
-                    <md-label>Accounting date</md-label>
+                    <label>Accounting date</label>
                     <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
                 </md-field>
 
@@ -199,7 +199,6 @@ export default {
     name: "UpdateOfTransaction",
     props: {
         showDialog: Boolean,
-        transactionId: String,
         refresh: Object,
         transactionToUpdate: Object
     },
