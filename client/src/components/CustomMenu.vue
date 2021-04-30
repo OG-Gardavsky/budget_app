@@ -28,7 +28,7 @@ export default {
     name: "CustomMenu",
     components: {AddTransaction},
     props: {
-        refresh: Object
+        refresh: Function
     },
     data(){
         return{
