@@ -1,5 +1,8 @@
 <template>
   <div id="mainContent">
+
+      <Header />
+
       <md-dialog-alert
           :md-active.sync="displayError"
           :md-content="errorMessage"
@@ -26,10 +29,12 @@
 <script>
 import LoginPage from "@/components/LoginPage";
 import router from "@/router";
+import Header from "@/components/Header";
 
 export default {
     name: 'login',
     components: {
+        Header,
       LoginPage
     },
     data() {

@@ -1,11 +1,16 @@
 <template>
     <div id="rootDiv">
-        <h1>Budget app</h1>
+        <div style="display: flex; flex-direction: row;  margin: 10px">
+                <md-icon style="color: #fcfcfc">account_balance_wallet</md-icon>
+            <h1>Budget app</h1>
+        </div>
 
-        <span>
+
+
+        <span v-if="displayProfilePicture()">
 
             <md-menu >
-                <md-button class="md-icon-button md-raised md-primary" md-menu-trigger>
+                <md-button class="md-icon-button md-raised " md-menu-trigger>
                     <md-icon>account_circle</md-icon>
                 </md-button>
 
@@ -68,7 +73,6 @@ export default {
         width:100%;
         height:100%;
         margin:0px;
-        border-bottom: 1px solid #797979;
     }
 
     #rootDiv {
@@ -78,11 +82,11 @@ export default {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        border-bottom: 1px solid #797979;
-        background-color: #9e9e9e;
+        background-color: #448aff ;
 
         h1 {
-            margin: 10px
+            margin: 10px;
+            color: #fcfcfc;
         }
 
         .md-button{

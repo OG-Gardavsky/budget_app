@@ -20,6 +20,9 @@ Vue.mixin({
         }
     },
     methods: {
+        displayProfilePicture() {
+            return !['login', 'signUp', 'passwordResetRequest', 'passwordReset',].includes(this.$route.name) ;
+        },
         parseDateBeforeSave(date){
             const now = new Date();
             if (date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate()) {
