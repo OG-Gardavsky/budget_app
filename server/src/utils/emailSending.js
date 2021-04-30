@@ -16,8 +16,8 @@ const forgottenPasswordSend = async (receiver, resetLink) => {
         const res = await sgMail.send({
             to: receiver,
             from: emailAdressForSending,
-            subject: 'Budget app - forgotten password',
-            html: `<h1> your link for password reset: </h1> <br/> ${resetLink}</a> `
+            subject: 'budget app - forgotten password',
+            html: `<h1> your link for password reeset: </h1> <br/> <a href="${resetLink}">clik here</a> `
         });
 
         if (res[0].statusCode !== 202) {
