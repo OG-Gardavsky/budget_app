@@ -16,6 +16,15 @@
             <md-button class="md-raised">Log In</md-button>
         </router-link>
 
+
+        <h1>Warning</h1>
+        <p>
+          <span>
+          This serves as a demo of open-source project, by Ondřej Gardavský, //link for github.
+          Please do not use it for you confidential data, we guarantee no safety of them.
+        </span>
+        </p>
+
     </div>
 </template>
 
