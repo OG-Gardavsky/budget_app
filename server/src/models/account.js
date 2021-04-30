@@ -14,12 +14,12 @@ const accountSchema = new mongoose.Schema({
         required: true,
         enum: ['debit', 'credit', 'cash', 'invest', 'debt']
     },
-    currency: {
-        type: String,
-        required: false,
-        trim: true,
-        enum: ['CZK', 'USD', 'EUR', 'BTC']
-    },
+    // currency: {
+    //     type: String,
+    //     required: false,
+    //     trim: true,
+    //     enum: ['CZK', 'USD', 'EUR', 'BTC']
+    // },
     initialBalance: {
         type: Number,
         required: true,
