@@ -41,6 +41,8 @@ router.post(baseUrl + '/login', async(req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email.toLowerCase(), req.body.password);
         const token = await user.generateAuthToken();
+        user.resetToken = undefined;
+        user.save();
         res.send({user, token});
     } catch (e) {
         res.status(400).send();
@@ -157,7 +159,7 @@ router.post(baseUrl + '/passwordResetRequest', async(req, res) => {
         const user = await User.findOne({ email: req.body.email.toLowerCase() } );
 
         if (!user) {
-            return res.status(400).send({error: 'User not found'});
+            return res.send();
         }
 
         const resetToken = await user.generateResetToken();
@@ -218,6 +220,7 @@ router.post(baseUrl + '/passwordReset', async(req, res) => {
         }
 
         user.password = req.body.newPassword;
+        user.tokens = [];
         const token = await user.generateAuthToken();
         user.resetToken = undefined;
         await user.save();
