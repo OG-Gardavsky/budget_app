@@ -165,7 +165,7 @@ router.post(baseUrl + '/passwordResetRequest', async(req, res) => {
         const resetToken = await user.generateResetToken();
 
 
-        const resetLink = `${req.protocol}://${req.get('host')}/#/passwordReset?token=${resetToken}`;
+        const resetLink = `https://${req.get('host')}/#/passwordReset?token=${resetToken}`;
 
         await forgottenPasswordSend(user.email, resetLink)
 
