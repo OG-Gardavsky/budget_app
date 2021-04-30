@@ -327,7 +327,6 @@ router.get(baseUrl, auth, async (req, res) => {
         res.send(req.user.transactions);
 
     } catch (e) {
-        console.log(e)
         res.status(500).send();
     }
 });
@@ -396,14 +395,13 @@ router.get(baseUrl + '/debt/sharedId::id', auth, async (req, res) => {
         bodyToSend.basicAccountId = basicAccountTransaction ? basicAccountTransaction.accountId : undefined;
         bodyToSend.debtAccountId = debtAccountTransaction ? debtAccountTransaction.accountId : undefined;
         bodyToSend.amount = basicAccountTransaction ? basicAccountTransaction.amount : Math.abs(debtAccountTransaction.amount);
-        bodyToSend.name = basicAccountTransaction ? basicAccountTransaction.subtype : debtAccountTransaction.name;
+        bodyToSend.name = basicAccountTransaction ? basicAccountTransaction.name : debtAccountTransaction.name;
 
 
 
         res.send(bodyToSend);
 
     } catch (e) {
-        console.log(e)
         res.status(500).send();
     }
 });
@@ -619,7 +617,6 @@ router.put(baseUrl + '/debt/sharedId::id' , auth, async (req, res) => {
 
     } catch (e) {
         res.status(500).send(e);
-        console.log(e);
     }
 });
 
@@ -642,7 +639,6 @@ router.put(baseUrl + '/invests/sharedId::id' , auth, async (req, res) => {
     try {
         const transactions = await Transaction.find({sharedId: new ObjectId(sharedId), owner: req.user._id, type: 'invests'});
 
-        console.log(transactions)
 
         if (![1,2].includes(transactions.length)) {
             return res.status(400).send({ error: 'Entered accounts either does not work or does not belong to user'});
@@ -714,7 +710,6 @@ router.put(baseUrl + '/invests/sharedId::id' , auth, async (req, res) => {
 
     } catch (e) {
         res.status(500).send(e);
-        console.log(e);
     }
 });
 

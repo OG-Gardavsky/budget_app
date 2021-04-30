@@ -22,7 +22,7 @@
             </md-card>
 
 
-            <md-card>
+            <md-card v-if="listOfCurrencyNames !== null">
                 <md-card-header>
                     <div class="md-headline">Default currency</div>
                     <div class="md-subhead">Change will not calculate to new currency, just changes label</div>

@@ -1,29 +1,35 @@
 <template>
-    <section>
-        <h1>Reset your password</h1>
-        <form>
-            <md-field>
-                <label>Enter your email</label>
-                <md-input type="email" v-model="email" placeholder="Email" />
-            </md-field>
+    <div>
+        <Header />
+        <section>
 
-            <md-button type="submit" class="md-raised md-primary" @click="onPasswReset">send reset link</md-button>
-        </form>
+            <h1>Reset your password</h1>
+            <form>
+                <md-field>
+                    <label>Enter your email</label>
+                    <md-input type="email" v-model="email" placeholder="Email" />
+                </md-field>
+
+                <md-button type="submit" class="md-raised md-primary" @click="onPasswReset">send reset link</md-button>
+            </form>
 
 
-        <p>Wanna go back to</p>
-        <router-link :to="'/'">
-            <md-button class="md-raised">Log In</md-button>
-        </router-link>
+            <p>Wanna go back to</p>
+            <router-link :to="'/'">
+                <md-button class="md-raised">Log In</md-button>
+            </router-link>
 
-    </section>
+        </section>
+    </div>
 </template>
 
 <script>
 import router from "@/router";
+import Header from "@/components/Header";
 
 export default {
     name: "ResetPasswordRequest",
+    components: {Header},
     data() {
         return{
             email: null
@@ -44,19 +50,7 @@ export default {
                 body: JSON.stringify({email: this.email}),
             });
 
-            if (res.status === 200){
-                return  this.displayCustomError('reset link send to your email');
-            }
-
-            try {
-                const responseBody = await res.json();
-
-                if (responseBody.error) {
-                    this.displayCustomError(responseBody.error);
-                }
-            } catch (e) {
-                this.displayCustomError('error during reseting password');
-            }
+            this.displayCustomError('Your request was processed. Look into your mailbox');
 
         }
     },

@@ -62,7 +62,7 @@
 <!--                        </md-field>-->
 
                         <md-field>
-                            <md-label>Accounting date</md-label>
+                            <label>Accounting date</label>
                             <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true" />
                         </md-field>
 
@@ -103,7 +103,7 @@
                         </md-field>
 
                         <md-field>
-                            <md-label>Accounting date</md-label>
+                            <label>Accounting date</label>
                             <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
                         </md-field>
 
@@ -156,7 +156,7 @@
                         </md-field>
 
                         <md-field>
-                            <md-label>Accounting date</md-label>
+                            <label>Accounting date</label>
                             <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true" />
                         </md-field>
 
@@ -209,7 +209,7 @@
                         </md-field>
 
                         <md-field>
-                            <md-label>Accounting date</md-label>
+                            <label>Accounting date</label>
                             <md-datepicker v-model="accountingDate" aria-autocomplete="none" aria-required="true"/>
                         </md-field>
 
