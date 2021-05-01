@@ -142,11 +142,11 @@ router.put(baseUrl + '/password', auth, async (req, res) => {
 
         req.user.password = req.body.newPassword;
         req.user.tokens = [];
-        req.user.save();
+        await req.user.save();
 
         res.send({message: 'password changed succesfully'});
     } catch (e) {
-        res.status(500).send();
+        res.status(400).send({error: e.toString()});
     }
 });
 
