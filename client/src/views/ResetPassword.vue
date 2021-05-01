@@ -111,7 +111,7 @@ export default {
                     this.displayCustomError(responseBody.error);
                 }
             } catch (e) {
-                this.displayCustomError('reset link invalid, ask for new one');
+                this.displayCustomError('problem during password reset');
             }
 
         },
