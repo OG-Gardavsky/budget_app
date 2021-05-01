@@ -29,7 +29,7 @@ router.post(baseUrl, async (req, res) => {
         const token = await user.generateAuthToken();
         res.status(201).send({user, token});
     } catch (e) {
-        res.status(400).send(e);
+        res.status(400).send({error: e.toString()});
     }
 });
 
@@ -228,7 +228,7 @@ router.post(baseUrl + '/passwordReset', async(req, res) => {
         res.send({user, token});
 
     } catch (e) {
-        res.status(400).send();
+        res.status(400).send({error: e.toString()});
     }
 });
 
@@ -251,7 +251,6 @@ router.delete(baseUrl + '/me', auth, async (req, res) => {
         await req.user.remove();
         res.send(req.user);
     } catch (e) {
-        console.log(e)
         res.status(500).send();
     }
 })

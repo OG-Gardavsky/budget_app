@@ -75,6 +75,10 @@ export default {
                 return this.displayCustomError('Password is too short, is missing ' +  (this.requiredPasswLength - this.password.length) + ' characters.');
             }
 
+            if (/ /.test(this.password)) {
+                return this.displayCustomError('Password cannot contain whitespaces.')
+            }
+
             if (this.passwordCheck !== this.password){
                 return this.displayCustomError('Passwords do not match.');
             }
