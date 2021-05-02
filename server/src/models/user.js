@@ -167,7 +167,12 @@ userSchema.pre('save', async function(next) {
     user.email = user.email.toLowerCase();
 
     if (user.isModified('password')) {
-        user.password = await bcrypt.hash(user.password, 8);
+
+        if (/ /.test(user.password)) {
+            throw new Error('Password cannot contain whitespaces.')
+        }
+
+        user.password = await bcrypt.hash(user.password, constants.bcryptSaltRounds);
     }
 
     next();

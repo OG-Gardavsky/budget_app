@@ -46,6 +46,10 @@
         </md-content>
 
         <div v-if="currentAccount !== null">
+            <md-button class="md-icon-button  md-primary" @click="refresh">
+                <md-icon>arrow_back_ios</md-icon>
+            </md-button>
+
             <md-button class="md-button md-primary md-raised" @click="deleteAccount">delete account</md-button>
             <md-button class="md-button md-primary md-raised" @click="showUpdateAccountDialog = true">edit account</md-button>
 
@@ -61,42 +65,47 @@
 
 
         <div id="transactions">
-            <md-card md-with-hover class="" :key="transaction._id" v-for="transaction in transactions" >
-                <md-card-header>
-                    <div class="md-title" style="display: flex; justify-content: space-between">
+            <div
+                :key="transaction._id" v-for="transaction in transactions"
+                @click="currentTransaction = transaction"
+            >
 
-                        <div>
-                            <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
-                            <span v-if="transaction.type === 'transfer'">{{transaction.type}}</span>
-                            {{transaction.subtype}}
+                <md-card md-with-hover>
+                    <md-card-header>
+                        <div class="md-title" style="display: flex; justify-content: space-between">
+
+                            <div>
+                                <span v-if="transaction.type === 'basic'">{{pairCategoryTransaction(transaction)}} -</span>
+                                <span v-if="transaction.type === 'transfer'">{{transaction.type}}</span>
+                                {{transaction.subtype}}
+                            </div>
+
+
+                            <div> <span v-if="transaction.amount > 0">+</span> {{transaction.amount}} {{transaction.currency}}</div>
+
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between">
+                            <div class="md-subhead" > {{transaction.name}}</div>
+                            <div class="md-subhead"> {{  parseDate(transaction.accountingDate) }}    </div>
                         </div>
 
 
-                        <div> <span v-if="transaction.amount > 0">+</span> {{transaction.amount}} {{transaction.currency}}</div>
+                    </md-card-header>
 
-                    </div>
+                    <md-card-actions v-if="currentTransaction === transaction">
+                        <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
+                        <md-button class="md-raised md-primary"
+                               @click="showUpdateBasicTransactionDialog = true;"
+                        >
+                            edit
+                        </md-button>
 
-                    <div style="display: flex; justify-content: space-between">
-                        <div class="md-subhead" > {{transaction.name}}</div>
-                        <div class="md-subhead"> {{  parseDate(transaction.accountingDate) }}    </div>
-                    </div>
+                    </md-card-actions>
 
+                </md-card>
 
-                </md-card-header>
-                <md-card-actions>
-                    <md-button class="md-raised" @click="deleteTransaction(transaction)">delete</md-button>
-                    <md-button class="md-raised"
-                           @click="showUpdateBasicTransactionDialog = true; currentTransaction = transaction"
-                    >
-                        edit
-                    </md-button>
-
-                </md-card-actions>
-
-
-
-
-            </md-card>
+            </div>
 
             <md-button v-if="transactions.length % defaultLimitOfTransactions === 0 && transactions.length === currentLimitOfTransactions" class="md-raised"
                        @click="currentLimitOfTransactions += defaultLimitOfTransactions"
@@ -153,8 +162,8 @@ export default {
         return {
             sortTransactionsBy: 'desc',
 
-            defaultLimitOfTransactions: 5,
-            currentLimitOfTransactions: 5,
+            defaultLimitOfTransactions: 10,
+            currentLimitOfTransactions: 10,
 
             totalMoney: null,
 
@@ -167,7 +176,7 @@ export default {
             currentAccount: null,
             showUpdateBasicTransactionDialog: false,
             showUpdateAccountDialog: false,
-            currentTransaction: {}
+            currentTransaction: null
         }
     },
     watch: {
@@ -180,7 +189,9 @@ export default {
             }
         },
         currentAccount: function() {
-            this.showTransactionsOfSpecificAccount(this.currentAccount);
+            if (this.currentAccount !== null) {
+                this.showTransactionsOfSpecificAccount(this.currentAccount);
+            }
         }
     },
     methods: {
@@ -200,7 +211,7 @@ export default {
             this.transactions = await res.json();
         },
         async deleteTransaction(transaction){
-            const answer = window.confirm('Are you sure you want to delete transation');
+            const answer = window.confirm('Are you sure you want to delete transation?');
 
             if (!answer) {
                 return;
@@ -240,20 +251,24 @@ export default {
             await this.refresh();
         },
         async refresh (){
+            this.currentAccount = null;
             const result = await this.checkCredentials();
             if (result !== 0){
                 return;
             }
 
-            this.totalMoney = await this.getTotalBalanceByAccType('all');
-            await this.displayFinancialInfo();
+
+            this.displayFinancialInfo();
         },
         displayFinancialInfo(){
+            this.getTotalBalance();
             this.getListOfCategories();
             this.accountsBalance = this.showBalanceOfAccounts('basic');
             this.showTransactionsOfAllAccounts();
         },
-
+        async getTotalBalance() {
+            this.totalMoney = await this.getTotalBalanceByAccType('all');
+        },
         async showTransactionsOfAllAccounts() {
             const res = await fetch('api/transactions?type=basic&limit=' + this.currentLimitOfTransactions + '&sort=' + this.sortTransactionsBy, {
                 method: 'GET',

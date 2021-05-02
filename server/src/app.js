@@ -10,6 +10,8 @@ const currencyRouter = require('./routers/currency')
 const process = require('process');
 const helmet = require('helmet');
 
+const publicDirectory = path.join(__dirname, '../../client/dist');
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -24,9 +26,6 @@ app.use(categoryRouter);
 app.use(statsRouter);
 app.use(currencyRouter);
 
-
-
-const publicDirectory = path.join(__dirname, '../../client/dist');
 
 app.use('/', express.static(publicDirectory));
 

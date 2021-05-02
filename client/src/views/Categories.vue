@@ -88,9 +88,17 @@ export default {
                 }
             });
 
+            if (res.status === 200) {
+                return this.refresh();
+            }
 
-            if (res.status !== 200){
-                return this.displayCustomError('Error during deleting of ' + category.name);
+            try {
+                const responseBody = await res.json();
+                if (responseBody.error) {
+                    this.displayCustomError(responseBody.error);
+                }
+            } catch (e) {
+                this.displayCustomError('Error during deleting of ' + category.name);
             }
 
             await this.refresh();

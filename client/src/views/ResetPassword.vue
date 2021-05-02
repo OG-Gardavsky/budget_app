@@ -1,42 +1,45 @@
 <template>
-    <section>
+    <div>
+        <Header />
 
-        <h1>choose your new password.</h1>
-
-
-
-        <form>
-
-            <md-field>
-                <label>Enter your password - minimal 10 characters</label>
-                <md-input type="password" v-model="password" placeholder="Password" />
-            </md-field>
-
-            <md-field>
-                <label>Reenter you password</label>
-                <md-input type="password" v-model="passwordCheck" placeholder="Password" />
-            </md-field>
-
-            <md-button v-if="disableRessetButton === false" type="submit" class="md-raised md-primary" @click="resetPassword">Reset Password</md-button>
-            <md-button v-if="disableRessetButton === true" disabled class="md-raised md-primary">Reset Password</md-button>
-        </form>
+        <section>
+            <h1>choose your new password.</h1>
 
 
+            <form>
+
+                <md-field>
+                    <label>Enter your password - minimal 10 characters</label>
+                    <md-input type="password" v-model="password" placeholder="Password" />
+                </md-field>
+
+                <md-field>
+                    <label>Reenter you password</label>
+                    <md-input type="password" v-model="passwordCheck" placeholder="Password" />
+                </md-field>
+
+                <md-button v-if="disableRessetButton === false" type="submit" class="md-raised md-primary" @click="resetPassword">Reset Password</md-button>
+                <md-button v-if="disableRessetButton === true" disabled class="md-raised md-primary">Reset Password</md-button>
+            </form>
 
 
-        <p>Wanna go back to</p>
-        <router-link :to="'/'">
-            <md-button class="md-raised">Log In</md-button>
-        </router-link>
+            <p>Wanna go back to</p>
+            <router-link :to="'/'">
+                <md-button class="md-raised">Log In</md-button>
+            </router-link>
 
-    </section>
+        </section>
+
+    </div>
 </template>
 
 <script>
 import router from "@/router";
+import Header from "@/components/Header";
 
 export default {
     name: "ResetPassword",
+    components: {Header},
     data() {
         return {
             requiredPasswLength: 10,
@@ -108,7 +111,7 @@ export default {
                     this.displayCustomError(responseBody.error);
                 }
             } catch (e) {
-                this.displayCustomError('reset link invalid, ask for new one');
+                this.displayCustomError('problem during password reset');
             }
 
         },

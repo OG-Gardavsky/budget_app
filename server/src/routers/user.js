@@ -29,7 +29,7 @@ router.post(baseUrl, async (req, res) => {
         const token = await user.generateAuthToken();
         res.status(201).send({user, token});
     } catch (e) {
-        res.status(400).send(e);
+        res.status(400).send({error: e.toString()});
     }
 });
 
@@ -41,6 +41,8 @@ router.post(baseUrl + '/login', async(req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email.toLowerCase(), req.body.password);
         const token = await user.generateAuthToken();
+        user.resetToken = undefined;
+        user.save();
         res.send({user, token});
     } catch (e) {
         res.status(400).send();
@@ -140,11 +142,11 @@ router.put(baseUrl + '/password', auth, async (req, res) => {
 
         req.user.password = req.body.newPassword;
         req.user.tokens = [];
-        req.user.save();
+        await req.user.save();
 
         res.send({message: 'password changed succesfully'});
     } catch (e) {
-        res.status(500).send();
+        res.status(400).send({error: e.toString()});
     }
 });
 
@@ -157,13 +159,13 @@ router.post(baseUrl + '/passwordResetRequest', async(req, res) => {
         const user = await User.findOne({ email: req.body.email.toLowerCase() } );
 
         if (!user) {
-            return res.status(400).send({error: 'User not found'});
+            return res.send();
         }
 
         const resetToken = await user.generateResetToken();
 
 
-        const resetLink = `${req.protocol}://${req.get('host')}/#/passwordReset?token=${resetToken}`;
+        const resetLink = `https://${req.get('host')}/#/passwordReset?token=${resetToken}`;
 
         await forgottenPasswordSend(user.email, resetLink)
 
@@ -218,6 +220,7 @@ router.post(baseUrl + '/passwordReset', async(req, res) => {
         }
 
         user.password = req.body.newPassword;
+        user.tokens = [];
         const token = await user.generateAuthToken();
         user.resetToken = undefined;
         await user.save();
@@ -225,7 +228,7 @@ router.post(baseUrl + '/passwordReset', async(req, res) => {
         res.send({user, token});
 
     } catch (e) {
-        res.status(400).send();
+        res.status(400).send({error: e.toString()});
     }
 });
 
@@ -248,7 +251,6 @@ router.delete(baseUrl + '/me', auth, async (req, res) => {
         await req.user.remove();
         res.send(req.user);
     } catch (e) {
-        console.log(e)
         res.status(500).send();
     }
 })
