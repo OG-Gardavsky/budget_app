@@ -129,8 +129,14 @@ npm run devServer
 npm run devClient
 ```
 
-No you can modify code, as you wish
-
+No you can modify code, as you wish. If you perform some modification on client side, you need to build the code to work properly on server
+```
+cd client 
+npm run build
+```
 
 
 ### I want to just deploy
+- switch to deploy branch
+- save your filled config file 
+- 
