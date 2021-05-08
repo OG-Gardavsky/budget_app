@@ -19,8 +19,8 @@
             </md-field>
 
 
-            <md-autocomplete v-model="currencyName" :md-options="listOfCurrencyNames">
-                <label>Default currency</label>
+            <md-autocomplete v-model="currencyName" :md-options="listOfCurrencyNames" >
+                <label>Default currency(what you are using most)</label>
             </md-autocomplete>
 
 
@@ -83,7 +83,14 @@ export default {
                 return this.displayCustomError('Passwords do not match.');
             }
 
-            const primarCurrency = this.listOfCurrencies.find(currency => currency.currencyName === this.currencyName).id;
+            const isPrimarCurrencyValid = this.listOfCurrencies.find(currency => currency.currencyName === this.currencyName);
+
+            if (isPrimarCurrencyValid === undefined) {
+                return this.displayCustomError('Currency must be chosen from list of currencies.')
+            }
+
+            const primarCurrency = isPrimarCurrencyValid.id;
+
 
 
             const credentials = {

@@ -169,7 +169,11 @@ export default {
                 return this.displayCustomError('please fill your Default Currency')
             }
 
-            const primarCurrency = this.listOfCurrencies.find(currency => currency.currencyName === this.currencyName).id;
+            const isPrimarCurrencyValid = this.listOfCurrencies.find(currency => currency.currencyName === this.currencyName);
+            if (isPrimarCurrencyValid === undefined) {
+                return this.displayCustomError('Currency must be chosen from list of currencies.')
+            }
+            const primarCurrency = isPrimarCurrencyValid.id;
 
 
             const res = await fetch('api/users/currency', {
@@ -205,9 +209,6 @@ export default {
                 },
                 body: JSON.stringify({ password: this.passwordConfirmDelete }),
             });
-
-            console.log(res)
-            console.log(res.status)
 
             if (res.status === 200){
                 this.displayCustomError('Your account was deleted, goodbye')
