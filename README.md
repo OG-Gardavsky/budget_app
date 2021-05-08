@@ -1,5 +1,5 @@
 # Budget_app
-This is open-source project created as bachelor thesis at 
+This is open-source project created as a part of bachelor thesis at 
 ***<a href="https://fis.vse.cz/">Faculty of Informatics and Statistics</a>*** of 
 ***<a href="www.vse.cz">Prague University of Economics and Business </a>***
 by Ondřej Gardavský
