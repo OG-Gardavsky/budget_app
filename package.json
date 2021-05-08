@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "cd server && npm install",
-    "start": "node server/src/app.js"
+    "start": "node server/src/app.js",
+    "devServer": "cd server && npm run dev",
+    "devClient": "cd client && npm run serve"
   },
   "repository": {
     "type": "git",

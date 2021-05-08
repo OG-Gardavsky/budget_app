@@ -72,7 +72,7 @@ const routes = [
         component: More
     },
     {
-        path: '/blank',
+        path: '/*',
         name: 'blank',
         component: BlankPage
     }

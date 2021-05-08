@@ -21,7 +21,9 @@
             <div :key="account.accountId" v-for="account in accountsBalance"
                  @click=" currentAccount = account ;  currentLimitOfTransactions = defaultLimitOfTransactions" >
 
-                <md-card md-with-hover class="accountCard">
+                <md-card md-with-hover class="accountCard"
+                         v-bind:style= "currentAccount._id.toString() === account._id.toString() ? 'background-color: #448aff; color: white' : ''"
+                >
                     <md-card-header>
 <!--                        <div class="md-title"><span v-if="account.balance > 0">+</span> {{account.balance}} {{account.currency}}</div>-->
 <!--                        <div v-if="account.limit">limit: {{account.limit}} {{account.currency}}</div>-->
@@ -31,6 +33,8 @@
                         <div class="md-subhead">{{account.name}}</div>
                     </md-card-header>
                 </md-card>
+
+
             </div>
 
 
