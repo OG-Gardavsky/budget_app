@@ -8,9 +8,8 @@
         <Header />
         <md-empty-state
             md-icon="cloud_off"
-            md-label="There is nothing yet"
-            md-description="this funkcionality will be added">
-        </md-empty-state>
+            md-label="This site does not exist"
+        />
         <CustomMenu />
     </div>
 </template>
