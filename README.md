@@ -1,11 +1,12 @@
 # Budget_app
+Self-hosted open-source app for managing personal finances.  
+See demo page https://gardavsky-budget-app.herokuapp.com/ 
+
+***
 This is open-source project created as a part of bachelor thesis at 
 ***<a href="https://fis.vse.cz/">Faculty of Informatics and Statistics</a>*** of 
 ***<a href="www.vse.cz">Prague University of Economics and Business </a>***
 by Ondřej Gardavský
-
-***
-This is self-hosted solution. Main purpose of this project is to provide open-source app, that helps with managing personal finances.
 ***
 
 ## Features:
@@ -72,7 +73,7 @@ Open cloned repo
 cd budget_app
 ```
 
-configure project constats
+configure project constats - in server/src/config/constants.js
 ```
 const constants = {
     dbAdrres: '',
@@ -135,8 +136,16 @@ cd client
 npm run build
 ```
 
+After that you can deploy your modified code where you want
+
 
 ### I want to just deploy
 - switch to deploy branch
 - save your filled config file 
-- 
+- deploy your code 
+
+
+
+***
+## Tests
+As a main testing tool is used Postman, part of this repo 
