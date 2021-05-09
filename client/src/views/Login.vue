@@ -25,7 +25,7 @@
       <h1>Warning</h1>
       <p>
           <span>
-          This serves as a demo of open-source project, by Ondřej Gardavský, //link for github.
+          This serves as a demo of open-source project, by Ondřej Gardavský, <a href="https://github.com/OG-Gardavsky/budget_app" target="_blank">Budget app</a>.
           Please do not use it for you confidential data, we guarantee no safety of them.
         </span>
       </p>
