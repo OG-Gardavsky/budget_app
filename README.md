@@ -23,8 +23,7 @@ by Ondřej Gardavský
             - know your maximal and current available limit
         - cash - for your wallet or money box
 - incomes and expenses management
-    - put down all your financial transactions to know what you spend ang get money on 
-      <!-- evidovat proste -->
+    - record all your financial transactions to know what you spend ang get money on
     - your transaction are categorized
 - category management
     - sort your incomes and expenses by categories
@@ -32,11 +31,9 @@ by Ondřej Gardavský
     - your incomes and expenses are summarized by categories
     - get summary for given month of your incomes/expenses
 - debts management
-    - put down who you lended or from who you borrowed money
-        <!-- evidovat proste -->
+    - record who you lended or from who you borrowed money
 - invest mangement
-    - put down to where you invested your money
-        <!-- evidovat proste -->
+    - record to where you invested your money
 
 ***
 ## Technologies
@@ -117,7 +114,6 @@ const constants = {
 - use some email you have access to, this need to be verified in ***<a href="https://sendgrid.com/">SendGrid</a>***
 
 
-
 ### I want to modify and deploy
 
 install npm dependencies
@@ -144,7 +140,7 @@ npm run build
 After that you can deploy your modified code where you want
 
 
-### I want to just deploy
+### I just want to just deploy
 - switch to deploy branch
 - save your filled config file 
 - deploy your code 
@@ -157,3 +153,7 @@ As a main testing tool during development was used ***<a href="postman.com">Post
 ```
 server/docs/postman
 ```
+
+***
+## Contributing
+If you would like to contribute to this project, every contribution is welcomed, see [Contributing](https://github.com/OG-Gardavsky/budget_app/blob/main/CONTRIBUTING.md).
