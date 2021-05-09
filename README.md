@@ -117,7 +117,6 @@ const constants = {
 - use some email you have access to, this need to be verified in ***<a href="https://sendgrid.com/">SendGrid</a>***
 
 
-
 ### I want to modify and deploy
 
 install npm dependencies
@@ -144,7 +143,7 @@ npm run build
 After that you can deploy your modified code where you want
 
 
-### I want to just deploy
+### I just want to just deploy
 - switch to deploy branch
 - save your filled config file 
 - deploy your code 
@@ -157,3 +156,7 @@ As a main testing tool during development was used ***<a href="postman.com">Post
 ```
 server/docs/postman
 ```
+
+***
+## Contributing
+If you would like to contribute to this project, every contribution is welcomed, see [Contributing](https://github.com/OG-Gardavsky/budget_app/blob/main/CONTRIBUTING.md).
