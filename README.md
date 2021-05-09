@@ -50,7 +50,7 @@ by Ondřej Gardavský
     - ***<a href="https://www.currencyconverterapi.com/">Currency Converter API</a>*** for getting list of currencies
 
 - Hosting
-    - anything where (možná lepší anywhere?) you can run Node.js and MongoDB
+    - anywhere you can run Node.js and MongoDB
     - I used:
         - ***<a href="https://www.heroku.com/">Heroku</a>*** for running application logic
         - ***<a href="https://www.mongodb.com/cloud/atlas">MongoDB Atlas</a>*** for hosting of MongoDB database (free version)
