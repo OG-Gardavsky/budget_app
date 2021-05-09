@@ -16,8 +16,17 @@
 
             <md-card>
                 <md-card-header>
-                    <div class="md-title">name: {{userInfo.name}} </div>
                     <div class="md-title">email: {{userInfo.email}} </div>
+                    <div class="md-title">name: {{userInfo.name}} </div>
+
+                    <md-field>
+                        <label>Name</label>
+                        <md-input type="email" v-model="userName" placeholder="Name" />
+                    </md-field>
+
+                    <md-card-actions>
+                        <md-button class="md-primary" @click="changeUserName">Change</md-button>
+                    </md-card-actions>
                 </md-card-header>
             </md-card>
 
@@ -117,6 +126,8 @@ export default {
         components: {CustomMenu, Header},
     data() {
         return {
+            userName: null,
+
             oldPassword: null,
             newPassword: null,
             newPasswordCheck: null,
@@ -131,6 +142,39 @@ export default {
         }
     },
     methods: {
+        async changeUserName(){
+
+            if (this.userName === '') {
+                return this.displayCustomError('please fill your name')
+            }
+
+
+
+            const res = await fetch('api/users', {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('userToken')
+                },
+                body: JSON.stringify({ name: this.userName })
+            });
+
+
+            if (res.status === 200){
+                return await this.checkCredentials();
+            }
+
+            try {
+                const resBody = await res.json();
+
+                if (resBody.error) {
+                    return  this.displayCustomError(resBody.error);
+                }
+            } catch (e) {
+                this.displayCustomError('Error during changing name');
+            }
+
+        },
         async changePassword(){
 
             if (this.newPassword !== this.newPasswordCheck) {
@@ -169,10 +213,14 @@ export default {
                 return this.displayCustomError('please fill your Default Currency')
             }
 
-            const primarCurrency = this.listOfCurrencies.find(currency => currency.currencyName === this.currencyName).id;
+            const isPrimarCurrencyValid = this.listOfCurrencies.find(currency => currency.currencyName === this.currencyName);
+            if (isPrimarCurrencyValid === undefined) {
+                return this.displayCustomError('Currency must be chosen from list of currencies.')
+            }
+            const primarCurrency = isPrimarCurrencyValid.id;
 
 
-            const res = await fetch('api/users/currency', {
+            const res = await fetch('api/users', {
                 method: 'PUT',
                 headers: {
                     'Content-type': 'application/json',
@@ -187,7 +235,7 @@ export default {
                 return  this.displayCustomError(resBody.error);
             }
             if (res.status !== 200){
-                return  this.displayCustomError('Error during changing primar Currency');
+                return  this.displayCustomError('Error during changing default Currency');
             }
 
         },
@@ -205,9 +253,6 @@ export default {
                 },
                 body: JSON.stringify({ password: this.passwordConfirmDelete }),
             });
-
-            console.log(res)
-            console.log(res.status)
 
             if (res.status === 200){
                 this.displayCustomError('Your account was deleted, goodbye')
@@ -227,6 +272,8 @@ export default {
     },
     async created() {
         await this.checkCredentials();
+
+        this.userName = this.userInfo.name
 
         this.listOfCurrencies = await this.getListOfCurrencies();
         this.listOfCurrencyNames = this.listOfCurrencies.map(currencyObject => currencyObject.currencyName);

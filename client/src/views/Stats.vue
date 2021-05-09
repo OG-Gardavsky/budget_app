@@ -42,7 +42,7 @@
 
         <md-card id="totalSum">
             <md-card-content>
-                <div class="md-title" v-if="totalSum !== null">Total {{transactionType}}: {{totalSum}} {{userInfo.primarCurrency4}}</div>
+                <div class="md-title" v-if="totalSum !== null">Total {{transactionType}}: {{totalSum}} {{userInfo.primarCurrency}}</div>
             </md-card-content>
         </md-card>
 
@@ -91,14 +91,30 @@ export default {
                             "#46BFBD",
                             "#FDB45C",
                             "#949FB1",
-                            "#4D5360"
+                            "#4D5360",
+                            "#003f5c",
+                            "#2f4b7c",
+                            "#665191",
+                            "#a05195",
+                            "#d45087",
+                            "#f95d6a",
+                            "#ff7c43",
+                            "#ffa600",
                         ],
                         hoverBackgroundColor: [
                             "#FF5A5E",
                             "#5AD3D1",
                             "#FFC870",
                             "#A8B3C5",
-                            "#616774"
+                            "#616774",
+                            "#194a6a",
+                            "#4065ac",
+                            "#8066b8",
+                            "#ce69c1",
+                            "#fa659f",
+                            "#ff878f",
+                            "#ffa178",
+                            "#ffcf8d",
                         ]
                     }
                 ]

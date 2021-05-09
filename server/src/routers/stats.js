@@ -111,6 +111,8 @@ router.get(baseUrl + '/type::type', auth, async (req, res) => {
             summedCategories.push( { categoryName: category.name, categoryId: category._id, sum: match.sum } );
         });
 
+        summedCategories.sort((a, b) => a.sum-b.sum);
+
         res.send(summedCategories);
     } catch (e) {
         res.status(500).send(e);

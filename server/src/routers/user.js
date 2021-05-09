@@ -95,10 +95,10 @@ router.post(baseUrl + '/logoutAll', auth, async (req, res) => {
     }
 });
 
-router.put(baseUrl + '/currency', auth, async (req, res) => {
+router.put(baseUrl, auth, async (req, res) => {
 
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['primarCurrency'];
+    const allowedUpdates = ['primarCurrency', 'name'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
     if (!isValidOperation) {
@@ -107,10 +107,12 @@ router.put(baseUrl + '/currency', auth, async (req, res) => {
 
     try {
 
-        req.user.primarCurrency = req.body.primarCurrency;
-        req.user.save();
 
-        res.send({message: 'currency changed succesfully'});
+        updates.forEach((update) => req.user[update] = req.body[update]);
+
+        await req.user.save();
+
+        res.send({message: updates.toString() + ' changed succesfully'});
     } catch (e) {
         res.status(500).send();
     }
