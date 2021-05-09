@@ -23,8 +23,7 @@ by Ondřej Gardavský
             - know your maximal and current available limit
         - cash - for your wallet or money box
 - incomes and expenses management
-    - put down all your financial transactions to know what you spend ang get money on 
-      <!-- evidovat proste -->
+    - record all your financial transactions to know what you spend ang get money on
     - your transaction are categorized
 - category management
     - sort your incomes and expenses by categories
@@ -32,11 +31,9 @@ by Ondřej Gardavský
     - your incomes and expenses are summarized by categories
     - get summary for given month of your incomes/expenses
 - debts management
-    - put down who you lended or from who you borrowed money
-        <!-- evidovat proste -->
+    - record who you lended or from who you borrowed money
 - invest mangement
-    - put down to where you invested your money
-        <!-- evidovat proste -->
+    - record to where you invested your money
 
 ***
 ## Technologies
