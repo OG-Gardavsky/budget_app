@@ -61,7 +61,7 @@ by Ondřej Gardavský
 ***
 ## License
 
-Budget_app is completely free and released under the [MIT License](https://github.com/OG-Gardavsky/budget_app/blob/polishing/LICENSE).
+Budget_app is completely free and released under the [MIT License](https://github.com/OG-Gardavsky/budget_app/blob/main/LICENSE).
 
 ***
 ## Get started
