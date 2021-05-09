@@ -57,8 +57,11 @@ by Ondřej Gardavský
     - I used:
         - ***<a href="https://www.heroku.com/">Heroku</a>*** for running application logic
         - ***<a href="https://www.mongodb.com/cloud/atlas">MongoDB Atlas</a>*** for hosting of MongoDB database (free version)
-  
-    
+
+***
+## License
+
+Budget_app is completely free and released under the [MIT License](https://github.com/OG-Gardavsky/budget_app/blob/main/LICENSE).
 
 ***
 ## Get started
@@ -74,6 +77,8 @@ cd budget_app
 ```
 
 configure project constats - in server/src/config/constants.js
+
+
 ```
 const constants = {
     dbAdrres: '',
@@ -148,4 +153,7 @@ After that you can deploy your modified code where you want
 
 ***
 ## Tests
-As a main testing tool is used Postman, part of this repo 
+As a main testing tool during development was used ***<a href="postman.com">Postman</a>***. For manual as well as automated tests. Definitions of theese collections are located in:
+```
+server/docs/postman
+```

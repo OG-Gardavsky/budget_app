@@ -1,0 +1,1260 @@
+{
+	"info": {
+		"_postman_id": "867734c8-3a0d-445a-9560-f98ce563a555",
+		"name": "Budget_app-definitions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "users-management",
+			"item": [
+				{
+					"name": "Create user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {\r",
+									"    pm.environment.set('authToken', pm.response.json().token)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"random name\",\r\n    \"email\": \"something@gmail.com\",\r\n    \"password\": \"1234567891\",\r\n    \"primarCurrency\": \"CZK\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/users",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {\r",
+									"    pm.environment.set('authToken', pm.response.json().token)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"something@gmail.com\",\r\n    \"password\": \"1234567891\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/users/login",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {\r",
+									"    pm.environment.set('authToken', pm.response.json().token)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oldPassword\": \"12345678911\",\r\n    \"newPassword\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/users/password",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users",
+								"password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change primar Currency/name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"primarCurrency\": \"USD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/users",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {\r",
+									"    pm.environment.set('authToken', '')\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/users/logout",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout All sessions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {\r",
+									"    pm.environment.set('authToken', '')\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/users/logoutAll",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users",
+								"logoutAll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/users",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request password reset",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"ogardavsky@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/users/passwordResetRequest",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users",
+								"passwordResetRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Is reset token valid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/users/isResetTokenValid/token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDg4ODQ4MmMwZDU1MDUxYWM3Nzg1YWEiLCJpYXQiOjE2MTk2MDUxNTQsImV4cCI6MTYxOTYyMzE1NH0.GuovYyr3O4OZxxAPMLr2JjJziMq8nPQdxxaiahwzOSI",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users",
+								"isResetTokenValid",
+								"token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDg4ODQ4MmMwZDU1MDUxYWM3Nzg1YWEiLCJpYXQiOjE2MTk2MDUxNTQsImV4cCI6MTYxOTYyMzE1NH0.GuovYyr3O4OZxxAPMLr2JjJziMq8nPQdxxaiahwzOSI"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "password reset with token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {\r",
+									"    pm.environment.set('authToken', pm.response.json().token)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDg4ODQ4MmMwZDU1MDUxYWM3Nzg1YWEiLCJpYXQiOjE2MTk2MDUxNTQsImV4cCI6MTYxOTYyMzE1NH0.GuovYyr3O4OZxxAPMLr2JjJziMq8nPQdxxaiahwzOSI\",\r\n    \"newPassword\": \"12345678912\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/users/passwordReset",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users",
+								"passwordReset"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"1234567891\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/users/me",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "accounts-management",
+			"item": [
+				{
+					"name": "Create new Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"first\",\r\n    \"type\": \"invest\",\r\n    \"moneyType\": \"fiat\",\r\n    \"currency\": \"CZK\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/accounts",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"initialBalance\": -5000,\r\n    \"name\": \"up2\",\r\n    \"limit\": 30000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/accounts/id:608807748a62c231b4fa6de7",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"accounts",
+								"id:608807748a62c231b4fa6de7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List of Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/accounts?type=basic",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"accounts"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "basic"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show Account details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/accounts/id:604c7cc92ddff546b4dffa43",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"accounts",
+								"id:604c7cc92ddff546b4dffa43"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show balance of all Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/accounts/balance?type=invest",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"accounts",
+								"balance"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "invest"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show Acount transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/accounts/id:606cdd3e074e4032d894c2ca/transactions?limit=6&sort=desc",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"accounts",
+								"id:606cdd3e074e4032d894c2ca",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "6"
+								},
+								{
+									"key": "sort",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show Account balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/accounts/id:606cdd3e074e4032d894c2ca/balance",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"accounts",
+								"id:606cdd3e074e4032d894c2ca",
+								"balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/accounts/id:60769781157c8f553067b324",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"accounts",
+								"id:60769781157c8f553067b324"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transaction-management",
+			"item": [
+				{
+					"name": "Create new Income/expense",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subtype\": \"expense\",\r\n    \"amount\": \"dffdgdfg\",\r\n    \"categoryId\": \"604ff68d54e3914878efeb0f\",\r\n    \"accountId\": \"6069cb3b213bab0854d64eb5\",\r\n    \"name\": \"kapesny\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/transactions/basic",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"basic"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update Income/expense Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subtype\": \"income\",\r\n    \"amount\": 2000,\r\n    \"categoryId\": \"6069cb46213bab0854d64eb6\",\r\n    \"accountId\": \"6069cb3b213bab0854d64eb5\",\r\n    \"name\": \"After update\",\r\n    \"currency\": \"USD\",\r\n    \"fmdskf\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/transactions/basic/id:6069e9d95ccb2b3f2452a5a9",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"basic",
+								"id:6069e9d95ccb2b3f2452a5a9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Transfer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": -10,\r\n    \"givingAccountId\": \"606cdd3e074e4032d894c2ca\",\r\n    \"receivingAccountId\": \"606e282918cac2001573be8f\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/transactions/transfer",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"transfer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update transfer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": 42,\r\n    \"givingAccountId\": \"6069cb3b213bab0854d64eb5\",\r\n    \"receivingAccountId\": \"6069d0883a98b11af0225e55\",\r\n    \"name\": \"updated to 42\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/transactions/transfer/sharedId:607587644544b30015605af8",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"transfer",
+								"sharedId:607587644544b30015605af8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create Debts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountingDate\": \"2021-04-30T15:27:34.221Z\",\r\n    \"amount\": \"10\",\r\n    \"basicAccountId\": \"6082d3305ee8eb001514bf92\",\r\n    \"debtAccountId\": \"6082d33e5ee8eb001514bf93\",\r\n    \"subtype\": \"borrow\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/transactions/debt",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"debt"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update debt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subtype\": \"lend\",\r\n    \"basicAccountId\": \"606e284018cac2001573be90\",\r\n    \"debtAccountId\": \"60744d7d7bfeac26acb0f967\",\r\n    \"amount\": 20,\r\n    \"name\" : \"updated\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/transactions/debt/sharedId:607590e0b7c25f1d34860c16",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"debt",
+								"sharedId:607590e0b7c25f1d34860c16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create invest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subtype\": \"withdrawal\",\r\n    \"basicAccountId\": \"606cdd3e074e4032d894c2ca\",\r\n    \"investAccountId\": \"607aad86cd5c662e44137988\",\r\n    \"amount\": 10,\r\n    \"accountingDate\": \"2021-04-14T22:00:00.000+00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/transactions/invests",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"invests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update invest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subtype\": \"withdrawal\",\r\n    \"basicAccountId\": \"606cdd3e074e4032d894c2ca\",\r\n    \"investAccountId\": \"607aad86cd5c662e44137988\",\r\n    \"amount\": 10,\r\n    \"accountingDate\": \"2021-04-14T22:00:00.000+00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/transactions/invests/sharedId:607abe87b72f9661b4a7c813",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"invests",
+								"sharedId:607abe87b72f9661b4a7c813"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get transef/debt/invest details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/transactions/invests/sharedId:607ade0e6dc221689079afb0",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"invests",
+								"sharedId:607ade0e6dc221689079afb0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List of Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/transactions?type=invest&limit=10&sort=desc",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "invest"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "sort",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Transaction",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/transactions/id:60449c4dbc7e9b1bfc7b2e63",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"transactions",
+								"id:60449c4dbc7e9b1bfc7b2e63"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "category-management",
+			"item": [
+				{
+					"name": "Create new Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"food\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/categories",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"general\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/categories/id:6069cb46213bab0854d64eb6",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"categories",
+								"id:6069cb46213bab0854d64eb6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List of categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/categories",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/categories/id:604c7dc12ddff546b4dffa4a",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"categories",
+								"id:604c7dc12ddff546b4dffa4a"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "stats",
+			"item": [
+				{
+					"name": "categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/stats/type:expense?month=5&year=2021",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"stats",
+								"type:expense"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "5"
+								},
+								{
+									"key": "year",
+									"value": "2021"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "total sum in month",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/stats/total/type:expense?month=4&year=2021",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"stats",
+								"total",
+								"type:expense"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "4"
+								},
+								{
+									"key": "year",
+									"value": "2021"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "total sum on Account type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/stats/balance?type=all",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"stats",
+								"balance"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "all"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "currency-API",
+			"item": [
+				{
+					"name": "get list of currencies",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/currency/list",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"currency",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "endpoint",
+			"value": "localhost:3000/api"
+		}
+	]
+}
