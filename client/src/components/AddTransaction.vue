@@ -200,7 +200,7 @@
                         </md-field>
 
                         <md-field>
-                            <label v-if="transactionSubtype === null ">Debt account</label>
+                            <label v-if="transactionSubtype === null ">Invest account</label>
                             <label v-if="transactionSubtype === 'deposit' " >Putting money to Account: </label>
                             <label v-if="transactionSubtype === 'withdrawal' " >Getting money from Account: </label>
                             <md-select v-model="investAccountId" required >
